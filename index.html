@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>My Little Smart Town V2 - เมืองจำลองของหนู</title>
+  <title>My Little Smart Town V3 - เมืองจำลองของหนู</title>
   <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -26,7 +26,7 @@
       justify-content: space-between;
       align-items: center;
       padding: 10px 16px;
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255, 255, 255, 0.94);
       box-shadow: 0 4px 12px rgba(0,0,0,0.08);
       position: sticky;
       top: 0;
@@ -82,9 +82,9 @@
     /* Screen Container */
     .screen {
       display: none;
-      max-width: 820px;
+      max-width: 860px;
       margin: 0 auto;
-      padding: 16px;
+      padding: 14px;
       text-align: center;
     }
     .screen.active { display: block; animation: fadeIn 0.3s ease; }
@@ -130,7 +130,7 @@
     .zone-emoji { font-size: 54px; margin-bottom: 6px; }
     .zone-name { font-size: 21px; font-weight: 700; margin: 4px 0; }
     .zone-tag {
-      background: rgba(255,255,255,0.75);
+      background: rgba(255,255,255,0.8);
       padding: 4px 12px;
       border-radius: 20px;
       font-size: 13px;
@@ -143,14 +143,14 @@
       flex-wrap: wrap;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
     .pill-btn {
       background: #fff;
       border: 3px solid #b2bec3;
       border-radius: 20px;
       padding: 6px 14px;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       cursor: pointer;
       color: #2d3436;
@@ -160,6 +160,11 @@
       color: #fff;
       border-color: #4834d4;
       box-shadow: 0 3px 0 #30336b;
+    }
+    .pill-sub.active {
+      background: #00b894;
+      border-color: #00896f;
+      box-shadow: 0 3px 0 #006266;
     }
 
     /* Prompt Box */
@@ -176,7 +181,7 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.06);
     }
     .prompt-text {
-      font-size: 20px;
+      font-size: 19px;
       font-weight: 700;
       text-align: left;
       flex: 1;
@@ -323,61 +328,113 @@
     .mart-emoji { font-size: 42px; }
     .mart-label { font-size: 20px; font-weight: 700; margin-top: 4px; }
 
-    /* Game 4: Smart School (Attitude & Logic) */
-    .sequence-stage {
-      background: #fff;
+    /* Game 4: Smart School & Interactive Worksheet Pattern */
+    .worksheet-stage {
+      background: #ffffff;
       border-radius: 24px;
-      padding: 18px;
+      padding: 20px 12px;
       margin-bottom: 16px;
-      border: 4px solid #a29bfe;
+      border: 5px solid #ff9ff3;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
       display: flex;
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 10px;
-      min-height: 120px;
+      gap: 8px;
+      min-height: 130px;
     }
-    .seq-box {
-      background: #f1f2f6;
-      border-radius: 18px;
-      padding: 12px 16px;
-      font-size: 36px;
-      font-weight: 700;
+    .pat-item {
+      width: 68px;
+      height: 68px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8f9fa;
+      border: 3px solid #dfe6e9;
+      padding: 6px;
+      position: relative;
+      transition: transform 0.2s;
+    }
+    .pat-item svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .pat-blank {
+      background: #fff9db;
+      border: 4px dashed #f59f00;
       min-width: 72px;
-      border: 3px solid #dfe4ea;
-    }
-    .seq-question {
-      background: #ffeaa7;
-      border: 3px dashed #fdcb6e;
-      color: #d63031;
+      height: 72px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 700;
+      color: #e67700;
+      padding: 6px 10px;
       animation: pulse 1.2s infinite;
     }
-    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+    .pat-blank.double-blank {
+      min-width: 136px;
+      background: #fff3bf;
+    }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
     .choices-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      max-width: 560px;
+      gap: 14px;
+      max-width: 640px;
       margin: 0 auto;
     }
-    @media (max-width: 480px) {
+    @media (max-width: 520px) {
       .choices-grid { grid-template-columns: 1fr; }
     }
     .choice-btn {
       background: #fff;
       border: 4px solid #74b9ff;
-      border-radius: 20px;
-      padding: 14px;
-      font-size: 22px;
+      border-radius: 22px;
+      padding: 14px 12px;
+      font-size: 20px;
       font-weight: 700;
       cursor: pointer;
       box-shadow: 0 6px 0 #0984e3;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
+      justify-content: center;
+      gap: 8px;
+      position: relative;
     }
     .choice-btn:active { transform: translateY(4px); box-shadow: none; }
+    .choice-badge {
+      background: #ffeaa7;
+      color: #d63031;
+      border: 2px solid #fdcb6e;
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .choice-visual-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .choice-svg-box {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .choice-svg-box svg {
+      width: 100%;
+      height: 100%;
+    }
 
     /* Modals */
     .modal-overlay {
@@ -458,9 +515,9 @@
       </div>
 
       <div class="zone-card zone-4" onclick="openZone(4)">
-        <div class="zone-emoji">🎓</div>
+        <div class="zone-emoji">🎨</div>
         <div class="zone-name">4. โรงเรียนฝึกสมอง</div>
-        <div class="zone-tag">นิสัยดี + อนุกรมภาพ + เลขหายไป</div>
+        <div class="zone-tag">อนุกรมรูปทรง/ยานพาหนะ + นิสัยดี + เลขหาย</div>
       </div>
     </div>
   </div>
@@ -524,18 +581,35 @@
     <div class="mart-grid" id="martGrid"></div>
   </div>
 
-  <!-- ZONE 4: SMART SCHOOL (Attitude + Pattern + Missing Number) -->
+  <!-- ZONE 4: SMART SCHOOL (Pattern Worksheets + Attitude + Missing Number) -->
   <div id="zone4" class="screen">
     <div class="mode-bar">
-      <button class="pill-btn active" id="z4ModeAtt" onclick="setZ4Mode('attitude')">💖 นิสัยดี & เหตุการณ์</button>
-      <button class="pill-btn" id="z4ModePat" onclick="setZ4Mode('pattern')">🧩 3 ภาพนี้ อะไรต่อ?</button>
+      <button class="pill-btn active" id="z4ModePat" onclick="setZ4Mode('pattern')">🎨 อนุกรมภาพต่อเนื่อง</button>
+      <button class="pill-btn" id="z4ModeAtt" onclick="setZ4Mode('attitude')">💖 นิสัยดี & เหตุการณ์</button>
       <button class="pill-btn" id="z4ModeNum" onclick="setZ4Mode('number')">🔢 เลขอะไรหายไป?</button>
     </div>
+
+    <!-- Sub-toolbar specifically for Pattern Mode -->
+    <div id="z4PatternToolbar">
+      <div class="mode-bar">
+        <button class="pill-btn pill-sub active" id="patThemeMix" onclick="setPatTheme('mix')">🌈 รวมทุกหมวด</button>
+        <button class="pill-btn pill-sub" id="patThemeShapes" onclick="setPatTheme('shapes')">🔷 รูปทรงหลากสี</button>
+        <button class="pill-btn pill-sub" id="patThemeVehicles" onclick="setPatTheme('vehicles')">🚒 ยานพาหนะ</button>
+        <button class="pill-btn pill-sub" id="patThemeAnimals" onclick="setPatTheme('animals')">🦁 สัตว์ & ผลไม้</button>
+      </div>
+      <div class="mode-bar">
+        <button class="pill-btn active" id="patDiffEasy" onclick="setPatDiff('easy')">🌱 ง่าย (ABAB เติมท้าย)</button>
+        <button class="pill-btn" id="patDiffMed" onclick="setPatDiff('med')">⭐ กลาง (AAB / แหว่งกลาง)</button>
+        <button class="pill-btn" id="patDiffHard" onclick="setPatDiff('hard')">🔥 ยาก (เติมคู่ 2 ช่อง ก./ข.)</button>
+      </div>
+    </div>
+
     <div class="prompt-box">
-      <div class="prompt-text" id="z4Prompt">มาช่วยกันคิดนะ!</div>
+      <div class="prompt-text" id="z4Prompt">เลือกภาพเติมในช่องว่างให้ถูกต้องนะจ๊ะ!</div>
       <button class="speak-btn" onclick="speakZ4()">🔊</button>
     </div>
-    <div class="sequence-stage" id="z4Stage"></div>
+
+    <div class="worksheet-stage" id="z4Stage"></div>
     <div class="choices-grid" id="z4Choices"></div>
   </div>
 
@@ -570,7 +644,7 @@
         <input type="text" id="inputCouponText" style="width:100%; padding:10px; border-radius:12px; border:2px solid #b2bec3; font-size:16px; margin-top:4px;">
       </div>
       <div style="margin-bottom:14px;">
-        <button class="pill-btn" onclick="adjustStars(5)">➕ เพิ่มให้ 5 ดาว (รางวัลพิเศษ)</button>
+        <button class="pill-btn" onclick="adjustStars(5)">➕ เพิ่มให้ 5 ดาว</button>
         <button class="pill-btn" onclick="adjustStars(-5)">➖ ลด 5 ดาว</button>
       </div>
       <button class="primary-btn" onclick="saveSettings()">💾 บันทึก</button>
@@ -642,7 +716,7 @@
       if (num === 4) initZone4();
     }
 
-    // ======== ZONE 1: TOY ROOM (Easy & Hard) ========
+    // ======== ZONE 1: TOY ROOM ========
     let z1Diff = 'easy';
     let z1Tasks = [];
     const toyTypes = [
@@ -674,22 +748,18 @@
       const shuffledToys = [...toyTypes].sort(() => Math.random() - 0.5);
 
       if (z1Diff === 'easy') {
-        const count = Math.floor(Math.random() * 3) + 2; // 2-4
+        const count = Math.floor(Math.random() * 3) + 2;
         z1Tasks.push({ color: shuffledColors[0], toy: shuffledToys[0], target: count, collected: 0 });
       } else {
-        // Hard mode: 2 distinct targets at once
-        const c1 = Math.floor(Math.random() * 2) + 2; // 2-3
-        const c2 = Math.floor(Math.random() * 2) + 2; // 2-3
+        const c1 = Math.floor(Math.random() * 2) + 2;
+        const c2 = Math.floor(Math.random() * 2) + 2;
         z1Tasks.push({ color: shuffledColors[0], toy: shuffledToys[0], target: c1, collected: 0 });
         z1Tasks.push({ color: shuffledColors[1], toy: shuffledToys[1], target: c2, collected: 0 });
       }
 
-      // Generate required items + distractors
       let items = [];
       z1Tasks.forEach(t => {
-        for (let i = 0; i < t.target; i++) {
-          items.push({ color: t.color, toy: t.toy });
-        }
+        for (let i = 0; i < t.target; i++) items.push({ color: t.color, toy: t.toy });
       });
 
       const distractorCount = z1Diff === 'easy' ? 4 : 8;
@@ -745,8 +815,7 @@
         speakText(String(matchTask.collected), 'en-US');
         updateZ1Prompt();
 
-        const allDone = z1Tasks.every(t => t.collected >= t.target);
-        if (allDone) {
+        if (z1Tasks.every(t => t.collected >= t.target)) {
           addStar(z1Diff === 'hard' ? 2 : 1);
           setTimeout(() => {
             speakText('Good job! You are very helpful!', 'en-US');
@@ -760,7 +829,7 @@
       }
     }
 
-    // ======== ZONE 2: GARDEN MAZE (4x4, 5x5, 6x6) ========
+    // ======== ZONE 2: GARDEN MAZE ========
     let z2GridSize = 4;
     let z2Control = 'step';
     let playerPos = { r: 0, c: 0 };
@@ -799,7 +868,6 @@
       codeQueue = [];
       currentTargetObj = mazeTargets[Math.floor(Math.random() * mazeTargets.length)];
 
-      // Generate guaranteed safe path first so player is never trapped
       let safePath = new Set(['0,0', `${goalPos.r},${goalPos.c}`]);
       let cr = 0, cc = 0;
       while (cr < goalPos.r || cc < goalPos.c) {
@@ -842,22 +910,17 @@
           const cell = document.createElement('div');
           cell.className = 'maze-cell';
           cell.style.fontSize = z2GridSize === 6 ? '22px' : '30px';
-          if (playerPos.r === r && playerPos.c === c) {
-            cell.textContent = '🐶';
-          } else if (goalPos.r === r && goalPos.c === c) {
-            cell.textContent = currentTargetObj.emoji;
-          } else if (rocks.some(k => k.r === r && k.c === c)) {
-            cell.textContent = '🪨';
-          }
+          if (playerPos.r === r && playerPos.c === c) cell.textContent = '🐶';
+          else if (goalPos.r === r && goalPos.c === c) cell.textContent = currentTargetObj.emoji;
+          else if (rocks.some(k => k.r === r && k.c === c)) cell.textContent = '🪨';
           grid.appendChild(cell);
         }
       }
     }
 
     function handleMazeInput(dir) {
-      if (z2Control === 'step') {
-        moveSingleStep(dir);
-      } else {
+      if (z2Control === 'step') moveSingleStep(dir);
+      else {
         codeQueue.push(dir);
         updateQueueUI();
       }
@@ -877,8 +940,7 @@
     }
 
     function moveSingleStep(dir) {
-      let nr = playerPos.r;
-      let nc = playerPos.c;
+      let nr = playerPos.r, nc = playerPos.c;
       if (dir === 'UP') nr--;
       if (dir === 'DOWN') nr++;
       if (dir === 'LEFT') nc--;
@@ -897,8 +959,7 @@
       renderMaze();
 
       if (playerPos.r === goalPos.r && playerPos.c === goalPos.c) {
-        const reward = z2GridSize === 6 ? 2 : 1;
-        addStar(reward);
+        addStar(z2GridSize === 6 ? 2 : 1);
         speakText(`Awesome! You found the ${currentTargetObj.en}!`, 'en-US');
         setTimeout(initZone2, 1000);
         return 'WIN';
@@ -922,7 +983,7 @@
       }, 420);
     }
 
-    // ======== ZONE 3: MINI MART (Easy & Hard Riddles) ========
+    // ======== ZONE 3: MINI MART ========
     let z3Category = 'thai';
     let z3Diff = 'easy';
     let z3Answer = null;
@@ -941,7 +1002,7 @@
     ];
 
     const engItems = [
-      { label: 'Apple', emoji: '🍎', speak: 'Apple', riddle: 'What fruit is red and crunchy? Apple!' },
+      { label: 'Apple', emoji: '🍎', speak: 'Apple', riddle: 'What fruit is red and crunchy?' },
       { label: 'Banana', emoji: '🍌', speak: 'Banana', riddle: 'What fruit is yellow and monkeys love to eat?' },
       { label: 'Orange', emoji: '🍊', speak: 'Orange', riddle: 'What round fruit is orange and juicy?' },
       { label: 'Milk', emoji: '🥛', speak: 'Milk', riddle: 'What white drink comes from a cow?' },
@@ -968,33 +1029,22 @@
     }
 
     function initZone3() {
-      let pool = [];
-      if (z3Category === 'thai') pool = [...thaiItems];
-      else if (z3Category === 'eng') pool = [...engItems];
-      else pool = [...thaiItems, ...engItems];
-
+      let pool = z3Category === 'thai' ? [...thaiItems] : (z3Category === 'eng' ? [...engItems] : [...thaiItems, ...engItems]);
       const count = z3Diff === 'easy' ? 6 : 9;
       const choices = pool.sort(() => Math.random() - 0.5).slice(0, count);
       z3Answer = choices[Math.floor(Math.random() * choices.length)];
 
       const isThaiItem = thaiItems.some(t => t.label === z3Answer.label);
-      if (z3Diff === 'easy') {
-        document.getElementById('z3Prompt').textContent = isThaiItem
-          ? `แม่ค้าอยากได้ "${z3Answer.label}" จ้า!`
-          : `Find the "${z3Answer.label}" please!`;
-      } else {
-        document.getElementById('z3Prompt').textContent = `🧩 คำใบ้: ${z3Answer.riddle}`;
-      }
+      document.getElementById('z3Prompt').textContent = z3Diff === 'easy'
+        ? (isThaiItem ? `แม่ค้าอยากได้ "${z3Answer.label}" จ้า!` : `Find the "${z3Answer.label}" please!`)
+        : `🧩 คำใบ้: ${z3Answer.riddle}`;
 
       const grid = document.getElementById('martGrid');
       grid.innerHTML = '';
       choices.forEach(item => {
         const card = document.createElement('div');
         card.className = 'mart-card';
-        card.innerHTML = `
-          <div class="mart-emoji">${item.emoji}</div>
-          <div class="mart-label">${z3Diff === 'hard' ? item.label : item.label}</div>
-        `;
+        card.innerHTML = `<div class="mart-emoji">${item.emoji}</div><div class="mart-label">${item.label}</div>`;
         card.onclick = () => {
           if (item.label === z3Answer.label) {
             addStar(z3Diff === 'hard' ? 2 : 1);
@@ -1008,7 +1058,6 @@
         };
         grid.appendChild(card);
       });
-
       speakZ3();
     }
 
@@ -1022,10 +1071,296 @@
       }
     }
 
-    // ======== ZONE 4: SMART SCHOOL (Attitude + Pattern + Missing Number) ========
-    let z4Mode = 'attitude';
+    // ======== ZONE 4: SMART SCHOOL & COLORFUL WORKSHEET GENERATOR ========
+    let z4Mode = 'pattern';
+    let patTheme = 'mix';
+    let patDiff = 'easy';
     let currentZ4Question = null;
 
+    // Rich Custom SVG Generator for Crisp, Colorful Shapes & Vehicles
+    function makeShapeSVG(type, fill, stroke = '#2d3436') {
+      const shapes = {
+        circle: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="${fill}" stroke="${stroke}" stroke-width="6"/><circle cx="35" cy="35" r="8" fill="rgba(255,255,255,0.45)"/></svg>`,
+        square: `<svg viewBox="0 0 100 100"><rect x="14" y="14" width="72" height="72" rx="10" fill="${fill}" stroke="${stroke}" stroke-width="6"/><rect x="24" y="24" width="20" height="12" rx="4" fill="rgba(255,255,255,0.4)"/></svg>`,
+        triangle: `<svg viewBox="0 0 100 100"><polygon points="50,10 90,86 10,86" fill="${fill}" stroke="${stroke}" stroke-width="6" stroke-linejoin="round"/></svg>`,
+        star: `<svg viewBox="0 0 100 100"><polygon points="50,8 63,36 94,40 71,62 77,92 50,77 23,92 29,62 6,40 37,36" fill="${fill}" stroke="${stroke}" stroke-width="5" stroke-linejoin="round"/></svg>`,
+        hexagon: `<svg viewBox="0 0 100 100"><polygon points="28,12 72,12 94,50 72,88 28,88 6,50" fill="${fill}" stroke="${stroke}" stroke-width="6" stroke-linejoin="round"/></svg>`,
+        heart: `<svg viewBox="0 0 100 100"><path d="M50,86 C50,86 10,60 10,34 C10,18 24,10 38,16 C45,19 50,26 50,26 C50,26 55,19 62,16 C76,10 90,18 90,34 C90,60 50,86 50,86 Z" fill="${fill}" stroke="${stroke}" stroke-width="6" stroke-linejoin="round"/></svg>`,
+        diamond: `<svg viewBox="0 0 100 100"><polygon points="50,8 88,50 50,92 12,50" fill="${fill}" stroke="${stroke}" stroke-width="6" stroke-linejoin="round"/></svg>`
+      };
+      return shapes[type];
+    }
+
+    function makeVehicleSVG(type, primaryColor, secondaryColor = '#ffeaa7') {
+      const v = {
+        car: `<svg viewBox="0 0 100 100">
+          <rect x="10" y="46" width="80" height="28" rx="10" fill="${primaryColor}" stroke="#2d3436" stroke-width="4"/>
+          <path d="M24,46 L36,24 L66,24 L78,46 Z" fill="${primaryColor}" stroke="#2d3436" stroke-width="4" stroke-linejoin="round"/>
+          <polygon points="38,29 63,29 71,44 30,44" fill="#dff9fb"/>
+          <circle cx="28" cy="76" r="12" fill="#2d3436"/><circle cx="28" cy="76" r="5" fill="#dfe6e9"/>
+          <circle cx="72" cy="76" r="12" fill="#2d3436"/><circle cx="72" cy="76" r="5" fill="#dfe6e9"/>
+          <circle cx="84" cy="56" r="4" fill="#ffeaa7"/>
+        </svg>`,
+        bus: `<svg viewBox="0 0 100 100">
+          <rect x="8" y="24" width="84" height="50" rx="8" fill="${primaryColor}" stroke="#2d3436" stroke-width="4"/>
+          <rect x="16" y="32" width="16" height="16" rx="3" fill="#dff9fb" stroke="#2d3436" stroke-width="3"/>
+          <rect x="38" y="32" width="16" height="16" rx="3" fill="#dff9fb" stroke="#2d3436" stroke-width="3"/>
+          <rect x="60" y="32" width="22" height="16" rx="3" fill="#dff9fb" stroke="#2d3436" stroke-width="3"/>
+          <circle cx="26" cy="76" r="11" fill="#2d3436"/><circle cx="26" cy="76" r="5" fill="#dfe6e9"/>
+          <circle cx="74" cy="76" r="11" fill="#2d3436"/><circle cx="74" cy="76" r="5" fill="#dfe6e9"/>
+        </svg>`,
+        rocket: `<svg viewBox="0 0 100 100">
+          <path d="M35,72 L20,86 L35,82 Z" fill="${secondaryColor}" stroke="#2d3436" stroke-width="4"/>
+          <path d="M65,72 L80,86 L65,82 Z" fill="${secondaryColor}" stroke="#2d3436" stroke-width="4"/>
+          <path d="M50,10 C68,28 70,56 66,78 L34,78 C30,56 32,28 50,10 Z" fill="${primaryColor}" stroke="#2d3436" stroke-width="4"/>
+          <circle cx="50" cy="46" r="12" fill="#dff9fb" stroke="#2d3436" stroke-width="4"/>
+          <path d="M40,78 L50,96 L60,78 Z" fill="#ff7675"/>
+        </svg>`,
+        boat: `<svg viewBox="0 0 100 100">
+          <polygon points="48,14 48,56 80,56" fill="${primaryColor}" stroke="#2d3436" stroke-width="4" stroke-linejoin="round"/>
+          <polygon points="44,22 44,56 20,56" fill="${secondaryColor}" stroke="#2d3436" stroke-width="4" stroke-linejoin="round"/>
+          <polygon points="12,62 88,62 74,84 26,84" fill="#e17055" stroke="#2d3436" stroke-width="4" stroke-linejoin="round"/>
+        </svg>`,
+        heli: `<svg viewBox="0 0 100 100">
+          <line x1="18" y1="20" x2="82" y2="20" stroke="#2d3436" stroke-width="6" stroke-linecap="round"/>
+          <line x1="50" y1="20" x2="50" y2="32" stroke="#2d3436" stroke-width="5"/>
+          <path d="M12,50 L36,50" stroke="${primaryColor}" stroke-width="8" stroke-linecap="round"/>
+          <ellipse cx="56" cy="52" rx="26" ry="20" fill="${primaryColor}" stroke="#2d3436" stroke-width="4"/>
+          <path d="M58,36 C72,36 78,44 78,52 L58,52 Z" fill="#dff9fb" stroke="#2d3436" stroke-width="3"/>
+          <line x1="36" y1="78" x2="76" y2="78" stroke="#2d3436" stroke-width="5" stroke-linecap="round"/>
+        </svg>`,
+        plane: `<svg viewBox="0 0 100 100">
+          <path d="M12,52 L86,36 C94,35 96,46 88,50 L16,66 Z" fill="#ffffff" stroke="#2d3436" stroke-width="4"/>
+          <polygon points="42,46 62,42 46,20 34,22" fill="${primaryColor}" stroke="#2d3436" stroke-width="4" stroke-linejoin="round"/>
+          <polygon points="44,56 64,52 50,82 38,82" fill="${primaryColor}" stroke="#2d3436" stroke-width="4" stroke-linejoin="round"/>
+          <polygon points="14,52 26,49 20,32 10,34" fill="${secondaryColor}" stroke="#2d3436" stroke-width="4" stroke-linejoin="round"/>
+        </svg>`,
+        scooter: `<svg viewBox="0 0 100 100">
+          <path d="M24,68 L64,68 L72,36 L60,36" fill="none" stroke="${primaryColor}" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M22,68 C22,52 44,52 44,68 Z" fill="${primaryColor}" stroke="#2d3436" stroke-width="4"/>
+          <rect x="24" y="46" width="22" height="8" rx="4" fill="#2d3436"/>
+          <circle cx="24" cy="74" r="12" fill="#2d3436"/><circle cx="24" cy="74" r="5" fill="#fff"/>
+          <circle cx="72" cy="74" r="12" fill="#2d3436"/><circle cx="72" cy="74" r="5" fill="#fff"/>
+        </svg>`,
+        bike: `<svg viewBox="0 0 100 100">
+          <circle cx="24" cy="70" r="14" fill="none" stroke="#2d3436" stroke-width="6"/>
+          <circle cx="76" cy="70" r="14" fill="none" stroke="#2d3436" stroke-width="6"/>
+          <polyline points="24,70 46,44 70,44 50,70 24,70" fill="none" stroke="${primaryColor}" stroke-width="5" stroke-linejoin="round"/>
+          <line x1="76" y1="70" x2="66" y2="34" stroke="${primaryColor}" stroke-width="5" stroke-linecap="round"/>
+          <line x1="58" y1="34" x2="74" y2="34" stroke="#2d3436" stroke-width="5" stroke-linecap="round"/>
+          <line x1="38" y1="40" x2="52" y2="40" stroke="#2d3436" stroke-width="6" stroke-linecap="round"/>
+        </svg>`
+      };
+      return v[type];
+    }
+
+    function makeEmojiSVG(emoji, bg) {
+      return `<svg viewBox="0 0 100 100">
+        <rect x="6" y="6" width="88" height="88" rx="22" fill="${bg}" stroke="#2d3436" stroke-width="4"/>
+        <text x="50" y="68" font-size="56" text-anchor="middle">${emoji}</text>
+      </svg>`;
+    }
+
+    // Master Visual Catalog (Over 35 distinct colorful visual items!)
+    const visualCatalog = {
+      shapes: [
+        { id: 'sh_cy', name: 'วงกลมสีเหลือง', svg: makeShapeSVG('circle', '#ffd32a') },
+        { id: 'sh_cb', name: 'วงกลมสีน้ำตาล', svg: makeShapeSVG('circle', '#b37d4e') },
+        { id: 'sh_sp', name: 'สี่เหลี่ยมสีชมพูเข้ม', svg: makeShapeSVG('square', '#f53b57') },
+        { id: 'sh_so', name: 'สี่เหลี่ยมสีส้ม', svg: makeShapeSVG('square', '#ff9f1a') },
+        { id: 'sh_sr', name: 'สี่เหลี่ยมสีแดง', svg: makeShapeSVG('square', '#eb2f06') },
+        { id: 'sh_tb', name: 'สามเหลี่ยมสีฟ้า', svg: makeShapeSVG('triangle', '#4bcffa') },
+        { id: 'sh_ty', name: 'สามเหลี่ยมสีเหลือง', svg: makeShapeSVG('triangle', '#fffa65') },
+        { id: 'sh_hg', name: 'หกเหลี่ยมสีเขียว', svg: makeShapeSVG('hexagon', '#05c46b') },
+        { id: 'sh_stp', name: 'ดาวสีม่วง', svg: makeShapeSVG('star', '#8c7ae6') },
+        { id: 'sh_stpk', name: 'ดาวสีชมพูอ่อน', svg: makeShapeSVG('star', '#ffcccc') },
+        { id: 'sh_hr', name: 'หัวใจสีชมพู', svg: makeShapeSVG('heart', '#ff6b81') },
+        { id: 'sh_dm', name: 'เพชรสีฟ้า', svg: makeShapeSVG('diamond', '#18dcff') }
+      ],
+      vehicles: [
+        { id: 'vh_scoot', name: 'มอเตอร์ไซค์สีแดง', svg: makeVehicleSVG('scooter', '#ff3f34') },
+        { id: 'vh_taxi', name: 'รถแท็กซี่สีเหลือง', svg: makeVehicleSVG('car', '#ffd32a') },
+        { id: 'vh_car_o', name: 'รถเก๋งสีส้ม', svg: makeVehicleSVG('car', '#ff793f') },
+        { id: 'vh_car_b', name: 'รถตำรวจสีน้ำเงิน', svg: makeVehicleSVG('car', '#3867d6') },
+        { id: 'vh_bike', name: 'รถจักรยาน', svg: makeVehicleSVG('bike', '#eb3b5a') },
+        { id: 'vh_plane', name: 'เครื่องบิน', svg: makeVehicleSVG('plane', '#45aaf2', '#fed330') },
+        { id: 'vh_heli', name: 'เฮลิคอปเตอร์สีเหลือง', svg: makeVehicleSVG('heli', '#fed330') },
+        { id: 'vh_boat', name: 'เรือใบสีฟ้า', svg: makeVehicleSVG('boat', '#2bcbba', '#fed330') },
+        { id: 'vh_bus', name: 'รถบัสสีส้ม', svg: makeVehicleSVG('bus', '#fa8231') },
+        { id: 'vh_rock_o', name: 'จรวดสีส้ม', svg: makeVehicleSVG('rocket', '#fd9644', '#4b7bec') },
+        { id: 'vh_rock_p', name: 'จรวดสีม่วง', svg: makeVehicleSVG('rocket', '#a55eea', '#ff7675') }
+      ],
+      animals: [
+        { id: 'an_lion', name: 'สิงโต', svg: makeEmojiSVG('🦁', '#ffeaa7') },
+        { id: 'an_frog', name: 'กบ', svg: makeEmojiSVG('🐸', '#b8e994') },
+        { id: 'an_panda', name: 'แพนด้า', svg: makeEmojiSVG('🐼', '#dff9fb') },
+        { id: 'an_rab', name: 'กระต่าย', svg: makeEmojiSVG('🐰', '#ffcccc') },
+        { id: 'an_oct', name: 'ปลาหมึก', svg: makeEmojiSVG('🐙', '#f8a5c2') },
+        { id: 'fr_apple', name: 'แอปเปิล', svg: makeEmojiSVG('🍎', '#ffcccc') },
+        { id: 'fr_bana', name: 'กล้วยหอม', svg: makeEmojiSVG('🍌', '#fff200') },
+        { id: 'fr_straw', name: 'สตรอว์เบอร์รี', svg: makeEmojiSVG('🍓', '#fab1a0') },
+        { id: 'fr_grape', name: 'องุ่น', svg: makeEmojiSVG('🍇', '#d6a2e8') },
+        { id: 'fr_melon', name: 'แตงโม', svg: makeEmojiSVG('🍉', '#b8e994') }
+      ]
+    };
+
+    function setZ4Mode(mode) {
+      z4Mode = mode;
+      document.getElementById('z4ModePat').classList.toggle('active', mode === 'pattern');
+      document.getElementById('z4ModeAtt').classList.toggle('active', mode === 'attitude');
+      document.getElementById('z4ModeNum').classList.toggle('active', mode === 'number');
+      document.getElementById('z4PatternToolbar').style.display = mode === 'pattern' ? 'block' : 'none';
+      initZone4();
+    }
+
+    function setPatTheme(theme) {
+      patTheme = theme;
+      document.getElementById('patThemeMix').classList.toggle('active', theme === 'mix');
+      document.getElementById('patThemeShapes').classList.toggle('active', theme === 'shapes');
+      document.getElementById('patThemeVehicles').classList.toggle('active', theme === 'vehicles');
+      document.getElementById('patThemeAnimals').classList.toggle('active', theme === 'animals');
+      initZone4();
+    }
+
+    function setPatDiff(diff) {
+      patDiff = diff;
+      document.getElementById('patDiffEasy').classList.toggle('active', diff === 'easy');
+      document.getElementById('patDiffMed').classList.toggle('active', diff === 'med');
+      document.getElementById('patDiffHard').classList.toggle('active', diff === 'hard');
+      initZone4();
+    }
+
+    function generateWorksheetPattern() {
+      const stage = document.getElementById('z4Stage');
+      const choicesEl = document.getElementById('z4Choices');
+      stage.innerHTML = '';
+      choicesEl.innerHTML = '';
+
+      // 1. Pick theme pool
+      let pool = [];
+      if (patTheme === 'shapes') pool = [...visualCatalog.shapes];
+      else if (patTheme === 'vehicles') pool = [...visualCatalog.vehicles];
+      else if (patTheme === 'animals') pool = [...visualCatalog.animals];
+      else {
+        const keys = ['shapes', 'vehicles', 'animals'];
+        const chosenKey = keys[Math.floor(Math.random() * keys.length)];
+        pool = [...visualCatalog[chosenKey]];
+      }
+
+      pool.sort(() => Math.random() - 0.5);
+      const itemA = pool[0];
+      const itemB = pool[1];
+      const itemC = pool[2];
+
+      // 2. Build pattern rule based on difficulty (Directly inspired by user's worksheet images!)
+      let seq = [];
+      let blankStart = 0;
+      let blankCount = 1;
+
+      if (patDiff === 'easy') {
+        // Classic ABAB_[?] or AABBAA_[?]
+        const templates = [
+          [itemA, itemB, itemA, itemB, itemA],
+          [itemA, itemB, itemA, itemB, itemA, itemB],
+          [itemA, itemA, itemB, itemB, itemA, itemA]
+        ];
+        seq = templates[Math.floor(Math.random() * templates.length)];
+        blankStart = seq.length - 1;
+        blankCount = 1;
+      } else if (patDiff === 'med') {
+        // Worksheet Type 2: AABAAB or ABCABC with missing slot anywhere in the middle or end
+        const templates = [
+          [itemA, itemA, itemB, itemA, itemA, itemB, itemA, itemA, itemB],
+          [itemA, itemB, itemA, itemB, itemA, itemB, itemA],
+          [itemA, itemB, itemC, itemA, itemB, itemC]
+        ];
+        seq = templates[Math.floor(Math.random() * templates.length)];
+        const possiblePositions = [seq.length - 1, seq.length - 2, Math.floor(seq.length / 2)];
+        blankStart = possiblePositions[Math.floor(Math.random() * possiblePositions.length)];
+        blankCount = 1;
+      } else {
+        // Hard Mode: Missing 2-item pair in the middle (Just like Row 3 & Row 4 of Worksheet 1!)
+        const templates = [
+          { s: [itemA, itemB, itemB, itemA, itemB, itemB, itemA, itemB, itemB, itemA], b: 3 },
+          { s: [itemA, itemA, itemB, itemB, itemA, itemA, itemB, itemB, itemA, itemA], b: 1 },
+          { s: [itemA, itemB, itemA, itemB, itemA, itemB, itemA, itemB], b: 3 }
+        ];
+        const picked = templates[Math.floor(Math.random() * templates.length)];
+        seq = picked.s;
+        blankStart = picked.b;
+        blankCount = 2;
+      }
+
+      // 3. Render sequence on stage
+      for (let i = 0; i < seq.length; i++) {
+        if (i === blankStart) {
+          const blankBox = document.createElement('div');
+          blankBox.className = 'pat-blank' + (blankCount === 2 ? ' double-blank' : '');
+          blankBox.textContent = blankCount === 2 ? '❓ ❓' : '❓';
+          stage.appendChild(blankBox);
+          if (blankCount === 2) i++; // skip second item of the pair
+        } else {
+          const itemBox = document.createElement('div');
+          itemBox.className = 'pat-item';
+          itemBox.innerHTML = seq[i].svg;
+          stage.appendChild(itemBox);
+        }
+      }
+
+      // 4. Generate Choices (ก., ข., ค.)
+      const thaiLetters = ['ก.', 'ข.', 'ค.'];
+      let options = [];
+
+      if (blankCount === 1) {
+        const correctItem = seq[blankStart];
+        const wrong1 = correctItem.id === itemA.id ? itemB : itemA;
+        const wrong2 = itemC;
+        options = [
+          { items: [correctItem], correct: true },
+          { items: [wrong1], correct: false },
+          { items: [wrong2], correct: false }
+        ];
+        currentZ4Question = { speak: 'ให้เลือกภาพเติมในช่องว่างให้สัมพันธ์กับแบบรูปนะจ๊ะ' };
+        document.getElementById('z4Prompt').textContent = '🎨 เลือกภาพเติมลงในกรอบสี่เหลี่ยม [ ❓ ] ให้ถูกต้อง!';
+      } else {
+        // Pair choices (2 items per choice button, like ก. [square][star] vs ข. [star][square])
+        const c1 = seq[blankStart];
+        const c2 = seq[blankStart + 1];
+        options = [
+          { items: [c1, c2], correct: true },
+          { items: [c2, c1.id === c2.id ? (c1.id === itemA.id ? itemB : itemA) : c1], correct: false },
+          { items: [itemB, itemB.id === c1.id && itemB.id === c2.id ? itemA : itemB], correct: false }
+        ];
+        currentZ4Question = { speak: 'ช่องว่างหายไปสองรูป เลือกคู่ภาพ กอ ขอ หรือ คอ มาเติมให้ถูกต้องนะจ๊ะ' };
+        document.getElementById('z4Prompt').textContent = '🔥 ท้าทาย! เลือกคู่ภาพ (2 รูป) เติมลงในช่องว่าง [ ❓ ❓ ] ให้ถูกต้อง!';
+      }
+
+      options.sort(() => Math.random() - 0.5);
+
+      options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        const visualsHTML = opt.items.map(it => `<div class="choice-svg-box">${it.svg}</div>`).join('');
+        btn.innerHTML = `
+          <div class="choice-visual-wrap">${visualsHTML}</div>
+          <div class="choice-badge">${thaiLetters[idx]}</div>
+        `;
+        btn.onclick = () => {
+          if (opt.correct) {
+            addStar(patDiff === 'hard' ? 2 : 1);
+            speakText('เก่งมากจ้า ถูกต้องเลย!', 'th-TH');
+            setTimeout(initZone4, 900);
+          } else {
+            btn.classList.add('shake');
+            setTimeout(() => btn.classList.remove('shake'), 400);
+            speakText('ยังไม่ใช่นะจ๊ะ ลองสังเกตลำดับภาพอีกทีนะ', 'th-TH');
+          }
+        };
+        choicesEl.appendChild(btn);
+      });
+    }
+
+    // Attitude Questions
     const attitudeQuestions = [
       {
         prompt: 'กินกล้วยเสร็จแล้ว ควรทำอะไรต่อครับ?',
@@ -1083,37 +1418,23 @@
       }
     ];
 
-    const patternSets = [
-      { seq: ['🍎', '🍌', '🍎'], ans: '🍌', wrong: ['🍇', '🍉'] },
-      { seq: ['🐶', '🐱', '🐶'], ans: '🐱', wrong: ['🐷', '🐸'] },
-      { seq: ['🌞', '🌙', '🌞'], ans: '🌙', wrong: ['⭐', '🌧️'] },
-      { seq: ['🚗', '🚗', '🚌'], ans: '🚗', wrong: ['✈️', '🚲'] },
-      { seq: ['🔴', '🔵', '🟡', '🔴', '🔵'], ans: '🟡', wrong: ['🟢', '🟣'] },
-      { seq: ['🐸', '🐸', ' lotus ', '🐸', '🐸'].map(x => x.trim() === 'lotus' ? '🪷' : x), ans: '🪷', wrong: ['🌵', '🍄'] }
-    ];
-
-    function setZ4Mode(mode) {
-      z4Mode = mode;
-      document.getElementById('z4ModeAtt').classList.toggle('active', mode === 'attitude');
-      document.getElementById('z4ModePat').classList.toggle('active', mode === 'pattern');
-      document.getElementById('z4ModeNum').classList.toggle('active', mode === 'number');
-      initZone4();
-    }
-
     function initZone4() {
       const stage = document.getElementById('z4Stage');
       const choicesEl = document.getElementById('z4Choices');
       stage.innerHTML = '';
       choicesEl.innerHTML = '';
 
-      if (z4Mode === 'attitude') {
+      if (z4Mode === 'pattern') {
+        generateWorksheetPattern();
+      } else if (z4Mode === 'attitude') {
         const q = attitudeQuestions[Math.floor(Math.random() * attitudeQuestions.length)];
         currentZ4Question = { speak: q.prompt };
         document.getElementById('z4Prompt').textContent = q.prompt;
 
         q.seq.forEach(item => {
           const box = document.createElement('div');
-          box.className = 'seq-box' + (item === '❓' ? ' seq-question' : '');
+          box.className = item === '❓' ? 'pat-blank' : 'pat-item';
+          box.style.fontSize = '38px';
           box.textContent = item;
           stage.appendChild(box);
         });
@@ -1122,55 +1443,25 @@
         opts.forEach(opt => {
           const btn = document.createElement('button');
           btn.className = 'choice-btn';
-          btn.innerHTML = `<span style="font-size:40px;">${opt.icon}</span><span>${opt.text}</span>`;
-          btn.onclick = () => checkZ4Answer(btn, opt.correct, opt.text);
+          btn.innerHTML = `<span style="font-size:42px;">${opt.icon}</span><span>${opt.text}</span>`;
+          btn.onclick = () => checkZ4SimpleAnswer(btn, opt.correct, opt.text);
           choicesEl.appendChild(btn);
         });
-
-      } else if (z4Mode === 'pattern') {
-        const p = patternSets[Math.floor(Math.random() * patternSets.length)];
-        currentZ4Question = { speak: 'ดูภาพเรียงกัน แล้วภาพต่อไปคืออะไรเอ่ย?' };
-        document.getElementById('z4Prompt').textContent = '🧩 ดูภาพที่เรียงกัน แล้วภาพต่อไปคืออะไรเอ่ย?';
-
-        p.seq.forEach(em => {
-          const box = document.createElement('div');
-          box.className = 'seq-box';
-          box.textContent = em;
-          stage.appendChild(box);
-        });
-        const qBox = document.createElement('div');
-        qBox.className = 'seq-box seq-question';
-        qBox.textContent = '❓';
-        stage.appendChild(qBox);
-
-        const opts = [
-          { label: p.ans, correct: true },
-          { label: p.wrong[0], correct: false },
-          { label: p.wrong[1], correct: false }
-        ].sort(() => Math.random() - 0.5);
-
-        opts.forEach(opt => {
-          const btn = document.createElement('button');
-          btn.className = 'choice-btn';
-          btn.innerHTML = `<span style="font-size:48px;">${opt.label}</span>`;
-          btn.onclick = () => checkZ4Answer(btn, opt.correct, 'เก่งมากจ้า');
-          choicesEl.appendChild(btn);
-        });
-
       } else if (z4Mode === 'number') {
-        // Missing number sequence (step 1 or step 2)
         const step = Math.random() < 0.7 ? 1 : 2;
-        const start = Math.floor(Math.random() * 6) + 1;
-        const missingIdx = Math.floor(Math.random() * 4);
-        const seqNums = [0, 1, 2, 3].map(i => start + i * step);
+        const start = Math.floor(Math.random() * 8) + 1;
+        const missingIdx = Math.floor(Math.random() * 5);
+        const seqNums = [0, 1, 2, 3, 4].map(i => start + i * step);
         const ans = seqNums[missingIdx];
 
-        currentZ4Question = { speak: 'ตัวเลขอะไรเอ่ยที่หายไป?' };
+        currentZ4Question = { speak: 'ตัวเลขอะไรเอ่ยที่หายไปจากช่องว่าง?' };
         document.getElementById('z4Prompt').textContent = '🔢 ตัวเลขอะไรเอ่ยที่หายไปจากช่องว่าง?';
 
         seqNums.forEach((n, idx) => {
           const box = document.createElement('div');
-          box.className = 'seq-box' + (idx === missingIdx ? ' seq-question' : '');
+          box.className = idx === missingIdx ? 'pat-blank' : 'pat-item';
+          box.style.fontSize = '32px';
+          box.style.fontWeight = '700';
           box.textContent = idx === missingIdx ? '❓' : n;
           stage.appendChild(box);
         });
@@ -1185,11 +1476,11 @@
           { label: wrong2, correct: false }
         ].sort(() => Math.random() - 0.5);
 
-        opts.forEach(opt => {
+        opts.forEach((opt, i) => {
           const btn = document.createElement('button');
           btn.className = 'choice-btn';
-          btn.innerHTML = `<span style="font-size:40px;">${opt.label}</span>`;
-          btn.onclick = () => checkZ4Answer(btn, opt.correct, `หมายเลข ${opt.label} ถูกต้องจ้า!`);
+          btn.innerHTML = `<span style="font-size:40px;">${opt.label}</span><span class="choice-badge">${['ก.', 'ข.', 'ค.'][i]}</span>`;
+          btn.onclick = () => checkZ4SimpleAnswer(btn, opt.correct, `หมายเลข ${opt.label} ถูกต้องจ้า!`);
           choicesEl.appendChild(btn);
         });
       }
@@ -1201,11 +1492,11 @@
       if (currentZ4Question) speakText(currentZ4Question.speak, 'th-TH');
     }
 
-    function checkZ4Answer(btn, isCorrect, successMsg) {
+    function checkZ4SimpleAnswer(btn, isCorrect, successMsg) {
       if (isCorrect) {
         addStar(1);
         speakText(`ยอดเยี่ยมมาก! ${successMsg}`, 'th-TH');
-        setTimeout(initZone4, 1000);
+        setTimeout(initZone4, 950);
       } else {
         btn.classList.add('shake');
         setTimeout(() => btn.classList.remove('shake'), 400);
@@ -1258,7 +1549,6 @@
       closeSettings();
     }
 
-    // Initialize UI on load
     updateTopUI();
   </script>
 </body>
