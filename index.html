@@ -1,1591 +1,1265 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Little Smart Town - เมืองจำลองของหนู</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700;800&family=Fredoka:wght@500;700&display=swap" rel="stylesheet">
-    <style>
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-        }
-        body {
-            font-family: 'Fredoka', 'Kanit', sans-serif;
-            background: linear-gradient(180deg, #bae6fd 0%, #e0f2fe 55%, #dcfce7 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-            touch-action: manipulation;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>My Little Smart Town V2 - เมืองจำลองของหนู</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+      font-family: 'Mali', sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(180deg, #a1c4fd 0%, #c2e9fb 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: #2d3436;
+    }
+    /* Top Header & Progress Bar */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      gap: 10px;
+    }
+    .icon-btn {
+      background: #ffeaa7;
+      border: 3px solid #fdcb6e;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 0 #e1b12c;
+      flex-shrink: 0;
+    }
+    .icon-btn:active { transform: translateY(3px); box-shadow: none; }
+    
+    .star-progress-wrap {
+      flex: 1;
+      max-width: 450px;
+      background: #dfe6e9;
+      border-radius: 25px;
+      height: 36px;
+      position: relative;
+      border: 3px solid #fff;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .star-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #fdcb6e, #f39c12);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+    .star-progress-text {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      color: #2d3436;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.9);
+    }
 
-        /* Animations */
-        @keyframes floatSlow {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-        }
-        @keyframes bounceGentle {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.06); }
-        }
-        @keyframes wobbleGentle {
-            0%, 100% { transform: translateX(0) rotate(0deg); }
-            25% { transform: translateX(-8px) rotate(-6deg); }
-            50% { transform: translateX(8px) rotate(6deg); }
-            75% { transform: translateX(-5px) rotate(-3deg); }
-        }
-        @keyframes popIn {
-            0% { transform: scale(0.3); opacity: 0; }
-            80% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes floatUpFade {
-            0% { transform: translateY(0) scale(0.8); opacity: 1; }
-            100% { transform: translateY(-70px) scale(1.4); opacity: 0; }
-        }
-        @keyframes pulseGlow {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.7); }
-            50% { box-shadow: 0 0 0 14px rgba(250, 204, 21, 0); }
-        }
+    /* Screen Container */
+    .screen {
+      display: none;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 16px;
+      text-align: center;
+    }
+    .screen.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .animate-float { animation: floatSlow 3.2s ease-in-out infinite; }
-        .animate-bounce-gentle { animation: bounceGentle 2s ease-in-out infinite; }
-        .animate-wobble { animation: wobbleGentle 0.5s ease-in-out; }
-        .animate-pop { animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
-        .pulse-gold { animation: pulseGlow 2s infinite; }
+    /* Hub Town Cards */
+    .town-title {
+      font-size: 28px;
+      color: #2d3436;
+      margin: 8px 0 4px;
+      text-shadow: 2px 2px 0 #fff;
+    }
+    .town-sub {
+      font-size: 16px;
+      color: #636e72;
+      margin-bottom: 16px;
+    }
+    .town-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 520px) {
+      .town-grid { grid-template-columns: 1fr; }
+    }
+    .zone-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 18px;
+      cursor: pointer;
+      border: 4px solid #fff;
+      box-shadow: 0 8px 0 rgba(0,0,0,0.1);
+      transition: transform 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .zone-card:active { transform: translateY(4px); box-shadow: 0 4px 0 rgba(0,0,0,0.1); }
+    .zone-1 { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); }
+    .zone-2 { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
+    .zone-3 { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); }
+    .zone-4 { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); }
+    .zone-emoji { font-size: 54px; margin-bottom: 6px; }
+    .zone-name { font-size: 21px; font-weight: 700; margin: 4px 0; }
+    .zone-tag {
+      background: rgba(255,255,255,0.75);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+    }
 
-        /* 3D Kid Button Styles */
-        .btn-kid {
-            transition: all 0.12s ease;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.18);
-        }
-        .btn-kid:active {
-            transform: translateY(4px);
-            box-shadow: 0 2px 0 rgba(0,0,0,0.18);
-        }
-        .card-building {
-            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 10px 0 rgba(0,0,0,0.12), 0 15px 25px rgba(0,0,0,0.08);
-        }
-        .card-building:hover {
-            transform: translateY(-4px) scale(1.01);
-        }
-        .card-building:active {
-            transform: translateY(4px);
-            box-shadow: 0 4px 0 rgba(0,0,0,0.12);
-        }
+    /* Mode Selector Pills */
+    .mode-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .pill-btn {
+      background: #fff;
+      border: 3px solid #b2bec3;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      color: #2d3436;
+    }
+    .pill-btn.active {
+      background: #6c5ce7;
+      color: #fff;
+      border-color: #4834d4;
+      box-shadow: 0 3px 0 #30336b;
+    }
 
-        /* Toy item in Room */
-        .toy-item {
-            touch-action: none;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            cursor: grab;
-        }
-        .toy-item:active {
-            cursor: grabbing;
-            transform: scale(1.18);
-            z-index: 40;
-        }
+    /* Prompt Box */
+    .prompt-box {
+      background: #fff;
+      border-radius: 20px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+      border: 4px solid #74b9ff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.06);
+    }
+    .prompt-text {
+      font-size: 20px;
+      font-weight: 700;
+      text-align: left;
+      flex: 1;
+    }
+    .speak-btn {
+      background: #0984e3;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 22px;
+      cursor: pointer;
+      flex-shrink: 0;
+      box-shadow: 0 4px 0 #0652DD;
+    }
+    .speak-btn:active { transform: translateY(3px); box-shadow: none; }
 
-        /* Custom Color Swatches for Toys */
-        .toy-red { background: #fee2e2; border: 4px solid #ef4444; }
-        .toy-blue { background: #dbeafe; border: 4px solid #3b82f6; }
-        .toy-yellow { background: #fef9c3; border: 4px solid #eab308; }
-        .toy-green { background: #dcfce7; border: 4px solid #22c55e; }
+    /* Game 1: Toy Room */
+    .toy-floor {
+      background: rgba(255,255,255,0.65);
+      border-radius: 22px;
+      padding: 14px;
+      min-height: 220px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      border: 3px dashed #fff;
+    }
+    .toy-item {
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      cursor: pointer;
+      border: 4px solid #fff;
+      box-shadow: 0 5px 0 rgba(0,0,0,0.15);
+      transition: transform 0.15s;
+    }
+    .toy-item:active { transform: scale(1.12); }
+    .toy-red { background: #ff7675; }
+    .toy-blue { background: #74b9ff; }
+    .toy-yellow { background: #ffeaa7; }
+    .toy-green { background: #55efc4; }
+    .toy-box {
+      background: #e17055;
+      color: #fff;
+      border: 5px solid #d63031;
+      border-radius: 24px;
+      padding: 16px;
+      font-size: 20px;
+      font-weight: 700;
+      max-width: 420px;
+      margin: 0 auto;
+      box-shadow: 0 7px 0 #b33939;
+    }
 
-        /* Floating Number Effect */
-        .floating-number {
-            position: fixed;
-            pointer-events: none;
-            z-index: 100;
-            animation: floatUpFade 1s ease-out forwards;
-        }
+    /* Game 2: Garden Maze */
+    .maze-grid {
+      display: grid;
+      gap: 6px;
+      max-width: 390px;
+      margin: 0 auto 14px;
+      background: #55efc4;
+      padding: 10px;
+      border-radius: 20px;
+      border: 4px solid #00b894;
+    }
+    .maze-cell {
+      aspect-ratio: 1;
+      background: rgba(255,255,255,0.85);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+    }
+    .queue-box {
+      min-height: 44px;
+      background: rgba(255,255,255,0.85);
+      border-radius: 14px;
+      padding: 6px 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
+      font-size: 22px;
+    }
+    .dpad {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .ctrl-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 18px;
+      border: none;
+      background: #fdcb6e;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #e1b12c;
+    }
+    .ctrl-btn:active { transform: translateY(4px); box-shadow: none; }
+    .go-btn {
+      background: #00b894;
+      color: #fff;
+      font-weight: 700;
+      font-size: 20px;
+      padding: 0 22px;
+      width: auto;
+      box-shadow: 0 5px 0 #00896f;
+    }
 
-        /* Confetti Canvas */
-        #confetti-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 90;
-        }
-    </style>
+    /* Game 3: Mini Mart */
+    .mart-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    @media (max-width: 440px) {
+      .mart-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .mart-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 12px 8px;
+      border: 4px solid #dfe6e9;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #b2bec3;
+    }
+    .mart-card:active { transform: translateY(3px); box-shadow: none; }
+    .mart-emoji { font-size: 42px; }
+    .mart-label { font-size: 20px; font-weight: 700; margin-top: 4px; }
+
+    /* Game 4: Smart School (Attitude & Logic) */
+    .sequence-stage {
+      background: #fff;
+      border-radius: 24px;
+      padding: 18px;
+      margin-bottom: 16px;
+      border: 4px solid #a29bfe;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      min-height: 120px;
+    }
+    .seq-box {
+      background: #f1f2f6;
+      border-radius: 18px;
+      padding: 12px 16px;
+      font-size: 36px;
+      font-weight: 700;
+      min-width: 72px;
+      border: 3px solid #dfe4ea;
+    }
+    .seq-question {
+      background: #ffeaa7;
+      border: 3px dashed #fdcb6e;
+      color: #d63031;
+      animation: pulse 1.2s infinite;
+    }
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.07); } }
+    .choices-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    @media (max-width: 480px) {
+      .choices-grid { grid-template-columns: 1fr; }
+    }
+    .choice-btn {
+      background: #fff;
+      border: 4px solid #74b9ff;
+      border-radius: 20px;
+      padding: 14px;
+      font-size: 22px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 0 #0984e3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .choice-btn:active { transform: translateY(4px); box-shadow: none; }
+
+    /* Modals */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 16px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-card {
+      background: #fff;
+      border-radius: 28px;
+      padding: 24px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      border: 5px solid #fdcb6e;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    }
+    .primary-btn {
+      background: #00b894;
+      color: #fff;
+      border: none;
+      border-radius: 18px;
+      padding: 12px 24px;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 5px 0 #00896f;
+      margin: 6px;
+    }
+    .shake { animation: shakeAnim 0.4s; }
+    @keyframes shakeAnim {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      75% { transform: translateX(8px); }
+    }
+  </style>
 </head>
-<body class="flex flex-col justify-between min-h-screen text-slate-800 relative">
+<body>
 
-    <!-- Confetti Canvas -->
-    <canvas id="confetti-canvas"></canvas>
-
-    <!-- TOP BAR NAVIGATION (Zero-Reading Friendly) -->
-    <header class="w-full max-w-5xl mx-auto px-3 pt-3 pb-2 flex items-center justify-between gap-2 z-30">
-        <!-- Left: Home & Parent Config -->
-        <div class="flex items-center gap-2">
-            <button id="btn-home" onclick="goHome()" class="btn-kid bg-white hover:bg-amber-50 border-4 border-amber-400 rounded-2xl px-3 py-2 flex items-center gap-2 text-lg md:text-xl font-bold text-amber-900">
-                <span class="text-2xl md:text-3xl">🏠</span>
-                <span class="hidden sm:inline">เมืองหลัก</span>
-            </button>
-
-            <button onclick="openParentModal()" class="btn-kid bg-white/90 hover:bg-slate-100 border-4 border-slate-300 rounded-2xl p-2.5 text-xl md:text-2xl" title="ตั้งค่าคุณพ่อคุณแม่">
-                ⚙️
-            </button>
-        </div>
-
-        <!-- Center: Speak Instruction Again -->
-        <button id="btn-repeat-audio" onclick="repeatCurrentInstruction()" class="btn-kid bg-sky-500 hover:bg-sky-400 border-4 border-white text-white rounded-full px-4 py-2 flex items-center gap-2 text-base md:text-xl font-bold shadow-lg">
-            <span class="text-2xl md:text-3xl animate-bounce-gentle">🔊</span>
-            <span>ฟังโจทย์</span>
-        </button>
-
-        <!-- Right: Star Counter & Reward Button -->
-        <button id="btn-star-reward" onclick="openRewardModal()" class="btn-kid bg-amber-400 hover:bg-amber-300 border-4 border-white rounded-2xl px-3.5 py-2 flex items-center gap-2 text-amber-950 font-extrabold text-lg md:text-xl">
-            <span class="text-2xl md:text-3xl">⭐</span>
-            <span id="star-count-text">0 / 5</span>
-            <span id="reward-badge" class="hidden bg-rose-500 text-white text-xs px-2 py-0.5 rounded-full animate-bounce">แลกรางวัล!</span>
-        </button>
-    </header>
-
-    <!-- MAIN CONTENT CONTAINER -->
-    <main class="flex-1 w-full max-w-5xl mx-auto px-3 py-2 flex flex-col justify-center relative z-10">
-
-        <!-- ==========================================
-             VIEW 0: HUB WORLD (MY LITTLE SMART TOWN)
-             ========================================== -->
-        <section id="view-hub" class="w-full flex flex-col items-center justify-center py-2">
-            <!-- Greeting Banner -->
-            <div class="bg-white/90 backdrop-blur border-4 border-sky-300 rounded-3xl px-6 py-3 mb-5 text-center shadow-md max-w-2xl w-full flex items-center justify-center gap-3">
-                <span class="text-4xl animate-float">🌈</span>
-                <div>
-                    <h1 class="text-2xl md:text-3xl font-extrabold text-sky-900">
-                        My Little Smart Town
-                    </h1>
-                    <p class="text-sm md:text-base text-sky-700 font-semibold">
-                        เมืองจำลองของ <span id="hub-child-name" class="text-rose-500 underline decoration-wavy">น้องคนเก่ง</span> — แตะเลือกบ้านที่อยากเล่นเลย!
-                    </p>
-                </div>
-                <span class="text-4xl animate-float" style="animation-delay: 1s;">🎈</span>
-            </div>
-
-            <!-- 3 Building Zones Grid -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 w-full">
-                <!-- Zone 1: Toy Room -->
-                <button onclick="enterZone('toyroom')" class="card-building bg-gradient-to-b from-rose-100 to-rose-200 border-4 border-rose-400 rounded-3xl p-5 flex flex-col items-center text-center relative overflow-hidden group">
-                    <div class="bg-rose-500 text-white text-xs font-bold px-3 py-1 rounded-full mb-2">
-                        Attitude + Math + Eng
-                    </div>
-                    <div class="w-28 h-28 md:w-32 md:h-32 bg-white rounded-full border-4 border-rose-300 flex items-center justify-center text-6xl md:text-7xl shadow-inner mb-3 animate-float">
-                        🧸
-                    </div>
-                    <h2 class="text-2xl md:text-3xl font-extrabold text-rose-900 mb-1">
-                        1. ห้องของเล่น
-                    </h2>
-                    <p class="text-rose-700 font-semibold text-base mb-3">
-                        Toy Room Clean Up!
-                    </p>
-                    <div class="flex gap-2 text-2xl bg-white/70 px-4 py-1.5 rounded-2xl">
-                        <span>🚗</span><span>🦆</span><span>⚽</span><span>📦</span>
-                    </div>
-                    <div class="mt-4 w-full bg-rose-500 group-hover:bg-rose-600 text-white font-bold py-2.5 rounded-2xl text-lg shadow">
-                        ▶️ เข้าไปเก็บของเล่น
-                    </div>
-                </button>
-
-                <!-- Zone 2: Garden Maze -->
-                <button onclick="enterZone('garden')" class="card-building bg-gradient-to-b from-emerald-100 to-emerald-200 border-4 border-emerald-400 rounded-3xl p-5 flex flex-col items-center text-center relative overflow-hidden group">
-                    <div class="bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-2">
-                        Coding Logic + Eng
-                    </div>
-                    <div class="w-28 h-28 md:w-32 md:h-32 bg-white rounded-full border-4 border-emerald-300 flex items-center justify-center text-6xl md:text-7xl shadow-inner mb-3 animate-float" style="animation-delay: 0.4s;">
-                        🐶
-                    </div>
-                    <h2 class="text-2xl md:text-3xl font-extrabold text-emerald-900 mb-1">
-                        2. สวนผจญภัย
-                    </h2>
-                    <p class="text-emerald-700 font-semibold text-base mb-3">
-                        Garden Coding Maze
-                    </p>
-                    <div class="flex gap-2 text-2xl bg-white/70 px-4 py-1.5 rounded-2xl">
-                        <span>⬆️</span><span>➡️</span><span>🦴</span><span>🥕</span>
-                    </div>
-                    <div class="mt-4 w-full bg-emerald-500 group-hover:bg-emerald-600 text-white font-bold py-2.5 rounded-2xl text-lg shadow">
-                        ▶️ พาสัตว์เลี้ยงเดิน
-                    </div>
-                </button>
-
-                <!-- Zone 3: Mini Mart -->
-                <button onclick="enterZone('mart')" class="card-building bg-gradient-to-b from-amber-100 to-amber-200 border-4 border-amber-400 rounded-3xl p-5 flex flex-col items-center text-center relative overflow-hidden group">
-                    <div class="bg-amber-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-2">
-                        อ่านไทย ก-ฮ + Eng
-                    </div>
-                    <div class="w-28 h-28 md:w-32 md:h-32 bg-white rounded-full border-4 border-amber-300 flex items-center justify-center text-6xl md:text-7xl shadow-inner mb-3 animate-float" style="animation-delay: 0.8s;">
-                        🛒
-                    </div>
-                    <h2 class="text-2xl md:text-3xl font-extrabold text-amber-900 mb-1">
-                        3. ตลาดนัดหรรษา
-                    </h2>
-                    <p class="text-amber-800 font-semibold text-base mb-3">
-                        Happy Mini Mart
-                    </p>
-                    <div class="flex gap-2 text-2xl bg-white/70 px-4 py-1.5 rounded-2xl">
-                        <span>ก🐓</span><span>🍎</span><span>🍌</span><span>🧺</span>
-                    </div>
-                    <div class="mt-4 w-full bg-amber-500 group-hover:bg-amber-600 text-white font-bold py-2.5 rounded-2xl text-lg shadow">
-                        ▶️ ไปจ่ายตลาดกัน
-                    </div>
-                </button>
-            </div>
-        </section>
-
-        <!-- ==========================================
-             VIEW 1: TOY ROOM (Attitude + Math + Eng)
-             ========================================== -->
-        <section id="view-toyroom" class="hidden w-full flex-col items-center">
-            <!-- Prompt Banner -->
-            <div onclick="repeatCurrentInstruction()" class="cursor-pointer w-full bg-white border-4 border-rose-400 rounded-3xl p-3 md:p-4 mb-3 shadow-md flex items-center justify-between gap-3">
-                <div class="flex items-center gap-3">
-                    <div class="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-rose-100 border-2 border-rose-300 flex items-center justify-center text-4xl">
-                        🤖
-                    </div>
-                    <div>
-                        <div id="toy-prompt-en" class="text-lg md:text-2xl font-extrabold text-rose-900">
-                            Put 3 RED CARS in the box!
-                        </div>
-                        <div id="toy-prompt-th" class="text-sm md:text-base font-semibold text-slate-600">
-                            ช่วยเก็บ รถสีแดง 3 ชิ้น ใส่กล่องหน่อยนะ! (แตะหรือลากก็ได้จ้า)
-                        </div>
-                    </div>
-                </div>
-                <!-- Visual Target Badge -->
-                <div id="toy-target-badge" class="flex items-center gap-2 bg-rose-50 border-3 border-rose-300 px-4 py-2 rounded-2xl shrink-0">
-                    <span id="toy-target-emoji" class="text-4xl">🚗</span>
-                    <span id="toy-progress-label" class="text-2xl md:text-3xl font-black text-rose-600">0 / 3</span>
-                </div>
-            </div>
-
-            <!-- Playroom Floor (Scattered Toys) -->
-            <div id="toy-floor" class="w-full bg-amber-50/90 border-4 border-amber-200 rounded-3xl p-4 min-h-[230px] md:min-h-[260px] grid grid-cols-3 sm:grid-cols-4 gap-3 md:gap-4 place-items-center relative shadow-inner">
-                <!-- Toys injected dynamically -->
-            </div>
-
-            <!-- Toy Box Dropzone at Bottom -->
-            <div class="w-full mt-4 flex flex-col items-center">
-                <div id="toy-box-dropzone" class="w-full max-w-md bg-gradient-to-b from-amber-500 to-amber-600 border-4 border-amber-800 rounded-3xl p-4 flex items-center justify-center gap-4 shadow-xl relative transition-transform">
-                    <span class="text-5xl md:text-6xl">📦</span>
-                    <div class="text-white text-left">
-                        <div class="text-xl md:text-2xl font-extrabold tracking-wide">
-                            TOY BOX (กล่องของเล่น)
-                        </div>
-                        <div class="text-xs md:text-sm text-amber-100 font-semibold">
-                            แตะที่ของเล่น หรือลากมาใส่กล่องนี้ได้เลย!
-                        </div>
-                    </div>
-                    <div id="toy-box-counter" class="bg-white text-amber-900 font-black text-2xl px-4 py-2 rounded-2xl border-2 border-amber-300">
-                        0/3
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==========================================
-             VIEW 2: GARDEN MAZE (Coding + English)
-             ========================================== -->
-        <section id="view-garden" class="hidden w-full flex-col items-center">
-            <!-- Top Row: Instruction & Mode Switch -->
-            <div class="w-full bg-white border-4 border-emerald-400 rounded-3xl p-3 md:p-4 mb-3 shadow-md flex flex-wrap items-center justify-between gap-2">
-                <div onclick="repeatCurrentInstruction()" class="flex items-center gap-3 cursor-pointer">
-                    <div id="maze-hero-avatar" class="w-14 h-14 rounded-2xl bg-emerald-100 border-2 border-emerald-300 flex items-center justify-center text-4xl">
-                        🐶
-                    </div>
-                    <div>
-                        <div id="maze-prompt-en" class="text-lg md:text-2xl font-extrabold text-emerald-900">
-                            Help the PUPPY find the BONE!
-                        </div>
-                        <div id="maze-prompt-th" class="text-sm md:text-base font-semibold text-slate-600">
-                            กดปุ่มลูกศรพาลูกหมาเดินไปหากระดูกกันเถอะ
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Mode Toggle: Queue Mode vs Step Mode -->
-                <div class="flex items-center gap-1 bg-emerald-50 p-1.5 rounded-2xl border-2 border-emerald-200">
-                    <button id="btn-mode-step" onclick="setMazeMode('step')" class="px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm transition">
-                        🐣 เดินทีละก้าว (ง่าย)
-                    </button>
-                    <button id="btn-mode-queue" onclick="setMazeMode('queue')" class="px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm transition">
-                        🚀 เรียงคำสั่ง Coding
-                    </button>
-                </div>
-            </div>
-
-            <!-- Main Maze Layout: Grid on Left/Top, Controls on Right/Bottom -->
-            <div class="w-full grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-                <!-- 4x4 Grid Board -->
-                <div class="md:col-span-7 flex justify-center">
-                    <div id="maze-grid" class="grid grid-cols-4 gap-2 bg-emerald-700 p-3 rounded-3xl border-4 border-emerald-900 shadow-xl w-full max-w-[360px] aspect-square">
-                        <!-- 16 Cells injected via JS -->
-                    </div>
-                </div>
-
-                <!-- Control Panel -->
-                <div class="md:col-span-5 bg-white/95 border-4 border-emerald-300 rounded-3xl p-4 flex flex-col items-center shadow-lg">
-                    <!-- Command Queue Display (Shown in Queue mode) -->
-                    <div id="maze-queue-container" class="w-full mb-3">
-                        <div class="flex justify-between items-center text-xs font-bold text-emerald-800 mb-1 px-1">
-                            <span>ลำดับคำสั่งเดิน (Command Queue):</span>
-                            <button onclick="clearMazeQueue()" class="text-rose-600 hover:underline flex items-center gap-1">
-                                🗑️ ล้างคำสั่ง
-                            </button>
-                        </div>
-                        <div id="maze-queue-bar" class="w-full min-h-[54px] bg-slate-100 border-3 border-slate-300 rounded-2xl p-2 flex flex-wrap items-center gap-1.5">
-                            <span class="text-slate-400 text-sm mx-auto">กดลูกศรด้านล่างเพื่อเรียงคำสั่ง...</span>
-                        </div>
-                    </div>
-
-                    <!-- D-Pad Arrow Buttons -->
-                    <div class="grid grid-cols-3 gap-2.5 w-full max-w-[240px] my-1">
-                        <div></div>
-                        <button onclick="handleArrowInput('UP')" class="btn-kid bg-sky-500 hover:bg-sky-400 text-white border-4 border-sky-700 rounded-2xl py-3 text-3xl font-bold flex items-center justify-center">
-                            ⬆️
-                        </button>
-                        <div></div>
-
-                        <button onclick="handleArrowInput('LEFT')" class="btn-kid bg-sky-500 hover:bg-sky-400 text-white border-4 border-sky-700 rounded-2xl py-3 text-3xl font-bold flex items-center justify-center">
-                            ⬅️
-                        </button>
-                        <button onclick="handleArrowInput('DOWN')" class="btn-kid bg-sky-500 hover:bg-sky-400 text-white border-4 border-sky-700 rounded-2xl py-3 text-3xl font-bold flex items-center justify-center">
-                            ⬇️
-                        </button>
-                        <button onclick="handleArrowInput('RIGHT')" class="btn-kid bg-sky-500 hover:bg-sky-400 text-white border-4 border-sky-700 rounded-2xl py-3 text-3xl font-bold flex items-center justify-center">
-                            ➡️
-                        </button>
-                    </div>
-
-                    <!-- Action Buttons (GO & Reset) -->
-                    <div id="maze-action-buttons" class="w-full flex gap-2 mt-3">
-                        <button onclick="clearMazeQueue()" class="btn-kid bg-rose-100 hover:bg-rose-200 text-rose-700 border-3 border-rose-300 rounded-2xl px-4 py-3 font-bold text-lg">
-                            🗑️
-                        </button>
-                        <button id="btn-maze-go" onclick="runMazeQueue()" class="btn-kid flex-1 bg-emerald-500 hover:bg-emerald-400 text-white border-4 border-emerald-700 rounded-2xl py-3 text-xl font-extrabold flex items-center justify-center gap-2">
-                            <span>▶️</span>
-                            <span>เดินเลย! (GO)</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==========================================
-             VIEW 3: MINI MART (Thai ก-ฮ + English)
-             ========================================== -->
-        <section id="view-mart" class="hidden w-full flex-col items-center">
-            <!-- Shopkeeper & Mode Switch Header -->
-            <div class="w-full bg-white border-4 border-amber-400 rounded-3xl p-3 md:p-4 mb-3 shadow-md flex flex-wrap items-center justify-between gap-3">
-                <div onclick="repeatCurrentInstruction()" class="flex items-center gap-3 cursor-pointer">
-                    <div class="w-16 h-16 rounded-2xl bg-amber-100 border-2 border-amber-400 flex items-center justify-center text-5xl animate-bounce-gentle">
-                        👩‍🌾
-                    </div>
-                    <div>
-                        <div class="text-xs font-bold uppercase tracking-wider text-amber-600">
-                            แม่ค้าตลาดนัดหรรษา (แตะเพื่อฟังซ้ำ)
-                        </div>
-                        <div id="mart-prompt-main" class="text-xl md:text-2xl font-extrabold text-amber-950">
-                            "อยากได้ ก.ไก่ จ้า!"
-                        </div>
-                        <div id="mart-prompt-sub" class="text-sm font-semibold text-slate-600">
-                            แตะเลือกของบนชั้นวางใส่ตะกร้าเลย
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Language Mode Selector -->
-                <div class="flex items-center gap-1 bg-amber-50 p-1.5 rounded-2xl border-2 border-amber-200">
-                    <button id="btn-mart-th" onclick="setMartMode('th')" class="px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm transition">
-                        🇹🇭 ก-ฮ ไทย
-                    </button>
-                    <button id="btn-mart-en" onclick="setMartMode('en')" class="px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm transition">
-                        🇬🇧 English
-                    </button>
-                    <button id="btn-mart-mix" onclick="setMartMode('mix')" class="px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm transition">
-                        🌈 ผสม (Mix)
-                    </button>
-                </div>
-            </div>
-
-            <!-- Market Awning Decoration -->
-            <div class="w-full grid grid-cols-8 h-5 rounded-t-2xl overflow-hidden border-x-4 border-t-4 border-rose-500">
-                <div class="bg-rose-500"></div><div class="bg-white"></div>
-                <div class="bg-rose-500"></div><div class="bg-white"></div>
-                <div class="bg-rose-500"></div><div class="bg-white"></div>
-                <div class="bg-rose-500"></div><div class="bg-white"></div>
-            </div>
-
-            <!-- Shelf Cards (4 Large Options) -->
-            <div id="mart-shelf" class="w-full bg-amber-100/90 border-4 border-amber-400 rounded-b-3xl p-4 grid grid-cols-2 sm:grid-cols-4 gap-4 shadow-inner">
-                <!-- 4 Cards Injected via JS -->
-            </div>
-
-            <!-- Shopping Basket at Bottom -->
-            <div class="mt-4 flex items-center gap-3 bg-white border-4 border-amber-500 rounded-3xl px-6 py-3 shadow-lg">
-                <span id="mart-basket-icon" class="text-5xl">🧺</span>
-                <div>
-                    <div class="text-lg font-extrabold text-amber-900">ตะกร้าจ่ายตลาดของหนู</div>
-                    <div id="mart-basket-status" class="text-sm text-slate-600 font-semibold">เลือกหยิบสินค้าตามที่แม่ค้าบอกนะจ๊ะ</div>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- ==========================================
-         CELEBRATION ROUND COMPLETE MODAL
-         ========================================== -->
-    <div id="modal-celebrate" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border-8 border-amber-400 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl animate-pop">
-            <div class="text-7xl mb-2 animate-bounce">🌟🎉🌟</div>
-            <h2 id="celebrate-title" class="text-3xl font-extrabold text-amber-900 mb-1">
-                เก่งมากเลย!
-            </h2>
-            <p id="celebrate-subtitle" class="text-lg font-semibold text-slate-600 mb-4">
-                รับดาวคนเก่งเพิ่ม 1 ดวงเลยจ้า!
-            </p>
-            <div id="celebrate-word-box" class="bg-sky-50 border-3 border-sky-200 rounded-2xl p-3 mb-5">
-                <span id="celebrate-emoji" class="text-5xl block mb-1">🍎</span>
-                <span id="celebrate-word" class="text-2xl font-black text-sky-900">APPLE</span>
-            </div>
-            <div class="flex gap-3">
-                <button onclick="closeCelebrateAndHome()" class="btn-kid bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-3 px-4 rounded-2xl text-lg">
-                    🏠 เมืองหลัก
-                </button>
-                <button onclick="nextRoundInCurrentZone()" class="btn-kid flex-1 bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold py-3 px-6 rounded-2xl text-xl flex items-center justify-center gap-2">
-                    <span>เล่นด่านต่อไป</span>
-                    <span>➡️</span>
-                </button>
-            </div>
-        </div>
+  <!-- Top Navigation Bar -->
+  <div class="top-bar">
+    <button class="icon-btn" onclick="goHome()" title="กลับหน้าเมือง">🏠</button>
+    <div class="star-progress-wrap" onclick="openRewardModal()">
+      <div class="star-progress-fill" id="starFill"></div>
+      <div class="star-progress-text" id="starText">⭐ 0 / 50 ดาว</div>
     </div>
+    <button class="icon-btn" onclick="openSettings()" title="ตั้งค่าคุณพ่อคุณแม่">⚙️</button>
+  </div>
 
-    <!-- ==========================================
-         REAL-WORLD REWARD COUPON MODAL (5 STARS)
-         ========================================== -->
-    <div id="modal-reward" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-gradient-to-b from-amber-100 to-white border-8 border-amber-400 rounded-3xl max-w-md w-full p-6 text-center shadow-2xl animate-pop relative">
-            <button onclick="closeRewardModal()" class="absolute top-3 right-3 w-10 h-10 rounded-full bg-slate-200 font-bold text-xl">✕</button>
+  <!-- HUB SCREEN -->
+  <div id="hubScreen" class="screen active">
+    <h1 class="town-title">🏰 เมืองจำลองของ <span id="childNameLabel">น้องมะลิ</span></h1>
+    <div class="town-sub">สะสมครบ <span id="goalLabel">50</span> ดาว รับคูปองรางวัลพิเศษจากคุณพ่อคุณแม่!</div>
 
-            <div class="text-6xl mb-2">🏆🎟️🍦</div>
-            <h2 class="text-2xl md:text-3xl font-extrabold text-amber-900 mb-1">
-                สมุดสะสมดาวคนเก่ง
-            </h2>
-            <p class="text-sm font-semibold text-amber-800 mb-4">
-                สะสมครบ 5 ดวง นำคูปองนี้ไปแลกรางวัลกับคุณพ่อคุณแม่ได้เลย!
-            </p>
+    <div class="town-grid">
+      <div class="zone-card zone-1" onclick="openZone(1)">
+        <div class="zone-emoji">🧸</div>
+        <div class="zone-name">1. ห้องของเล่น</div>
+        <div class="zone-tag">วินัย + นับเลข + สี (ง่าย/ยาก)</div>
+      </div>
 
-            <!-- 5 Stars Visual Slots -->
-            <div id="reward-stars-row" class="flex justify-center gap-2 bg-white p-3 rounded-2xl border-3 border-amber-300 mb-4 text-4xl">
-                <!-- Stars injected by JS -->
-            </div>
+      <div class="zone-card zone-2" onclick="openZone(2)">
+        <div class="zone-emoji">🐶</div>
+        <div class="zone-name">2. สวนผจญภัย</div>
+        <div class="zone-tag">Coding + อังกฤษ (4x4 ถึง 6x6)</div>
+      </div>
 
-            <!-- Coupon Box -->
-            <div id="reward-coupon-card" class="bg-white border-4 border-dashed border-rose-400 rounded-2xl p-4 mb-4">
-                <div class="text-xs font-bold uppercase text-rose-500 tracking-wider mb-1">
-                    🎁 คูปองรางวัลพิเศษสำหรับ <span id="coupon-child-name">น้องคนเก่ง</span>
-                </div>
-                <div id="coupon-reward-text" class="text-xl md:text-2xl font-extrabold text-slate-800 my-2">
-                    🍦 กินไอศกรีม 1 แท่ง หรือ อ่านนิทานก่อนนอนเพิ่ม 1 เรื่อง!
-                </div>
-                <div id="coupon-status-badge" class="inline-block bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">
-                    สะสมอีกนิดนะ!
-                </div>
-            </div>
+      <div class="zone-card zone-3" onclick="openZone(3)">
+        <div class="zone-emoji">🛒</div>
+        <div class="zone-name">3. ตลาดนัดหรรษา</div>
+        <div class="zone-tag">ก-ฮ + คำศัพท์ + ปริศนาคำใบ้</div>
+      </div>
 
-            <div class="flex gap-2">
-                <button id="btn-redeem-stars" onclick="redeemRewardCoupon()" class="btn-kid flex-1 bg-rose-500 hover:bg-rose-400 text-white font-extrabold py-3 rounded-2xl text-lg disabled:opacity-40">
-                    🎉 ใช้คูปองแลกรางวัลกับคุณพ่อคุณแม่!
-                </button>
-            </div>
-        </div>
+      <div class="zone-card zone-4" onclick="openZone(4)">
+        <div class="zone-emoji">🎓</div>
+        <div class="zone-name">4. โรงเรียนฝึกสมอง</div>
+        <div class="zone-tag">นิสัยดี + อนุกรมภาพ + เลขหายไป</div>
+      </div>
     </div>
+  </div>
 
-    <!-- ==========================================
-         PARENT SETTINGS MODAL (CUSTOM VOICE & NAME)
-         ========================================== -->
-    <div id="modal-parent" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
-        <div class="bg-white border-4 border-slate-300 rounded-3xl max-w-lg w-full p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl md:text-2xl font-extrabold text-slate-800 flex items-center gap-2">
-                    <span>⚙️</span>
-                    <span>ตั้งค่าสำหรับคุณพ่อคุณแม่ (Home Edition)</span>
-                </h2>
-                <button onclick="closeParentModal()" class="w-9 h-9 rounded-full bg-slate-200 font-bold">✕</button>
-            </div>
-
-            <!-- 1. Child's Nickname -->
-            <div class="mb-4">
-                <label class="block text-sm font-bold text-slate-700 mb-1">
-                    1. ชื่อเล่นของน้อง (ระบบจะพูดชมชื่อน้องเมื่อผ่านด่าน):
-                </label>
-                <input id="input-child-name" type="text" placeholder="เช่น น้องมะลิ, น้องภูผา" class="w-full border-2 border-slate-300 rounded-xl px-3.5 py-2 font-bold text-slate-800 focus:border-sky-500 outline-none">
-            </div>
-
-            <!-- 2. Real-world Reward Coupon Text -->
-            <div class="mb-4">
-                <label class="block text-sm font-bold text-slate-700 mb-1">
-                    2. รางวัลจริงเมื่อสะสมครบ 5 ดาว (คูปองแลกรางวัล):
-                </label>
-                <input id="input-reward-text" type="text" placeholder="เช่น อ่านนิทานก่อนนอนเพิ่ม 1 เรื่อง / กินไอศกรีม 1 ถ้วย" class="w-full border-2 border-slate-300 rounded-xl px-3.5 py-2 font-bold text-slate-800 focus:border-sky-500 outline-none">
-            </div>
-
-            <!-- 3. Custom Parent Voice Recording -->
-            <div class="mb-5 bg-sky-50 border-2 border-sky-200 rounded-2xl p-4">
-                <label class="block text-sm font-bold text-sky-900 mb-1">
-                    3. 🎙️ อัดเสียงคุณพ่อคุณแม่ชมเชย (เล่นทุกครั้งที่น้องผ่านด่าน):
-                </label>
-                <p class="text-xs text-slate-600 mb-3">
-                    กดปุ่มอัดเสียง แล้วพูดเช่น <i>"เก่งมากเลยครับลูกพ่อ!"</i> หรือ <i>"ยอดเยี่ยมที่สุดเลยค่ะ!"</i>
-                </p>
-                <div class="flex flex-wrap items-center gap-2">
-                    <button id="btn-record-voice" onclick="toggleVoiceRecording()" class="btn-kid bg-rose-500 hover:bg-rose-400 text-white font-bold px-4 py-2 rounded-xl text-sm flex items-center gap-2">
-                        <span>🎙️</span>
-                        <span id="record-btn-label">เริ่มอัดเสียงชม</span>
-                    </button>
-                    <button id="btn-play-recorded" onclick="playCustomParentVoice()" class="btn-kid bg-sky-500 hover:bg-sky-400 text-white font-bold px-3 py-2 rounded-xl text-sm hidden">
-                        ▶️ ฟังเสียงที่อัดไว้
-                    </button>
-                    <button id="btn-clear-recorded" onclick="clearCustomParentVoice()" class="btn-kid bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-2 rounded-xl text-sm hidden">
-                        🗑️ ลบเสียงอัด
-                    </button>
-                </div>
-                <div id="record-status-msg" class="text-xs font-semibold text-emerald-700 mt-2">
-                    สถานะปัจจุบัน: ใช้เสียงสังเคราะห์อัตโนมัติ (TTS)
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-2">
-                <button onclick="saveParentSettings()" class="btn-kid bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold px-6 py-2.5 rounded-2xl text-base">
-                    💾 บันทึกการตั้งค่า
-                </button>
-            </div>
-        </div>
+  <!-- ZONE 1: TOY ROOM -->
+  <div id="zone1" class="screen">
+    <div class="mode-bar">
+      <button class="pill-btn active" id="z1EasyBtn" onclick="setZ1Diff('easy')">🌱 ระดับง่าย (1 ชนิด)</button>
+      <button class="pill-btn" id="z1HardBtn" onclick="setZ1Diff('hard')">🔥 ระดับยาก (ผสม 2 ชนิด + ตัวหลอก)</button>
     </div>
+    <div class="prompt-box">
+      <div class="prompt-text" id="z1Prompt">กำลังเตรียมของเล่น...</div>
+      <button class="speak-btn" onclick="speakZ1()">🔊</button>
+    </div>
+    <div class="toy-floor" id="toyFloor"></div>
+    <div class="toy-box" id="toyBoxStatus">📦 กล่องเก็บของเล่น (แตะที่ของเล่นเพื่อเก็บลงกล่อง)</div>
+  </div>
 
-    <!-- FOOTER HELPER -->
-    <footer class="w-full text-center py-2 text-xs text-slate-500 font-semibold z-10">
-        My Little Smart Town • ออกแบบสำหรับเด็กวัยอนุบาล 3–6 ปี (Zero-Reading UI & Positive Feedback)
-    </footer>
+  <!-- ZONE 2: GARDEN MAZE -->
+  <div id="zone2" class="screen">
+    <div class="mode-bar">
+      <button class="pill-btn active" id="z2Size4" onclick="setZ2Grid(4)">🟢 4x4 (ง่าย)</button>
+      <button class="pill-btn" id="z2Size5" onclick="setZ2Grid(5)">🟡 5x5 (หินเยอะขึ้น)</button>
+      <button class="pill-btn" id="z2Size6" onclick="setZ2Grid(6)">🔴 6x6 (ท้าทาย)</button>
+    </div>
+    <div class="mode-bar">
+      <button class="pill-btn active" id="z2StepMode" onclick="setZ2Control('step')">👆 กดเดินทีละก้าว</button>
+      <button class="pill-btn" id="z2CodeMode" onclick="setZ2Control('code')">🤖 เรียงคำสั่ง Coding</button>
+    </div>
+    <div class="prompt-box">
+      <div class="prompt-text" id="z2Prompt">พาลูกหมาเดินหลบก้อนหินไปหาเป้าหมาย!</div>
+      <button class="speak-btn" onclick="speakZ2()">🔊</button>
+    </div>
+    <div class="maze-grid" id="mazeGrid"></div>
+    <div class="queue-box" id="codeQueueBox" style="display:none;">ยังไม่มีคำสั่ง</div>
+    <div class="dpad">
+      <button class="ctrl-btn" onclick="handleMazeInput('UP')">⬆️</button>
+      <button class="ctrl-btn" onclick="handleMazeInput('DOWN')">⬇️</button>
+      <button class="ctrl-btn" onclick="handleMazeInput('LEFT')">⬅️</button>
+      <button class="ctrl-btn" onclick="handleMazeInput('RIGHT')">➡️</button>
+      <button class="ctrl-btn go-btn" id="mazeGoBtn" style="display:none;" onclick="runCodeQueue()">▶️ GO!</button>
+      <button class="ctrl-btn" id="mazeClearBtn" style="display:none; background:#ff7675;" onclick="clearCodeQueue()">🗑️</button>
+    </div>
+  </div>
 
-    <!-- ==========================================
-         JAVASCRIPT GAME ENGINE
-         ========================================== -->
-    <script>
-        /**************************************************************
-         * 1. GLOBAL STATE & PARENT SETTINGS
-         **************************************************************/
-        const state = {
-            currentView: 'hub', // 'hub' | 'toyroom' | 'garden' | 'mart'
-            stars: 0,
-            maxStars: 5,
-            childName: 'น้องคนเก่ง',
-            rewardText: '🍦 กินไอศกรีม 1 แท่ง หรือ อ่านนิทานก่อนนอนเพิ่ม 1 เรื่อง!',
-            customPraiseAudioUrl: null,
-            currentInstruction: {
-                en: "Welcome to My Little Smart Town!",
-                th: "ยินดีต้อนรับสู่เมืองจำลองของหนู แตะเลือกบ้านที่อยากเล่นเลยจ้า"
-            }
+  <!-- ZONE 3: MINI MART -->
+  <div id="zone3" class="screen">
+    <div class="mode-bar">
+      <button class="pill-btn active" id="z3CatThai" onclick="setZ3Category('thai')">🇹🇭 พยัญชนะ ก-ฮ</button>
+      <button class="pill-btn" id="z3CatEng" onclick="setZ3Category('eng')">🇬🇧 คำศัพท์ Eng</button>
+      <button class="pill-btn" id="z3CatMix" onclick="setZ3Category('mix')">🌈 ผสมทั้งหมด</button>
+    </div>
+    <div class="mode-bar">
+      <button class="pill-btn active" id="z3DiffEasy" onclick="setZ3Diff('easy')">🌱 ง่าย (6 ช่อง)</button>
+      <button class="pill-btn" id="z3DiffHard" onclick="setZ3Diff('hard')">🔥 ยาก (9 ช่อง + โจทย์คำใบ้)</button>
+    </div>
+    <div class="prompt-box">
+      <div class="prompt-text" id="z3Prompt">เลือกของใส่ตะกร้าเลยจ้า</div>
+      <button class="speak-btn" onclick="speakZ3()">🔊</button>
+    </div>
+    <div class="mart-grid" id="martGrid"></div>
+  </div>
+
+  <!-- ZONE 4: SMART SCHOOL (Attitude + Pattern + Missing Number) -->
+  <div id="zone4" class="screen">
+    <div class="mode-bar">
+      <button class="pill-btn active" id="z4ModeAtt" onclick="setZ4Mode('attitude')">💖 นิสัยดี & เหตุการณ์</button>
+      <button class="pill-btn" id="z4ModePat" onclick="setZ4Mode('pattern')">🧩 3 ภาพนี้ อะไรต่อ?</button>
+      <button class="pill-btn" id="z4ModeNum" onclick="setZ4Mode('number')">🔢 เลขอะไรหายไป?</button>
+    </div>
+    <div class="prompt-box">
+      <div class="prompt-text" id="z4Prompt">มาช่วยกันคิดนะ!</div>
+      <button class="speak-btn" onclick="speakZ4()">🔊</button>
+    </div>
+    <div class="sequence-stage" id="z4Stage"></div>
+    <div class="choices-grid" id="z4Choices"></div>
+  </div>
+
+  <!-- REWARD MODAL -->
+  <div class="modal-overlay" id="rewardModal">
+    <div class="modal-card">
+      <div style="font-size:64px;">🏆🎉</div>
+      <h2 id="rewardModalTitle">เก่งที่สุดเลย!</h2>
+      <p id="rewardModalDesc" style="font-size:18px;"></p>
+      <div style="background:#ffeaa7; padding:14px; border-radius:18px; border:3px dashed #e17055; margin:14px 0; font-size:20px; font-weight:700;" id="couponTextDisplay">
+        🍦 คูปองแลกไอศกรีม 1 แท่ง หรือนิทานก่อนนอน 2 เรื่อง!
+      </div>
+      <button class="primary-btn" onclick="closeRewardModal()">เล่นต่อเลย!</button>
+      <button class="pill-btn" onclick="claimAndResetStars()">🎁 แลกรางวัลแล้ว (เริ่มสะสมใหม่)</button>
+    </div>
+  </div>
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal-overlay" id="settingsModal">
+    <div class="modal-card">
+      <h2>⚙️ ตั้งค่าสำหรับคุณพ่อคุณแม่</h2>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700;">ชื่อของน้อง:</label>
+        <input type="text" id="inputChildName" style="width:100%; padding:10px; border-radius:12px; border:2px solid #b2bec3; font-size:16px; margin-top:4px;">
+      </div>
+      <div style="text-align:left; margin-bottom:12px;">
+        <label style="font-weight:700;">เป้าหมายดาวแลกรางวัล (ค่าเริ่มต้น 50 ดาว):</label>
+        <input type="number" id="inputStarGoal" style="width:100%; padding:10px; border-radius:12px; border:2px solid #b2bec3; font-size:16px; margin-top:4px;">
+      </div>
+      <div style="text-align:left; margin-bottom:14px;">
+        <label style="font-weight:700;">ข้อความคูปองรางวัลจริง:</label>
+        <input type="text" id="inputCouponText" style="width:100%; padding:10px; border-radius:12px; border:2px solid #b2bec3; font-size:16px; margin-top:4px;">
+      </div>
+      <div style="margin-bottom:14px;">
+        <button class="pill-btn" onclick="adjustStars(5)">➕ เพิ่มให้ 5 ดาว (รางวัลพิเศษ)</button>
+        <button class="pill-btn" onclick="adjustStars(-5)">➖ ลด 5 ดาว</button>
+      </div>
+      <button class="primary-btn" onclick="saveSettings()">💾 บันทึก</button>
+      <button class="pill-btn" onclick="closeSettings()">ปิด</button>
+    </div>
+  </div>
+
+  <script>
+    // ======== STATE & LOCAL STORAGE ========
+    let appState = {
+      childName: localStorage.getItem('mlst_name') || 'น้องมะลิ',
+      stars: parseInt(localStorage.getItem('mlst_stars') || '0', 10),
+      starGoal: parseInt(localStorage.getItem('mlst_goal') || '50', 10),
+      couponText: localStorage.getItem('mlst_coupon') || '🍦 คูปองแลกไอศกรีม 1 แท่ง หรือนิทานก่อนนอน 2 เรื่อง!'
+    };
+
+    function saveState() {
+      localStorage.setItem('mlst_name', appState.childName);
+      localStorage.setItem('mlst_stars', appState.stars);
+      localStorage.setItem('mlst_goal', appState.starGoal);
+      localStorage.setItem('mlst_coupon', appState.couponText);
+      updateTopUI();
+    }
+
+    function updateTopUI() {
+      document.getElementById('childNameLabel').textContent = appState.childName;
+      document.getElementById('goalLabel').textContent = appState.starGoal;
+      const pct = Math.min(100, Math.round((appState.stars / appState.starGoal) * 100));
+      document.getElementById('starFill').style.width = pct + '%';
+      document.getElementById('starText').textContent = `⭐ ${appState.stars} / ${appState.starGoal} ดาว`;
+      document.getElementById('couponTextDisplay').textContent = appState.couponText;
+    }
+
+    // ======== SOUND & SPEECH ========
+    function speakText(text, lang = 'th-TH') {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = lang;
+      utter.rate = lang === 'en-US' ? 0.88 : 0.95;
+      window.speechSynthesis.speak(utter);
+    }
+
+    function addStar(amount = 1) {
+      appState.stars += amount;
+      saveState();
+      if (appState.stars >= appState.starGoal) {
+        document.getElementById('rewardModalTitle').textContent = `🎉 ครบ ${appState.starGoal} ดาวแล้ว!`;
+        document.getElementById('rewardModalDesc').textContent = `${appState.childName} เก่งมากๆ เลย เอาหน้าจอนี้ไปแลกรางวัลกับคุณพ่อคุณแม่ได้เลยครับ!`;
+        document.getElementById('rewardModal').classList.add('show');
+        speakText(`เย้! ${appState.childName} สะสมครบ ${appState.starGoal} ดาวแล้ว เก่งที่สุดเลยครับ!`, 'th-TH');
+      } else if (appState.stars % 10 === 0) {
+        speakText(`ว้าว! สะสมได้ ${appState.stars} ดาวแล้ว สู้ๆ นะครับ!`, 'th-TH');
+      }
+    }
+
+    // ======== NAVIGATION ========
+    function goHome() {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('hubScreen').classList.add('active');
+    }
+
+    function openZone(num) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('zone' + num).classList.add('active');
+      if (num === 1) initZone1();
+      if (num === 2) initZone2();
+      if (num === 3) initZone3();
+      if (num === 4) initZone4();
+    }
+
+    // ======== ZONE 1: TOY ROOM (Easy & Hard) ========
+    let z1Diff = 'easy';
+    let z1Tasks = [];
+    const toyTypes = [
+      { id: 'car', emoji: '🚗', en: 'Cars', th: 'รถ' },
+      { id: 'bear', emoji: '🧸', en: 'Bears', th: 'ตุ๊กตาหมี' },
+      { id: 'duck', emoji: '🦆', en: 'Ducks', th: 'เป็ด' },
+      { id: 'ball', emoji: '⚽', en: 'Balls', th: 'ลูกบอล' }
+    ];
+    const toyColors = [
+      { id: 'red', cls: 'toy-red', en: 'Red', th: 'สีแดง' },
+      { id: 'blue', cls: 'toy-blue', en: 'Blue', th: 'สีฟ้า' },
+      { id: 'yellow', cls: 'toy-yellow', en: 'Yellow', th: 'สีเหลือง' },
+      { id: 'green', cls: 'toy-green', en: 'Green', th: 'สีเขียว' }
+    ];
+
+    function setZ1Diff(diff) {
+      z1Diff = diff;
+      document.getElementById('z1EasyBtn').classList.toggle('active', diff === 'easy');
+      document.getElementById('z1HardBtn').classList.toggle('active', diff === 'hard');
+      initZone1();
+    }
+
+    function initZone1() {
+      const floor = document.getElementById('toyFloor');
+      floor.innerHTML = '';
+      z1Tasks = [];
+
+      const shuffledColors = [...toyColors].sort(() => Math.random() - 0.5);
+      const shuffledToys = [...toyTypes].sort(() => Math.random() - 0.5);
+
+      if (z1Diff === 'easy') {
+        const count = Math.floor(Math.random() * 3) + 2; // 2-4
+        z1Tasks.push({ color: shuffledColors[0], toy: shuffledToys[0], target: count, collected: 0 });
+      } else {
+        // Hard mode: 2 distinct targets at once
+        const c1 = Math.floor(Math.random() * 2) + 2; // 2-3
+        const c2 = Math.floor(Math.random() * 2) + 2; // 2-3
+        z1Tasks.push({ color: shuffledColors[0], toy: shuffledToys[0], target: c1, collected: 0 });
+        z1Tasks.push({ color: shuffledColors[1], toy: shuffledToys[1], target: c2, collected: 0 });
+      }
+
+      // Generate required items + distractors
+      let items = [];
+      z1Tasks.forEach(t => {
+        for (let i = 0; i < t.target; i++) {
+          items.push({ color: t.color, toy: t.toy });
+        }
+      });
+
+      const distractorCount = z1Diff === 'easy' ? 4 : 8;
+      for (let i = 0; i < distractorCount; i++) {
+        const rc = toyColors[Math.floor(Math.random() * toyColors.length)];
+        const rt = toyTypes[Math.floor(Math.random() * toyTypes.length)];
+        items.push({ color: rc, toy: rt });
+      }
+
+      items.sort(() => Math.random() - 0.5);
+      items.forEach(item => {
+        const el = document.createElement('div');
+        el.className = `toy-item ${item.color.cls}`;
+        el.textContent = item.toy.emoji;
+        el.onclick = () => clickToyItem(el, item);
+        floor.appendChild(el);
+      });
+
+      updateZ1Prompt();
+      speakZ1();
+    }
+
+    function updateZ1Prompt() {
+      if (z1Tasks.length === 1) {
+        const t = z1Tasks[0];
+        document.getElementById('z1Prompt').textContent =
+          `Put ${t.target} ${t.color.en} ${t.toy.en} in the box! (เก็บ${t.toy.th}${t.color.th} ${t.collected}/${t.target})`;
+      } else {
+        const [t1, t2] = z1Tasks;
+        document.getElementById('z1Prompt').textContent =
+          `เก็บ ${t1.target} ${t1.color.en} ${t1.toy.en} (${t1.collected}/${t1.target}) และ ${t2.target} ${t2.color.en} ${t2.toy.en} (${t2.collected}/${t2.target})`;
+      }
+    }
+
+    function speakZ1() {
+      if (z1Tasks.length === 1) {
+        const t = z1Tasks[0];
+        speakText(`Put ${t.target} ${t.color.en} ${t.toy.en} in the box`, 'en-US');
+      } else {
+        const [t1, t2] = z1Tasks;
+        speakText(`Put ${t1.target} ${t1.color.en} ${t1.toy.en}, and ${t2.target} ${t2.color.en} ${t2.toy.en} in the box`, 'en-US');
+      }
+    }
+
+    function clickToyItem(el, item) {
+      const matchTask = z1Tasks.find(t =>
+        t.color.id === item.color.id && t.toy.id === item.toy.id && t.collected < t.target
+      );
+      if (matchTask) {
+        matchTask.collected++;
+        el.style.transform = 'scale(0)';
+        setTimeout(() => el.remove(), 150);
+        speakText(String(matchTask.collected), 'en-US');
+        updateZ1Prompt();
+
+        const allDone = z1Tasks.every(t => t.collected >= t.target);
+        if (allDone) {
+          addStar(z1Diff === 'hard' ? 2 : 1);
+          setTimeout(() => {
+            speakText('Good job! You are very helpful!', 'en-US');
+            initZone1();
+          }, 900);
+        }
+      } else {
+        el.classList.add('shake');
+        setTimeout(() => el.classList.remove('shake'), 400);
+        speakText('ลองดูใหม่นะจ๊ะ', 'th-TH');
+      }
+    }
+
+    // ======== ZONE 2: GARDEN MAZE (4x4, 5x5, 6x6) ========
+    let z2GridSize = 4;
+    let z2Control = 'step';
+    let playerPos = { r: 0, c: 0 };
+    let goalPos = { r: 3, c: 3 };
+    let rocks = [];
+    let codeQueue = [];
+    let currentTargetObj = { emoji: '🦴', en: 'Bone', th: 'กระดูก' };
+    const mazeTargets = [
+      { emoji: '🦴', en: 'Bone', th: 'กระดูก' },
+      { emoji: '🍎', en: 'Apple', th: 'แอปเปิล' },
+      { emoji: '🏠', en: 'House', th: 'บ้าน' },
+      { emoji: '🍓', en: 'Strawberry', th: 'สตรอว์เบอร์รี' }
+    ];
+
+    function setZ2Grid(size) {
+      z2GridSize = size;
+      document.getElementById('z2Size4').classList.toggle('active', size === 4);
+      document.getElementById('z2Size5').classList.toggle('active', size === 5);
+      document.getElementById('z2Size6').classList.toggle('active', size === 6);
+      initZone2();
+    }
+
+    function setZ2Control(mode) {
+      z2Control = mode;
+      document.getElementById('z2StepMode').classList.toggle('active', mode === 'step');
+      document.getElementById('z2CodeMode').classList.toggle('active', mode === 'code');
+      document.getElementById('codeQueueBox').style.display = mode === 'code' ? 'flex' : 'none';
+      document.getElementById('mazeGoBtn').style.display = mode === 'code' ? 'inline-block' : 'none';
+      document.getElementById('mazeClearBtn').style.display = mode === 'code' ? 'inline-block' : 'none';
+      initZone2();
+    }
+
+    function initZone2() {
+      playerPos = { r: 0, c: 0 };
+      goalPos = { r: z2GridSize - 1, c: z2GridSize - 1 };
+      codeQueue = [];
+      currentTargetObj = mazeTargets[Math.floor(Math.random() * mazeTargets.length)];
+
+      // Generate guaranteed safe path first so player is never trapped
+      let safePath = new Set(['0,0', `${goalPos.r},${goalPos.c}`]);
+      let cr = 0, cc = 0;
+      while (cr < goalPos.r || cc < goalPos.c) {
+        if (cr < goalPos.r && (cc === goalPos.c || Math.random() < 0.5)) cr++;
+        else cc++;
+        safePath.add(`${cr},${cc}`);
+      }
+
+      rocks = [];
+      const rockCount = z2GridSize === 4 ? 2 : (z2GridSize === 5 ? 5 : 9);
+      let attempts = 0;
+      while (rocks.length < rockCount && attempts < 100) {
+        attempts++;
+        const rr = Math.floor(Math.random() * z2GridSize);
+        const rc = Math.floor(Math.random() * z2GridSize);
+        const key = `${rr},${rc}`;
+        if (!safePath.has(key) && !rocks.some(k => k.r === rr && k.c === rc)) {
+          rocks.push({ r: rr, c: rc });
+        }
+      }
+
+      document.getElementById('z2Prompt').textContent =
+        `Help the Puppy find the ${currentTargetObj.en}! (พาลูกหมาไปหา${currentTargetObj.th})`;
+      renderMaze();
+      updateQueueUI();
+      speakZ2();
+    }
+
+    function speakZ2() {
+      speakText(`Help the Puppy find the ${currentTargetObj.en}`, 'en-US');
+    }
+
+    function renderMaze() {
+      const grid = document.getElementById('mazeGrid');
+      grid.style.gridTemplateColumns = `repeat(${z2GridSize}, 1fr)`;
+      grid.innerHTML = '';
+
+      for (let r = 0; r < z2GridSize; r++) {
+        for (let c = 0; c < z2GridSize; c++) {
+          const cell = document.createElement('div');
+          cell.className = 'maze-cell';
+          cell.style.fontSize = z2GridSize === 6 ? '22px' : '30px';
+          if (playerPos.r === r && playerPos.c === c) {
+            cell.textContent = '🐶';
+          } else if (goalPos.r === r && goalPos.c === c) {
+            cell.textContent = currentTargetObj.emoji;
+          } else if (rocks.some(k => k.r === r && k.c === c)) {
+            cell.textContent = '🪨';
+          }
+          grid.appendChild(cell);
+        }
+      }
+    }
+
+    function handleMazeInput(dir) {
+      if (z2Control === 'step') {
+        moveSingleStep(dir);
+      } else {
+        codeQueue.push(dir);
+        updateQueueUI();
+      }
+    }
+
+    function updateQueueUI() {
+      const icons = { UP: '⬆️', DOWN: '⬇️', LEFT: '⬅️', RIGHT: '➡️' };
+      const box = document.getElementById('codeQueueBox');
+      box.textContent = codeQueue.length ? codeQueue.map(d => icons[d]).join(' ') : 'กดลูกศรเพื่อเรียงคำสั่ง แล้วกด GO!';
+    }
+
+    function clearCodeQueue() {
+      codeQueue = [];
+      playerPos = { r: 0, c: 0 };
+      renderMaze();
+      updateQueueUI();
+    }
+
+    function moveSingleStep(dir) {
+      let nr = playerPos.r;
+      let nc = playerPos.c;
+      if (dir === 'UP') nr--;
+      if (dir === 'DOWN') nr++;
+      if (dir === 'LEFT') nc--;
+      if (dir === 'RIGHT') nc++;
+
+      if (nr < 0 || nr >= z2GridSize || nc < 0 || nc >= z2GridSize) {
+        speakText('ชนขอบรั้วแล้วจ้า', 'th-TH');
+        return false;
+      }
+      if (rocks.some(k => k.r === nr && k.c === nc)) {
+        speakText('อุ๊ย ชนก้อนหิน!', 'th-TH');
+        return false;
+      }
+
+      playerPos = { r: nr, c: nc };
+      renderMaze();
+
+      if (playerPos.r === goalPos.r && playerPos.c === goalPos.c) {
+        const reward = z2GridSize === 6 ? 2 : 1;
+        addStar(reward);
+        speakText(`Awesome! You found the ${currentTargetObj.en}!`, 'en-US');
+        setTimeout(initZone2, 1000);
+        return 'WIN';
+      }
+      return true;
+    }
+
+    function runCodeQueue() {
+      if (!codeQueue.length) return;
+      playerPos = { r: 0, c: 0 };
+      renderMaze();
+      let i = 0;
+      const timer = setInterval(() => {
+        if (i >= codeQueue.length) {
+          clearInterval(timer);
+          return;
+        }
+        const res = moveSingleStep(codeQueue[i]);
+        i++;
+        if (res === false || res === 'WIN') clearInterval(timer);
+      }, 420);
+    }
+
+    // ======== ZONE 3: MINI MART (Easy & Hard Riddles) ========
+    let z3Category = 'thai';
+    let z3Diff = 'easy';
+    let z3Answer = null;
+
+    const thaiItems = [
+      { label: 'ก. ไก่', emoji: '🐔', speak: 'กอ ไก่', riddle: 'พยัญชนะตัวอะไรเอ่ย ขันตอนเช้า เอกอีเอ้กเอ้ก?' },
+      { label: 'ข. ไข่', emoji: '🥚', speak: 'ขอ ไข่', riddle: 'พยัญชนะตัวอะไรเอ่ย แม่ไก่ฟักออกมาเป็นฟองกลมๆ?' },
+      { label: 'ช. ช้าง', emoji: '🐘', speak: 'ชอ ช้าง', riddle: 'พยัญชนะตัวอะไรเอ่ย ตัวใหญ่มีงวงยาวๆ?' },
+      { label: 'ต. เต่า', emoji: '🐢', speak: 'ตอ เต่า', riddle: 'พยัญชนะตัวอะไรเอ่ย เดินช้าๆ มีกระดองแข็ง?' },
+      { label: 'ป. ปลา', emoji: '🐟', speak: 'ปอ ปลา', riddle: 'พยัญชนะตัวอะไรเอ่ย ว่ายอยู่ในน้ำ มีครีบมีหาง?' },
+      { label: 'ผ. ผึ้ง', emoji: '🐝', speak: 'ผอ ผึ้ง', riddle: 'พยัญชนะตัวอะไรเอ่ย บินหึ่งๆ ทำรังมีน้ำหวาน?' },
+      { label: 'ม. ม้า', emoji: '🐴', speak: 'มอ ม้า', riddle: 'พยัญชนะตัวอะไรเอ่ย วิ่งเร็วคึกคัก กั๊บๆ?' },
+      { label: 'ล. ลิง', emoji: '🐵', speak: 'ลอ ลิง', riddle: 'พยัญชนะตัวอะไรเอ่ย ชอบห้อยโหนและกินกล้วย?' },
+      { label: 'ส. เสือ', emoji: '🐯', speak: 'สอ เสือ', riddle: 'พยัญชนะตัวอะไรเอ่ย เป็นสัตว์ป่ามีลายพาดกลอน?' },
+      { label: 'ฮ. นกฮูก', emoji: '🦉', speak: 'ฮอ นกฮูก', riddle: 'พยัญชนะตัวสุดท้าย ตาโต๊โต ออกหากินกลางคืน?' }
+    ];
+
+    const engItems = [
+      { label: 'Apple', emoji: '🍎', speak: 'Apple', riddle: 'What fruit is red and crunchy? Apple!' },
+      { label: 'Banana', emoji: '🍌', speak: 'Banana', riddle: 'What fruit is yellow and monkeys love to eat?' },
+      { label: 'Orange', emoji: '🍊', speak: 'Orange', riddle: 'What round fruit is orange and juicy?' },
+      { label: 'Milk', emoji: '🥛', speak: 'Milk', riddle: 'What white drink comes from a cow?' },
+      { label: 'Bread', emoji: '🍞', speak: 'Bread', riddle: 'What soft food do we toast for breakfast?' },
+      { label: 'Carrot', emoji: '🥕', speak: 'Carrot', riddle: 'What orange vegetable do rabbits love?' },
+      { label: 'Watermelon', emoji: '🍉', speak: 'Watermelon', riddle: 'What big fruit is green outside and red inside?' },
+      { label: 'Grapes', emoji: '🍇', speak: 'Grapes', riddle: 'What small purple fruit grows in a bunch?' },
+      { label: 'Cheese', emoji: '🧀', speak: 'Cheese', riddle: 'What yellow food do little mice love?' }
+    ];
+
+    function setZ3Category(cat) {
+      z3Category = cat;
+      document.getElementById('z3CatThai').classList.toggle('active', cat === 'thai');
+      document.getElementById('z3CatEng').classList.toggle('active', cat === 'eng');
+      document.getElementById('z3CatMix').classList.toggle('active', cat === 'mix');
+      initZone3();
+    }
+
+    function setZ3Diff(diff) {
+      z3Diff = diff;
+      document.getElementById('z3DiffEasy').classList.toggle('active', diff === 'easy');
+      document.getElementById('z3DiffHard').classList.toggle('active', diff === 'hard');
+      initZone3();
+    }
+
+    function initZone3() {
+      let pool = [];
+      if (z3Category === 'thai') pool = [...thaiItems];
+      else if (z3Category === 'eng') pool = [...engItems];
+      else pool = [...thaiItems, ...engItems];
+
+      const count = z3Diff === 'easy' ? 6 : 9;
+      const choices = pool.sort(() => Math.random() - 0.5).slice(0, count);
+      z3Answer = choices[Math.floor(Math.random() * choices.length)];
+
+      const isThaiItem = thaiItems.some(t => t.label === z3Answer.label);
+      if (z3Diff === 'easy') {
+        document.getElementById('z3Prompt').textContent = isThaiItem
+          ? `แม่ค้าอยากได้ "${z3Answer.label}" จ้า!`
+          : `Find the "${z3Answer.label}" please!`;
+      } else {
+        document.getElementById('z3Prompt').textContent = `🧩 คำใบ้: ${z3Answer.riddle}`;
+      }
+
+      const grid = document.getElementById('martGrid');
+      grid.innerHTML = '';
+      choices.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'mart-card';
+        card.innerHTML = `
+          <div class="mart-emoji">${item.emoji}</div>
+          <div class="mart-label">${z3Diff === 'hard' ? item.label : item.label}</div>
+        `;
+        card.onclick = () => {
+          if (item.label === z3Answer.label) {
+            addStar(z3Diff === 'hard' ? 2 : 1);
+            speakText(isThaiItem ? `ถูกต้องจ้า ${item.speak}` : `Great! ${item.speak}`, isThaiItem ? 'th-TH' : 'en-US');
+            setTimeout(initZone3, 950);
+          } else {
+            card.classList.add('shake');
+            setTimeout(() => card.classList.remove('shake'), 400);
+            speakText('ยังไม่ใช่นะจ๊ะ ลองฟังใหม่นะ', 'th-TH');
+          }
         };
-
-        // Load saved settings from localStorage if available
-        function loadSavedState() {
-            try {
-                const savedStars = localStorage.getItem('smartTown_stars');
-                const savedName = localStorage.getItem('smartTown_childName');
-                const savedReward = localStorage.getItem('smartTown_rewardText');
-                if (savedStars !== null) state.stars = parseInt(savedStars, 10) || 0;
-                if (savedName) state.childName = savedName;
-                if (savedReward) state.rewardText = savedReward;
-            } catch (e) {
-                console.warn('Storage unavailable:', e);
-            }
-            updateStarUI();
-            document.getElementById('hub-child-name').textContent = state.childName;
-        }
-
-        function saveStateToStorage() {
-            try {
-                localStorage.setItem('smartTown_stars', state.stars);
-                localStorage.setItem('smartTown_childName', state.childName);
-                localStorage.setItem('smartTown_rewardText', state.rewardText);
-            } catch (e) {}
-        }
-
-        /**************************************************************
-         * 2. SOUND SYNTHESIS (Web Audio API) & SPEECH (TTS)
-         **************************************************************/
-        let audioCtx = null;
-        function getAudioCtx() {
-            if (!audioCtx) {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                audioCtx = new AudioContext();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            return audioCtx;
-        }
-
-        // Synthesize friendly kid-safe sound effects
-        function playSFX(type) {
-            try {
-                const ctx = getAudioCtx();
-                const now = ctx.currentTime;
-
-                if (type === 'pop') {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(420, now);
-                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
-                    gain.gain.setValueAtTime(0.25, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.13);
-                } else if (type === 'boing') {
-                    // Gentle forgiving bounce sound (never harsh!)
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(300, now);
-                    osc.frequency.linearRampToValueAtTime(220, now + 0.12);
-                    osc.frequency.linearRampToValueAtTime(320, now + 0.25);
-                    gain.gain.setValueAtTime(0.22, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.28);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.29);
-                } else if (type === 'fanfare') {
-                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5 E5 G5 C6
-                    notes.forEach((freq, idx) => {
-                        const osc = ctx.createOscillator();
-                        const gain = ctx.createGain();
-                        osc.type = 'triangle';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.1);
-                        gain.gain.setValueAtTime(0.25, now + idx * 0.1);
-                        gain.gain.exponentialRampToValueAtTime(0.008, now + idx * 0.1 + 0.35);
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
-                        osc.start(now + idx * 0.1);
-                        osc.stop(now + idx * 0.1 + 0.36);
-                    });
-                } else if (type === 'step') {
-                    const osc = ctx.createOscillator();
-                    const gain = ctx.createGain();
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(520, now);
-                    gain.gain.setValueAtTime(0.15, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.09);
-                }
-            } catch (e) {}
-        }
-
-        // Bilingual Web Speech API helper
-        function speakText(text, lang = 'en-US', onEndCallback = null) {
-            if (!('speechSynthesis' in window)) {
-                if (onEndCallback) onEndCallback();
-                return;
-            }
-            const utter = new SpeechSynthesisUtterance(text);
-            utter.lang = lang;
-            utter.rate = lang === 'en-US' ? 0.88 : 0.95; // Slightly slower & clearer for kindergarteners
-            utter.pitch = 1.1;
-            if (onEndCallback) {
-                utter.onend = onEndCallback;
-            }
-            window.speechSynthesis.speak(utter);
-        }
-
-        function speakBilingual(enText, thText) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
-            state.currentInstruction = { en: enText, th: thText };
-            if (enText && thText) {
-                speakText(enText, 'en-US', () => {
-                    speakText(thText, 'th-TH');
-                });
-            } else if (enText) {
-                speakText(enText, 'en-US');
-            } else if (thText) {
-                speakText(thText, 'th-TH');
-            }
-        }
-
-        function repeatCurrentInstruction() {
-            playSFX('pop');
-            speakBilingual(state.currentInstruction.en, state.currentInstruction.th);
-        }
-
-        /**************************************************************
-         * 3. NAVIGATION & VIEW MANAGEMENT
-         **************************************************************/
-        function showView(viewName) {
-            state.currentView = viewName;
-            const views = ['hub', 'toyroom', 'garden', 'mart'];
-            views.forEach(v => {
-                const el = document.getElementById(`view-${v}`);
-                if (v === viewName) {
-                    el.classList.remove('hidden');
-                    el.classList.add('flex');
-                } else {
-                    el.classList.add('hidden');
-                    el.classList.remove('flex');
-                }
-            });
-        }
-
-        function goHome() {
-            playSFX('pop');
-            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-            showView('hub');
-            state.currentInstruction = {
-                en: "Let's play in My Little Smart Town!",
-                th: `แวะพักที่เมืองหลักแล้วจ้า ${state.childName} อยากเข้าบ้านไหนต่อเอ่ย?`
-            };
-        }
-
-        function enterZone(zone) {
-            playSFX('pop');
-            showView(zone);
-            if (zone === 'toyroom') initToyRoomRound();
-            if (zone === 'garden') initGardenMazeRound();
-            if (zone === 'mart') initMartRound();
-        }
-
-        function nextRoundInCurrentZone() {
-            playSFX('pop');
-            document.getElementById('modal-celebrate').classList.add('hidden');
-            document.getElementById('modal-celebrate').classList.remove('flex');
-            if (state.currentView === 'toyroom') initToyRoomRound();
-            else if (state.currentView === 'garden') initGardenMazeRound();
-            else if (state.currentView === 'mart') initMartRound();
-        }
-
-        function closeCelebrateAndHome() {
-            document.getElementById('modal-celebrate').classList.add('hidden');
-            document.getElementById('modal-celebrate').classList.remove('flex');
-            goHome();
-        }
-
-        /**************************************************************
-         * 4. ZONE 1: TOY ROOM (Attitude + Math + English)
-         **************************************************************/
-        const TOY_CATALOG = [
-            { id: 'red_car', emoji: '🚗', colorClass: 'toy-red', enSingular: 'RED CAR', enPlural: 'RED CARS', thName: 'รถสีแดง' },
-            { id: 'blue_bear', emoji: '🧸', colorClass: 'toy-blue', enSingular: 'BLUE BEAR', enPlural: 'BLUE BEARS', thName: 'ตุ๊กตาหมีสีฟ้า' },
-            { id: 'yellow_duck', emoji: '🦆', colorClass: 'toy-yellow', enSingular: 'YELLOW DUCK', enPlural: 'YELLOW DUCKS', thName: 'เป็ดน้อยสีเหลือง' },
-            { id: 'green_ball', emoji: '⚽', colorClass: 'toy-green', enSingular: 'GREEN BALL', enPlural: 'GREEN BALLS', thName: 'ลูกบอลสีเขียว' }
-        ];
-        const NUMBER_WORDS_EN = ["Zero", "One!", "Two!", "Three!", "Four!", "Five!"];
-
-        let toyState = {
-            targetToy: null,
-            targetCount: 3,
-            collectedCount: 0
-        };
-
-        function initToyRoomRound() {
-            // Pick random target toy & count (2 to 4 for kindergarten)
-            const targetToy = TOY_CATALOG[Math.floor(Math.random() * TOY_CATALOG.length)];
-            const targetCount = Math.floor(Math.random() * 3) + 2; // 2, 3, or 4
-
-            toyState = {
-                targetToy,
-                targetCount,
-                collectedCount: 0
-            };
-
-            // Update Banner UI
-            const enPrompt = `Let's clean up! Put ${targetCount} ${targetToy.enPlural} in the box!`;
-            const thPrompt = `มาช่วยกันเก็บ ${targetToy.thName} ${targetCount} ชิ้น ใส่กล่องของเล่นกันเถอะ!`;
-
-            document.getElementById('toy-prompt-en').textContent = enPrompt;
-            document.getElementById('toy-prompt-th').textContent = thPrompt;
-            document.getElementById('toy-target-emoji').textContent = targetToy.emoji;
-            updateToyProgressUI();
-
-            // Build Floor Items (Target count + 4 distractor items)
-            const floor = document.getElementById('toy-floor');
-            floor.innerHTML = '';
-
-            const items = [];
-            for (let i = 0; i < targetCount; i++) {
-                items.push({ ...targetToy, isTarget: true });
-            }
-            const others = TOY_CATALOG.filter(t => t.id !== targetToy.id);
-            for (let i = 0; i < 5; i++) {
-                const distractor = others[i % others.length];
-                items.push({ ...distractor, isTarget: false });
-            }
-
-            // Shuffle items
-            items.sort(() => Math.random() - 0.5);
-
-            items.forEach((item, index) => {
-                const btn = document.createElement('div');
-                btn.className = `toy-item ${item.colorClass} w-24 h-24 md:w-28 md:h-28 rounded-3xl flex flex-col items-center justify-center shadow-md select-none`;
-                btn.innerHTML = `
-                    <span class="text-5xl md:text-6xl pointer-events-none">${item.emoji}</span>
-                    <span class="text-[11px] font-bold text-slate-700 mt-1 pointer-events-none">${item.thName}</span>
-                `;
-
-                // Support both simple tap AND drag-to-box for 3-6 yr olds
-                setupToyInteraction(btn, item);
-                floor.appendChild(btn);
-            });
-
-            speakBilingual(enPrompt, thPrompt);
-        }
-
-        function updateToyProgressUI() {
-            const label = `${toyState.collectedCount} / ${toyState.targetCount}`;
-            document.getElementById('toy-progress-label').textContent = label;
-            document.getElementById('toy-box-counter').textContent = label;
-        }
-
-        function setupToyInteraction(el, item) {
-            let isDragging = false;
-            let startX = 0, startY = 0;
-
-            el.addEventListener('pointerdown', (e) => {
-                if (el.dataset.collected === 'true') return;
-                isDragging = true;
-                startX = e.clientX;
-                startY = e.clientY;
-                el.setPointerCapture(e.pointerId);
-            });
-
-            el.addEventListener('pointermove', (e) => {
-                if (!isDragging) return;
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
-                el.style.transform = `translate(${dx}px, ${dy}px) scale(1.15)`;
-            });
-
-            el.addEventListener('pointerup', (e) => {
-                if (!isDragging) return;
-                isDragging = false;
-                el.style.transform = '';
-                handleToyAttempt(el, item, e.clientX, e.clientY);
-            });
-        }
-
-        function handleToyAttempt(el, item, clientX, clientY) {
-            if (el.dataset.collected === 'true') return;
-
-            if (item.isTarget) {
-                // Correct Toy!
-                el.dataset.collected = 'true';
-                toyState.collectedCount++;
-                playSFX('pop');
-
-                // Floating Number Visual
-                spawnFloatingNumber(toyState.collectedCount, clientX, clientY);
-
-                // Animate into toy box
-                el.style.transition = 'all 0.35s ease-in';
-                el.style.transform = 'scale(0.1) translateY(120px)';
-                el.style.opacity = '0';
-
-                const box = document.getElementById('toy-box-dropzone');
-                box.classList.add('scale-105');
-                setTimeout(() => box.classList.remove('scale-105'), 220);
-
-                updateToyProgressUI();
-
-                // Speak the number in English
-                const numWord = NUMBER_WORDS_EN[toyState.collectedCount] || String(toyState.collectedCount);
-                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-
-                if (toyState.collectedCount >= toyState.targetCount) {
-                    speakText(numWord, 'en-US', () => {
-                        setTimeout(() => {
-                            triggerRoundSuccess({
-                                emoji: toyState.targetToy.emoji,
-                                word: `${toyState.targetCount} ${toyState.targetToy.enPlural}`,
-                                enPraise: `Good job! You are very helpful!`,
-                                thPraise: `เก่งมากเลย ${state.childName} ช่วยเก็บ${toyState.targetToy.thName}เรียบร้อยแล้ว!`
-                            });
-                        }, 250);
-                    });
-                } else {
-                    speakText(numWord, 'en-US');
-                }
-            } else {
-                // Gentle forgiving feedback on wrong toy
-                playSFX('boing');
-                el.classList.remove('animate-wobble');
-                void el.offsetWidth; // trigger reflow
-                el.classList.add('animate-wobble');
-                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-                speakBilingual(
-                    `Oops! Let's find the ${toyState.targetToy.enSingular}`,
-                    `อันนี้คือ${item.thName}จ้า ลองหา${toyState.targetToy.thName}ดูนะ`
-                );
-            }
-        }
-
-        function spawnFloatingNumber(num, x, y) {
-            const badge = document.createElement('div');
-            badge.className = 'floating-number bg-amber-400 text-amber-950 border-4 border-white rounded-full w-16 h-16 flex items-center justify-center text-3xl font-black shadow-xl';
-            badge.style.left = `${(x || window.innerWidth / 2) - 32}px`;
-            badge.style.top = `${(y || window.innerHeight / 2) - 32}px`;
-            badge.textContent = num;
-            document.body.appendChild(badge);
-            setTimeout(() => badge.remove(), 1000);
-        }
-
-        /**************************************************************
-         * 5. ZONE 2: GARDEN MAZE (Coding Logic + English)
-         **************************************************************/
-        const MAZE_THEMES = [
-            { heroEmoji: '🐶', heroEn: 'PUPPY', heroTh: 'ลูกหมา', goalEmoji: '🦴', goalEn: 'BONE', goalTh: 'กระดูก' },
-            { heroEmoji: '🐰', heroEn: 'BUNNY', heroTh: 'กระต่ายน้อย', goalEmoji: '🥕', goalEn: 'CARROT', goalTh: 'แครอท' },
-            { heroEmoji: '🐱', heroEn: 'KITTEN', heroTh: 'ลูกแมว', goalEmoji: '🐟', goalEn: 'FISH', goalTh: 'ปลาทู' },
-            { heroEmoji: '🐵', heroEn: 'MONKEY', heroTh: 'ลิงจ๋อ', goalEmoji: '🍌', goalEn: 'BANANA', goalTh: 'กล้วยหอม' }
-        ];
-
-        let mazeState = {
-            size: 4,
-            mode: 'step', // 'step' (easy immediate move) or 'queue' (coding sequence)
-            theme: MAZE_THEMES[0],
-            heroPos: { r: 0, c: 0 },
-            startPos: { r: 0, c: 0 },
-            goalPos: { r: 3, c: 3 },
-            obstacles: [],
-            queue: [],
-            isRunning: false
-        };
-
-        function setMazeMode(mode) {
-            playSFX('pop');
-            mazeState.mode = mode;
-            const btnStep = document.getElementById('btn-mode-step');
-            const btnQueue = document.getElementById('btn-mode-queue');
-            const queueContainer = document.getElementById('maze-queue-container');
-            const actionButtons = document.getElementById('maze-action-buttons');
-
-            if (mode === 'step') {
-                btnStep.className = 'px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-emerald-500 text-white shadow';
-                btnQueue.className = 'px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm text-emerald-800 hover:bg-emerald-100';
-                queueContainer.classList.add('hidden');
-                actionButtons.classList.add('hidden');
-            } else {
-                btnQueue.className = 'px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-emerald-500 text-white shadow';
-                btnStep.className = 'px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm text-emerald-800 hover:bg-emerald-100';
-                queueContainer.classList.remove('hidden');
-                actionButtons.classList.remove('hidden');
-            }
-            clearMazeQueue();
-        }
-
-        function initGardenMazeRound() {
-            const theme = MAZE_THEMES[Math.floor(Math.random() * MAZE_THEMES.length)];
-            mazeState.theme = theme;
-            mazeState.startPos = { r: 0, c: 0 };
-            mazeState.heroPos = { r: 0, c: 0 };
-
-            // Pick a goal position at least 3 steps away
-            const possibleGoals = [
-                { r: 2, c: 3 }, { r: 3, c: 2 }, { r: 3, c: 3 }, { r: 1, c: 3 }, { r: 3, c: 1 }
-            ];
-            mazeState.goalPos = possibleGoals[Math.floor(Math.random() * possibleGoals.length)];
-
-            // Place 2 safe obstacles that never block the simple L-shaped paths
-            mazeState.obstacles = [];
-            const candidates = [];
-            for (let r = 0; r < 4; r++) {
-                for (let c = 0; c < 4; c++) {
-                    const isStart = (r === 0 && c === 0);
-                    const isGoal = (r === mazeState.goalPos.r && c === mazeState.goalPos.c);
-                    // Keep top row and right column clear so there is ALWAYS a guaranteed clear path
-                    const onGuaranteedPath = (r === 0 && c <= mazeState.goalPos.c) || (c === mazeState.goalPos.c && r <= mazeState.goalPos.r);
-                    if (!isStart && !isGoal && !onGuaranteedPath) {
-                        candidates.push({ r, c, emoji: Math.random() > 0.5 ? '🪨' : '🌷' });
-                    }
-                }
-            }
-            candidates.sort(() => Math.random() - 0.5);
-            mazeState.obstacles = candidates.slice(0, 2);
-            mazeState.queue = [];
-            mazeState.isRunning = false;
-
-            // Update Header
-            document.getElementById('maze-hero-avatar').textContent = theme.heroEmoji;
-            const enPrompt = `Help the ${theme.heroEn} find the ${theme.goalEn}!`;
-            const thPrompt = `กดลูกศรพา${theme.heroTh}เดินไปหา${theme.goalTh}กันเถอะ!`;
-            document.getElementById('maze-prompt-en').textContent = enPrompt;
-            document.getElementById('maze-prompt-th').textContent = thPrompt;
-
-            setMazeMode(mazeState.mode);
-            renderMazeGrid();
-            speakBilingual(enPrompt, thPrompt);
-        }
-
-        function renderMazeGrid() {
-            const gridEl = document.getElementById('maze-grid');
-            gridEl.innerHTML = '';
-
-            for (let r = 0; r < 4; r++) {
-                for (let c = 0; c < 4; c++) {
-                    const cell = document.createElement('div');
-                    const isChecker = (r + c) % 2 === 0;
-                    cell.className = `${isChecker ? 'bg-emerald-100' : 'bg-emerald-200'} rounded-2xl flex items-center justify-center text-4xl md:text-5xl relative select-none shadow-inner`;
-
-                    const isHero = (mazeState.heroPos.r === r && mazeState.heroPos.c === c);
-                    const isGoal = (mazeState.goalPos.r === r && mazeState.goalPos.c === c);
-                    const obstacle = mazeState.obstacles.find(o => o.r === r && o.c === c);
-
-                    if (isHero) {
-                        cell.innerHTML = `<span class="animate-bounce-gentle z-10 drop-shadow">${mazeState.theme.heroEmoji}</span>`;
-                    } else if (isGoal) {
-                        cell.innerHTML = `
-                            <div onclick="speakText('${mazeState.theme.goalEn}', 'en-US')" class="cursor-pointer flex flex-col items-center">
-                                <span class="animate-float">${mazeState.theme.goalEmoji}</span>
-                                <span class="text-[10px] font-extrabold bg-white/90 text-emerald-900 px-1.5 rounded-full -mt-1">${mazeState.theme.goalEn}</span>
-                            </div>
-                        `;
-                    } else if (obstacle) {
-                        cell.innerHTML = `<span class="opacity-85">${obstacle.emoji}</span>`;
-                    }
-                    gridEl.appendChild(cell);
-                }
-            }
-        }
-
-        function handleArrowInput(dir) {
-            if (mazeState.isRunning) return;
-
-            const dirWordEn = { UP: 'Up', DOWN: 'Down', LEFT: 'Left', RIGHT: 'Right' }[dir];
-
-            if (mazeState.mode === 'step') {
-                // Immediate step movement for younger toddlers
-                stepHeroDirection(dir);
-            } else {
-                // Queue mode (Coding logic)
-                if (mazeState.queue.length >= 10) return;
-                playSFX('pop');
-                mazeState.queue.push(dir);
-                renderMazeQueueBar();
-                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-                speakText(dirWordEn, 'en-US');
-            }
-        }
-
-        function renderMazeQueueBar() {
-            const bar = document.getElementById('maze-queue-bar');
-            if (mazeState.queue.length === 0) {
-                bar.innerHTML = `<span class="text-slate-400 text-sm mx-auto">กดลูกศรด้านล่างเพื่อเรียงคำสั่ง...</span>`;
-                return;
-            }
-            const iconMap = { UP: '⬆️', DOWN: '⬇️', LEFT: '⬅️', RIGHT: '➡️' };
-            bar.innerHTML = mazeState.queue.map((d, idx) => `
-                <span id="queue-item-${idx}" class="w-9 h-9 bg-sky-100 border-2 border-sky-400 rounded-xl flex items-center justify-center text-xl shadow-sm">
-                    ${iconMap[d]}
-                </span>
-            `).join('');
-        }
-
-        function clearMazeQueue() {
-            if (mazeState.isRunning) return;
-            playSFX('pop');
-            mazeState.queue = [];
-            mazeState.heroPos = { ...mazeState.startPos };
-            renderMazeQueueBar();
-            renderMazeGrid();
-        }
-
-        function stepHeroDirection(dir) {
-            let { r, c } = mazeState.heroPos;
-            if (dir === 'UP') r--;
-            if (dir === 'DOWN') r++;
-            if (dir === 'LEFT') c--;
-            if (dir === 'RIGHT') c++;
-
-            // Check boundaries & obstacles
-            const outOfBounds = (r < 0 || r >= 4 || c < 0 || c >= 4);
-            const hitObstacle = mazeState.obstacles.some(o => o.r === r && o.c === c);
-
-            if (outOfBounds || hitObstacle) {
-                playSFX('boing');
-                const gridEl = document.getElementById('maze-grid');
-                gridEl.classList.remove('animate-wobble');
-                void gridEl.offsetWidth;
-                gridEl.classList.add('animate-wobble');
-                return false;
-            }
-
-            // Valid step
-            playSFX('step');
-            mazeState.heroPos = { r, c };
-            renderMazeGrid();
-
-            // Check if reached goal
-            if (r === mazeState.goalPos.r && c === mazeState.goalPos.c) {
-                setTimeout(() => {
-                    triggerRoundSuccess({
-                        emoji: `${mazeState.theme.heroEmoji}${mazeState.theme.goalEmoji}`,
-                        word: `${mazeState.theme.heroEn} & ${mazeState.theme.goalEn}`,
-                        enPraise: `Yay! The ${mazeState.theme.heroEn} found the ${mazeState.theme.goalEn}!`,
-                        thPraise: `เก่งมากเลย ${state.childName} พา${mazeState.theme.heroTh}ไปหา${mazeState.theme.goalTh}สำเร็จแล้ว!`
-                    });
-                }, 250);
-                return 'GOAL';
-            }
-            return true;
-        }
-
-        async function runMazeQueue() {
-            if (mazeState.isRunning || mazeState.queue.length === 0) return;
-            mazeState.isRunning = true;
-            mazeState.heroPos = { ...mazeState.startPos };
-            renderMazeGrid();
-
-            for (let i = 0; i < mazeState.queue.length; i++) {
-                const badge = document.getElementById(`queue-item-${i}`);
-                if (badge) badge.classList.add('bg-amber-300', 'scale-110');
-
-                await new Promise(res => setTimeout(res, 420));
-                const result = stepHeroDirection(mazeState.queue[i]);
-
-                if (badge) badge.classList.remove('scale-110');
-                if (result === 'GOAL') {
-                    mazeState.isRunning = false;
-                    return;
-                }
-                if (result === false) {
-                    // Hit wall/obstacle
-                    break;
-                }
-            }
-
-            // If finished queue without reaching goal
-            await new Promise(res => setTimeout(res, 450));
-            const atGoal = (mazeState.heroPos.r === mazeState.goalPos.r && mazeState.heroPos.c === mazeState.goalPos.c);
-            if (!atGoal) {
-                playSFX('boing');
-                speakBilingual(
-                    "Almost there! Let's try again!",
-                    "เกือบถึงแล้วจ้า ลองเรียงลูกศรใหม่อีกครั้งนะ!"
-                );
-                mazeState.heroPos = { ...mazeState.startPos };
-                renderMazeGrid();
-            }
-            mazeState.isRunning = false;
-        }
-
-        /**************************************************************
-         * 6. ZONE 3: MINI MART (Thai Consonants ก-ฮ & English Vocab)
-         **************************************************************/
-        const THAI_ITEMS = [
-            { id: 'th_k', letter: 'ก', word: 'ก.ไก่', speak: 'กอ ไก่', emoji: '🐓', lang: 'th-TH' },
-            { id: 'th_kh', letter: 'ข', word: 'ข.ไข่', speak: 'ขอ ไข่', emoji: '🥚', lang: 'th-TH' },
-            { id: 'th_ng', letter: 'ง', word: 'ง.งู', speak: 'งอ งู', emoji: '🐍', lang: 'th-TH' },
-            { id: 'th_j', letter: 'จ', word: 'จ.จาน', speak: 'จอ จาน', emoji: '🍽️', lang: 'th-TH' },
-            { id: 'th_ch', letter: 'ช', word: 'ช.ช้าง', speak: 'ชอ ช้าง', emoji: '🐘', lang: 'th-TH' },
-            { id: 'th_t', letter: 'ต', word: 'ต.เต่า', speak: 'ตอ เต่า', emoji: '🐢', lang: 'th-TH' },
-            { id: 'th_p', letter: 'ป', word: 'ป.ปลา', speak: 'ปอ ปลา', emoji: '🐟', lang: 'th-TH' },
-            { id: 'th_m', letter: 'ม', word: 'ม.ม้า', speak: 'มอ ม้า', emoji: '🐴', lang: 'th-TH' },
-            { id: 'th_l', letter: 'ล', word: 'ล.ลิง', speak: 'ลอ ลิง', emoji: '🐒', lang: 'th-TH' },
-            { id: 'th_s', letter: 'ส', word: 'ส.เสือ', speak: 'สอ เสือ', emoji: '🐯', lang: 'th-TH' }
-        ];
-
-        const ENG_ITEMS = [
-            { id: 'en_apple', letter: 'A', word: 'APPLE', speak: 'Apple', thHint: 'แอปเปิล', emoji: '🍎', lang: 'en-US' },
-            { id: 'en_banana', letter: 'B', word: 'BANANA', speak: 'Banana', thHint: 'กล้วยหอม', emoji: '🍌', lang: 'en-US' },
-            { id: 'en_cake', letter: 'C', word: 'CAKE', speak: 'Cake', thHint: 'ขนมเค้ก', emoji: '🍰', lang: 'en-US' },
-            { id: 'en_milk', letter: 'M', word: 'MILK', speak: 'Milk', thHint: 'นมสด', emoji: '🥛', lang: 'en-US' },
-            { id: 'en_orange', letter: 'O', word: 'ORANGE', speak: 'Orange', thHint: 'ส้ม', emoji: '🍊', lang: 'en-US' },
-            { id: 'en_bread', letter: 'B', word: 'BREAD', speak: 'Bread', thHint: 'ขนมปัง', emoji: '🍞', lang: 'en-US' },
-            { id: 'en_cheese', letter: 'C', word: 'CHEESE', speak: 'Cheese', thHint: 'ชีส', emoji: '🧀', lang: 'en-US' },
-            { id: 'en_grape', letter: 'G', word: 'GRAPES', speak: 'Grapes', thHint: 'องุ่น', emoji: '🍇', lang: 'en-US' }
-        ];
-
-        let martState = {
-            mode: 'mix', // 'th' | 'en' | 'mix'
-            targetItem: null,
-            options: []
-        };
-
-        function setMartMode(mode) {
-            playSFX('pop');
-            martState.mode = mode;
-            const modes = ['th', 'en', 'mix'];
-            modes.forEach(m => {
-                const btn = document.getElementById(`btn-mart-${m}`);
-                if (m === mode) {
-                    btn.className = 'px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-amber-500 text-white shadow';
-                } else {
-                    btn.className = 'px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm text-amber-900 hover:bg-amber-100';
-                }
-            });
-            initMartRound();
-        }
-
-        function initMartRound() {
-            setMartModeUIOnly(martState.mode);
-
-            let pool = [];
-            if (martState.mode === 'th') {
-                pool = [...THAI_ITEMS];
-            } else if (martState.mode === 'en') {
-                pool = [...ENG_ITEMS];
-            } else {
-                pool = Math.random() > 0.5 ? [...THAI_ITEMS] : [...ENG_ITEMS];
-            }
-
-            pool.sort(() => Math.random() - 0.5);
-            const options = pool.slice(0, 4);
-            const target = options[Math.floor(Math.random() * options.length)];
-
-            martState.targetItem = target;
-            martState.options = options;
-
-            // Update Shopkeeper Prompt
-            const promptMain = document.getElementById('mart-prompt-main');
-            const promptSub = document.getElementById('mart-prompt-sub');
-
-            if (target.lang === 'th-TH') {
-                promptMain.textContent = `"แม่ค้าอยากได้ ${target.word} จ้า!"`;
-                promptSub.textContent = `แตะการ์ดพยัญชนะ "${target.letter}" (${target.word}) ใส่ตะกร้าเลย`;
-                speakBilingual('', `แม่ค้าอยากได้ ${target.speak} จ้า`);
-            } else {
-                promptMain.textContent = `"Can I have the ${target.word}, please?"`;
-                promptSub.textContent = `ช่วยหยิบ ${target.word} (${target.thHint}) ใส่ตะกร้าหน่อยจ้า`;
-                speakBilingual(`Can I have the ${target.speak}, please?`, `หยิบ ${target.thHint} ให้แม่ค้าหน่อยจ้า`);
-            }
-
-            // Render 4 Shelf Cards
-            const shelf = document.getElementById('mart-shelf');
-            shelf.innerHTML = '';
-
-            options.forEach(item => {
-                const card = document.createElement('button');
-                card.className = 'btn-kid bg-white hover:bg-amber-50 border-4 border-amber-300 rounded-3xl p-4 flex flex-col items-center justify-between min-h-[175px] shadow-md relative group';
-                card.innerHTML = `
-                    <div class="w-full flex justify-between items-center">
-                        <span class="text-3xl md:text-4xl font-black text-rose-500 bg-rose-50 px-3 py-0.5 rounded-2xl border-2 border-rose-200">${item.letter}</span>
-                        <span class="text-lg opacity-60 group-hover:opacity-100">🔊</span>
-                    </div>
-                    <div class="text-6xl md:text-7xl my-2 transition-transform group-hover:scale-110">${item.emoji}</div>
-                    <div class="text-lg md:text-xl font-extrabold text-slate-800">${item.word}</div>
-                `;
-                card.onclick = () => handleMartCardTap(card, item);
-                shelf.appendChild(card);
-            });
-        }
-
-        function setMartModeUIOnly(mode) {
-            ['th', 'en', 'mix'].forEach(m => {
-                const btn = document.getElementById(`btn-mart-${m}`);
-                if (m === mode) {
-                    btn.className = 'px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm bg-amber-500 text-white shadow';
-                } else {
-                    btn.className = 'px-3 py-1.5 rounded-xl font-bold text-xs md:text-sm text-amber-900 hover:bg-amber-100';
-                }
-            });
-        }
-
-        function handleMartCardTap(cardEl, item) {
-            if (item.id === martState.targetItem.id) {
-                // Correct item chosen!
-                playSFX('pop');
-                cardEl.classList.add('border-emerald-500', 'bg-emerald-50', 'scale-95');
-                document.getElementById('mart-basket-icon').textContent = item.emoji;
-                document.getElementById('mart-basket-status').textContent = `หยิบ ${item.word} ใส่ตะกร้าเรียบร้อยแล้ว!`;
-
-                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-                speakText(item.speak, item.lang, () => {
-                    setTimeout(() => {
-                        triggerRoundSuccess({
-                            emoji: item.emoji,
-                            word: `${item.letter} - ${item.word}`,
-                            enPraise: item.lang === 'en-US' ? `Awesome! That is ${item.speak}!` : `Great job!`,
-                            thPraise: `เก่งมากจ้ะ ${state.childName}! นี่คือ ${item.speak} จ้า`
-                        });
-                    }, 220);
-                });
-            } else {
-                // Gentle wobble + tell the kid what they tapped so they learn!
-                playSFX('boing');
-                cardEl.classList.remove('animate-wobble');
-                void cardEl.offsetWidth;
-                cardEl.classList.add('animate-wobble');
-
-                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-                if (item.lang === 'th-TH') {
-                    speakBilingual('', `อันนี้ ${item.speak} จ้า ลองหา ${martState.targetItem.speak} ดูนะ`);
-                } else {
-                    speakBilingual(`That is ${item.speak}. Try finding ${martState.targetItem.speak}!`, `อันนี้คือ ${item.thHint} จ้า`);
-                }
-            }
-        }
-
-        /**************************************************************
-         * 7. REWARDS, CELEBRATION & CONFETTI SYSTEM
-         **************************************************************/
-        function triggerRoundSuccess({ emoji, word, enPraise, thPraise }) {
-            playSFX('fanfare');
-            fireConfetti();
-
-            // Award 1 star
-            if (state.stars < state.maxStars) {
-                state.stars++;
-                saveStateToStorage();
-            }
-            updateStarUI();
-
-            // Populate Modal
-            document.getElementById('celebrate-title').textContent = `ยอดเยี่ยมเลย ${state.childName}!`;
-            document.getElementById('celebrate-subtitle').textContent = state.stars >= state.maxStars
-                ? '🎉 ดาวครบ 5 ดวงแล้ว! กดปุ่มดาวด้านบนเพื่อแลกคูปองรางวัลได้เลย!'
-                : `รับดาวคนเก่งเพิ่ม 1 ดวง (ตอนนี้มี ${state.stars}/${state.maxStars} ดวงแล้ว)`;
-            document.getElementById('celebrate-emoji').textContent = emoji;
-            document.getElementById('celebrate-word').textContent = word;
-
-            const modal = document.getElementById('modal-celebrate');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-
-            // Play custom recorded parent praise if recorded, otherwise TTS praise
-            if (state.customPraiseAudioUrl) {
-                playCustomParentVoice();
-            } else {
-                speakBilingual(enPraise, thPraise);
-            }
-        }
-
-        function updateStarUI() {
-            document.getElementById('star-count-text').textContent = `${state.stars} / ${state.maxStars}`;
-            const rewardBtn = document.getElementById('btn-star-reward');
-            const badge = document.getElementById('reward-badge');
-
-            if (state.stars >= state.maxStars) {
-                rewardBtn.classList.add('pulse-gold');
-                badge.classList.remove('hidden');
-            } else {
-                rewardBtn.classList.remove('pulse-gold');
-                badge.classList.add('hidden');
-            }
-        }
-
-        function openRewardModal() {
-            playSFX('pop');
-            const row = document.getElementById('reward-stars-row');
-            row.innerHTML = '';
-            for (let i = 1; i <= state.maxStars; i++) {
-                const span = document.createElement('span');
-                span.textContent = i <= state.stars ? '⭐' : '☆';
-                span.className = i <= state.stars ? 'text-amber-400 animate-bounce-gentle' : 'text-slate-300';
-                row.appendChild(span);
-            }
-
-            document.getElementById('coupon-child-name').textContent = state.childName;
-            document.getElementById('coupon-reward-text').textContent = state.rewardText;
-
-            const statusBadge = document.getElementById('coupon-status-badge');
-            const redeemBtn = document.getElementById('btn-redeem-stars');
-
-            if (state.stars >= state.maxStars) {
-                statusBadge.textContent = '✅ สะสมครบ 5 ดาวแล้ว! ยื่นให้คุณพ่อคุณแม่ได้เลย!';
-                statusBadge.className = 'inline-block bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full';
-                redeemBtn.disabled = false;
-                speakBilingual("Hooray! Five stars!", `เย้! ${state.childName} สะสมครบ 5 ดาวแล้ว เอาคูปองไปแลกรางวัลกับคุณพ่อคุณแม่ได้เลยจ้า`);
-            } else {
-                const left = state.maxStars - state.stars;
-                statusBadge.textContent = `สะสมอีก ${left} ดวงเพื่อปลดล็อกคูปองนี้!`;
-                statusBadge.className = 'inline-block bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full';
-                redeemBtn.disabled = true;
-                speakBilingual("", `ตอนนี้มี ${state.stars} ดาวแล้ว สะสมอีก ${left} ดวงจะแลกรางวัลได้แล้วนะจ๊ะ`);
-            }
-
-            const modal = document.getElementById('modal-reward');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeRewardModal() {
-            const modal = document.getElementById('modal-reward');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function redeemRewardCoupon() {
-            if (state.stars < state.maxStars) return;
-            playSFX('fanfare');
-            fireConfetti();
-            state.stars = 0;
-            saveStateToStorage();
-            updateStarUI();
-            closeRewardModal();
-            speakBilingual("Reward redeemed!", `ใช้คูปองแลกรางวัลเรียบร้อยแล้ว มาสะสมดาวรอบใหม่กันเถอะ!`);
-        }
-
-        /**************************************************************
-         * 8. PARENT SETTINGS & MICROPHONE VOICE RECORDER
-         **************************************************************/
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let isRecording = false;
-
-        function openParentModal() {
-            playSFX('pop');
-            document.getElementById('input-child-name').value = state.childName;
-            document.getElementById('input-reward-text').value = state.rewardText;
-            const modal = document.getElementById('modal-parent');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeParentModal() {
-            const modal = document.getElementById('modal-parent');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
-        function saveParentSettings() {
-            const nameInput = document.getElementById('input-child-name').value.trim();
-            const rewardInput = document.getElementById('input-reward-text').value.trim();
-
-            if (nameInput) state.childName = nameInput;
-            if (rewardInput) state.rewardText = rewardInput;
-
-            document.getElementById('hub-child-name').textContent = state.childName;
-            saveStateToStorage();
-            playSFX('pop');
-            closeParentModal();
-        }
-
-        async function toggleVoiceRecording() {
-            const btnLabel = document.getElementById('record-btn-label');
-            const statusMsg = document.getElementById('record-status-msg');
-
-            if (!isRecording) {
-                try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    mediaRecorder = new MediaRecorder(stream);
-                    audioChunks = [];
-
-                    mediaRecorder.ondataavailable = (e) => {
-                        if (e.data.size > 0) audioChunks.push(e.data);
-                    };
-
-                    mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                        state.customPraiseAudioUrl = URL.createObjectURL(audioBlob);
-                        document.getElementById('btn-play-recorded').classList.remove('hidden');
-                        document.getElementById('btn-clear-recorded').classList.remove('hidden');
-                        statusMsg.textContent = '✅ บันทึกเสียงชมของคุณพ่อคุณแม่เรียบร้อยแล้ว!';
-                        stream.getTracks().forEach(t => t.stop());
-                    };
-
-                    mediaRecorder.start();
-                    isRecording = true;
-                    btnLabel.textContent = '⏹️ หยุดอัดเสียง';
-                    statusMsg.textContent = '🔴 กำลังอัดเสียง... พูดคำชมได้เลยครับ (เช่น "เก่งมากลูกพ่อ!")';
-                } catch (err) {
-                    statusMsg.textContent = '⚠️ ไม่สามารถเปิดไมโครโฟนได้ ระบบจะใช้เสียงพูดอัตโนมัติ (TTS) แทนครับ';
-                }
-            } else {
-                mediaRecorder.stop();
-                isRecording = false;
-                btnLabel.textContent = '🎙️ อัดเสียงใหม่';
-            }
-        }
-
-        function playCustomParentVoice() {
-            if (!state.customPraiseAudioUrl) return;
-            const audio = new Audio(state.customPraiseAudioUrl);
-            audio.play();
-        }
-
-        function clearCustomParentVoice() {
-            state.customPraiseAudioUrl = null;
-            document.getElementById('btn-play-recorded').classList.add('hidden');
-            document.getElementById('btn-clear-recorded').classList.add('hidden');
-            document.getElementById('record-status-msg').textContent = 'สถานะปัจจุบัน: ใช้เสียงสังเคราะห์อัตโนมัติ (TTS)';
-        }
-
-        /**************************************************************
-         * 9. LIGHTWEIGHT CONFETTI ANIMATION
-         **************************************************************/
-        const confettiCanvas = document.getElementById('confetti-canvas');
-        const cCtx = confettiCanvas.getContext('2d');
-        let confettiPieces = [];
-        let confettiAnimId = null;
-
-        function resizeConfettiCanvas() {
-            confettiCanvas.width = window.innerWidth;
-            confettiCanvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resizeConfettiCanvas);
-
-        function fireConfetti() {
-            resizeConfettiCanvas();
-            const colors = ['#f43f5e', '#f59e0b', '#10b981', '#3b82f6', '#a855f7', '#ec4899'];
-            confettiPieces = [];
-            for (let i = 0; i < 80; i++) {
-                confettiPieces.push({
-                    x: Math.random() * confettiCanvas.width,
-                    y: Math.random() * confettiCanvas.height - confettiCanvas.height,
-                    w: Math.random() * 10 + 6,
-                    h: Math.random() * 10 + 6,
-                    color: colors[Math.floor(Math.random() * colors.length)],
-                    vy: Math.random() * 4 + 3,
-                    vx: (Math.random() - 0.5) * 3,
-                    angle: Math.random() * 360,
-                    vAngle: (Math.random() - 0.5) * 8
-                });
-            }
-            if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
-            animateConfetti();
-        }
-
-        function animateConfetti() {
-            cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-            let active = false;
-            confettiPieces.forEach(p => {
-                p.y += p.vy;
-                p.x += p.vx;
-                p.angle += p.vAngle;
-                if (p.y < confettiCanvas.height + 20) active = true;
-
-                cCtx.save();
-                cCtx.translate(p.x, p.y);
-                cCtx.rotate((p.angle * Math.PI) / 180);
-                cCtx.fillStyle = p.color;
-                cCtx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
-                cCtx.restore();
-            });
-
-            if (active) {
-                confettiAnimId = requestAnimationFrame(animateConfetti);
-            } else {
-                cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
-            }
-        }
-
-        // Initialize on Window Load
-        window.onload = function () {
-            loadSavedState();
-            resizeConfettiCanvas();
-        };
-    </script>
+        grid.appendChild(card);
+      });
+
+      speakZ3();
+    }
+
+    function speakZ3() {
+      if (!z3Answer) return;
+      const isThaiItem = thaiItems.some(t => t.label === z3Answer.label);
+      if (z3Diff === 'easy') {
+        speakText(isThaiItem ? `หยิบ ${z3Answer.speak} ให้หน่อยจ้า` : `Find the ${z3Answer.speak}`, isThaiItem ? 'th-TH' : 'en-US');
+      } else {
+        speakText(z3Answer.riddle, isThaiItem ? 'th-TH' : 'en-US');
+      }
+    }
+
+    // ======== ZONE 4: SMART SCHOOL (Attitude + Pattern + Missing Number) ========
+    let z4Mode = 'attitude';
+    let currentZ4Question = null;
+
+    const attitudeQuestions = [
+      {
+        prompt: 'กินกล้วยเสร็จแล้ว ควรทำอะไรต่อครับ?',
+        seq: ['🍌', '😋', '❓'],
+        options: [
+          { icon: '🗑️', text: 'ทิ้งเปลือกในถังขยะ', correct: true },
+          { icon: '🛣️', text: 'โยนทิ้งบนพื้น', correct: false },
+          { icon: '🛏️', text: 'วางไว้บนที่นอน', correct: false }
+        ]
+      },
+      {
+        prompt: 'เล่นของเล่นเต็มห้องเสร็จแล้ว ทำอย่างไรต่อดีนะ?',
+        seq: ['🧸', '🚗', '❓'],
+        options: [
+          { icon: '📦', text: 'เก็บใส่กล่องให้เรียบร้อย', correct: true },
+          { icon: '🏃', text: 'เดินหนีไปเลย', correct: false },
+          { icon: '😭', text: 'ร้องไห้งอแง', correct: false }
+        ]
+      },
+      {
+        prompt: 'ก่อนกินข้าว มือเปื้อน ต้องทำอะไรก่อนครับ?',
+        seq: ['👐', '🦠', '❓'],
+        options: [
+          { icon: '🧼', text: 'ล้างมือด้วยสบู่', correct: true },
+          { icon: '👕', text: 'เช็ดกับเสื้อผ้า', correct: false },
+          { icon: '🎮', text: 'ไปเล่นเกมต่อ', correct: false }
+        ]
+      },
+      {
+        prompt: 'เห็นเพื่อนหกล้มที่สนามเด็กเล่น เราควรทำอย่างไร?',
+        seq: ['👦', '💥', '❓'],
+        options: [
+          { icon: '🤝', text: 'เข้าไปช่วยพยุงเพื่อน', correct: true },
+          { icon: '😆', text: 'หัวเราะเยาะเพื่อน', correct: false },
+          { icon: '🙈', text: 'แกล้งทำเป็นไม่เห็น', correct: false }
+        ]
+      },
+      {
+        prompt: 'ตื่นนอนตอนเช้า พับผ้าห่มแล้ว ควรทำอะไรต่อ?',
+        seq: ['🌅', '🛏️', '❓'],
+        options: [
+          { icon: '🪥', text: 'แปรงฟันล้างหน้า', correct: true },
+          { icon: '🍬', text: 'กินลูกอมทันที', correct: false },
+          { icon: '👟', text: 'ใส่รองเท้าขึ้นเตียง', correct: false }
+        ]
+      },
+      {
+        prompt: 'เมื่อคุณพ่อคุณแม่ยื่นของให้ เราควรทำอย่างไร?',
+        seq: ['🎁', '👨‍👩‍👧', '❓'],
+        options: [
+          { icon: '🙏', text: 'ไหว้และพูดว่า ขอบคุณค่ะ/ครับ', correct: true },
+          { icon: '😠', text: 'ดึงของแล้ววิ่งหนี', correct: false },
+          { icon: '🙄', text: 'ไม่พูดอะไรเลย', correct: false }
+        ]
+      }
+    ];
+
+    const patternSets = [
+      { seq: ['🍎', '🍌', '🍎'], ans: '🍌', wrong: ['🍇', '🍉'] },
+      { seq: ['🐶', '🐱', '🐶'], ans: '🐱', wrong: ['🐷', '🐸'] },
+      { seq: ['🌞', '🌙', '🌞'], ans: '🌙', wrong: ['⭐', '🌧️'] },
+      { seq: ['🚗', '🚗', '🚌'], ans: '🚗', wrong: ['✈️', '🚲'] },
+      { seq: ['🔴', '🔵', '🟡', '🔴', '🔵'], ans: '🟡', wrong: ['🟢', '🟣'] },
+      { seq: ['🐸', '🐸', ' lotus ', '🐸', '🐸'].map(x => x.trim() === 'lotus' ? '🪷' : x), ans: '🪷', wrong: ['🌵', '🍄'] }
+    ];
+
+    function setZ4Mode(mode) {
+      z4Mode = mode;
+      document.getElementById('z4ModeAtt').classList.toggle('active', mode === 'attitude');
+      document.getElementById('z4ModePat').classList.toggle('active', mode === 'pattern');
+      document.getElementById('z4ModeNum').classList.toggle('active', mode === 'number');
+      initZone4();
+    }
+
+    function initZone4() {
+      const stage = document.getElementById('z4Stage');
+      const choicesEl = document.getElementById('z4Choices');
+      stage.innerHTML = '';
+      choicesEl.innerHTML = '';
+
+      if (z4Mode === 'attitude') {
+        const q = attitudeQuestions[Math.floor(Math.random() * attitudeQuestions.length)];
+        currentZ4Question = { speak: q.prompt };
+        document.getElementById('z4Prompt').textContent = q.prompt;
+
+        q.seq.forEach(item => {
+          const box = document.createElement('div');
+          box.className = 'seq-box' + (item === '❓' ? ' seq-question' : '');
+          box.textContent = item;
+          stage.appendChild(box);
+        });
+
+        const opts = [...q.options].sort(() => Math.random() - 0.5);
+        opts.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          btn.innerHTML = `<span style="font-size:40px;">${opt.icon}</span><span>${opt.text}</span>`;
+          btn.onclick = () => checkZ4Answer(btn, opt.correct, opt.text);
+          choicesEl.appendChild(btn);
+        });
+
+      } else if (z4Mode === 'pattern') {
+        const p = patternSets[Math.floor(Math.random() * patternSets.length)];
+        currentZ4Question = { speak: 'ดูภาพเรียงกัน แล้วภาพต่อไปคืออะไรเอ่ย?' };
+        document.getElementById('z4Prompt').textContent = '🧩 ดูภาพที่เรียงกัน แล้วภาพต่อไปคืออะไรเอ่ย?';
+
+        p.seq.forEach(em => {
+          const box = document.createElement('div');
+          box.className = 'seq-box';
+          box.textContent = em;
+          stage.appendChild(box);
+        });
+        const qBox = document.createElement('div');
+        qBox.className = 'seq-box seq-question';
+        qBox.textContent = '❓';
+        stage.appendChild(qBox);
+
+        const opts = [
+          { label: p.ans, correct: true },
+          { label: p.wrong[0], correct: false },
+          { label: p.wrong[1], correct: false }
+        ].sort(() => Math.random() - 0.5);
+
+        opts.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          btn.innerHTML = `<span style="font-size:48px;">${opt.label}</span>`;
+          btn.onclick = () => checkZ4Answer(btn, opt.correct, 'เก่งมากจ้า');
+          choicesEl.appendChild(btn);
+        });
+
+      } else if (z4Mode === 'number') {
+        // Missing number sequence (step 1 or step 2)
+        const step = Math.random() < 0.7 ? 1 : 2;
+        const start = Math.floor(Math.random() * 6) + 1;
+        const missingIdx = Math.floor(Math.random() * 4);
+        const seqNums = [0, 1, 2, 3].map(i => start + i * step);
+        const ans = seqNums[missingIdx];
+
+        currentZ4Question = { speak: 'ตัวเลขอะไรเอ่ยที่หายไป?' };
+        document.getElementById('z4Prompt').textContent = '🔢 ตัวเลขอะไรเอ่ยที่หายไปจากช่องว่าง?';
+
+        seqNums.forEach((n, idx) => {
+          const box = document.createElement('div');
+          box.className = 'seq-box' + (idx === missingIdx ? ' seq-question' : '');
+          box.textContent = idx === missingIdx ? '❓' : n;
+          stage.appendChild(box);
+        });
+
+        let wrong1 = ans + step;
+        let wrong2 = Math.max(1, ans - step);
+        if (wrong2 === ans) wrong2 = ans + 3;
+
+        const opts = [
+          { label: ans, correct: true },
+          { label: wrong1, correct: false },
+          { label: wrong2, correct: false }
+        ].sort(() => Math.random() - 0.5);
+
+        opts.forEach(opt => {
+          const btn = document.createElement('button');
+          btn.className = 'choice-btn';
+          btn.innerHTML = `<span style="font-size:40px;">${opt.label}</span>`;
+          btn.onclick = () => checkZ4Answer(btn, opt.correct, `หมายเลข ${opt.label} ถูกต้องจ้า!`);
+          choicesEl.appendChild(btn);
+        });
+      }
+
+      speakZ4();
+    }
+
+    function speakZ4() {
+      if (currentZ4Question) speakText(currentZ4Question.speak, 'th-TH');
+    }
+
+    function checkZ4Answer(btn, isCorrect, successMsg) {
+      if (isCorrect) {
+        addStar(1);
+        speakText(`ยอดเยี่ยมมาก! ${successMsg}`, 'th-TH');
+        setTimeout(initZone4, 1000);
+      } else {
+        btn.classList.add('shake');
+        setTimeout(() => btn.classList.remove('shake'), 400);
+        speakText('เอ๊... ลองคิดดูใหม่อีกทีนะจ๊ะ', 'th-TH');
+      }
+    }
+
+    // ======== MODALS & SETTINGS ========
+    function openRewardModal() {
+      document.getElementById('rewardModalTitle').textContent = `⭐ สะสมได้ ${appState.stars} / ${appState.starGoal} ดาว`;
+      document.getElementById('rewardModalDesc').textContent =
+        appState.stars >= appState.starGoal
+          ? 'ครบตามเป้าหมายแล้ว! นำคูปองนี้ไปแลกรางวัลกับคุณพ่อคุณแม่ได้เลย!'
+          : `อีกแค่ ${appState.starGoal - appState.stars} ดาว ก็จะได้รับคูปองรางวัลพิเศษแล้ว สู้ๆ นะ!`;
+      document.getElementById('rewardModal').classList.add('show');
+    }
+
+    function closeRewardModal() {
+      document.getElementById('rewardModal').classList.remove('show');
+    }
+
+    function claimAndResetStars() {
+      appState.stars = 0;
+      saveState();
+      closeRewardModal();
+      speakText('เริ่มสะสมดาวรอบใหม่กันเลย!', 'th-TH');
+    }
+
+    function openSettings() {
+      document.getElementById('inputChildName').value = appState.childName;
+      document.getElementById('inputStarGoal').value = appState.starGoal;
+      document.getElementById('inputCouponText').value = appState.couponText;
+      document.getElementById('settingsModal').classList.add('show');
+    }
+
+    function closeSettings() {
+      document.getElementById('settingsModal').classList.remove('show');
+    }
+
+    function adjustStars(delta) {
+      appState.stars = Math.max(0, appState.stars + delta);
+      saveState();
+    }
+
+    function saveSettings() {
+      appState.childName = document.getElementById('inputChildName').value.trim() || 'น้องมะลิ';
+      appState.starGoal = Math.max(5, parseInt(document.getElementById('inputStarGoal').value, 10) || 50);
+      appState.couponText = document.getElementById('inputCouponText').value.trim() || '🍦 คูปองแลกไอศกรีม 1 แท่ง!';
+      saveState();
+      closeSettings();
+    }
+
+    // Initialize UI on load
+    updateTopUI();
+  </script>
 </body>
 </html>
