@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>My Little Smart Town V5 - เมืองจำลองของหนู</title>
+  <title>My Little Smart Town V5.1 - เมืองจำลองของหนู</title>
   <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -187,7 +187,7 @@
       box-shadow: 0 5px 15px rgba(0,0,0,0.06);
     }
     .prompt-text {
-      font-size: 19px;
+      font-size: 18px;
       font-weight: 700;
       text-align: left;
       flex: 1;
@@ -283,8 +283,8 @@
       100% { transform: scale(1) translateY(0); }
     }
     .queue-box {
-      min-height: 44px;
-      background: rgba(255,255,255,0.85);
+      min-height: 48px;
+      background: rgba(255,255,255,0.9);
       border-radius: 14px;
       padding: 6px 12px;
       margin-bottom: 10px;
@@ -293,7 +293,8 @@
       justify-content: center;
       flex-wrap: wrap;
       gap: 6px;
-      font-size: 22px;
+      font-size: 20px;
+      border: 2px solid #dfe6e9;
     }
     .dpad {
       display: flex;
@@ -322,44 +323,70 @@
       box-shadow: 0 5px 0 #00896f;
     }
 
-    /* Game 3: Mini Mart */
+    /* Game 3: Mini Mart (Fixed Responsive Text Padding for Hidden Pictures) */
     .mart-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
-      max-width: 540px;
+      max-width: 580px;
       margin: 0 auto;
     }
-    @media (max-width: 440px) {
-      .mart-grid { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 480px) {
+      .mart-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     }
     .mart-card {
       background: #fff;
       border-radius: 20px;
-      padding: 14px 8px;
+      padding: 12px 8px;
       border: 4px solid #dfe6e9;
       cursor: pointer;
       box-shadow: 0 5px 0 #b2bec3;
-      min-height: 112px;
+      min-height: 116px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       transition: transform 0.15s, background 0.2s;
+      overflow: hidden;
+      word-break: break-word;
     }
     .mart-card:active { transform: translateY(3px); box-shadow: none; }
-    .mart-emoji { font-size: 44px; line-height: 1.1; }
-    .mart-label { font-size: 20px; font-weight: 700; margin-top: 6px; color: #2d3436; }
+    .mart-emoji { font-size: 42px; line-height: 1.1; }
+    .mart-label {
+      font-size: clamp(15px, 4vw, 20px);
+      font-weight: 700;
+      margin-top: 6px;
+      color: #2d3436;
+      line-height: 1.2;
+      max-width: 100%;
+    }
+    /* Single Thai Character vs Long English Word */
     .mart-big-char {
-      font-size: 46px;
+      font-size: 48px;
       font-weight: 700;
       color: #6c5ce7;
-      line-height: 1.1;
+      line-height: 1.15;
+      max-width: 100%;
+      padding: 2px 4px;
+    }
+    .mart-big-word {
+      font-size: clamp(18px, 4.5vw, 26px);
+      font-weight: 700;
+      color: #0984e3;
+      line-height: 1.2;
+      max-width: 100%;
+      padding: 4px 6px;
+      background: #f1f2f6;
+      border-radius: 12px;
+      word-wrap: break-word;
+    }
+    .mart-big-word.long-word {
+      font-size: clamp(15px, 3.8vw, 21px);
     }
     .mart-sub-hint {
-      font-size: 13px;
+      font-size: 12px;
       color: #636e72;
-      margin-top: 4px;
+      margin-top: 6px;
     }
 
     /* Game 4: Smart School & Interactive Worksheet Pattern */
@@ -571,7 +598,7 @@
       <div class="zone-card zone-2" onclick="openZone(2)">
         <div class="zone-emoji">🚀</div>
         <div class="zone-name">2. สวนผจญภัย</div>
-        <div class="zone-tag">Coding 5 เรื่องราว + เสียงเดินสมจริง (<span id="hubLang2">EN</span>)</div>
+        <div class="zone-tag">Coding 5 เรื่องราว + เสียงเดินครบทุกก้าว (<span id="hubLang2">EN</span>)</div>
       </div>
 
       <div class="zone-card zone-3" onclick="openZone(3)">
@@ -602,7 +629,7 @@
     <div class="toy-box" id="toyBoxStatus">📦 กล่องเก็บของเล่น (แตะที่ของเล่นเพื่อเก็บลงกล่อง)</div>
   </div>
 
-  <!-- ZONE 2: GARDEN MAZE (Multi-story + Character Movement SFX) -->
+  <!-- ZONE 2: GARDEN MAZE (Multi-story + Guaranteed Queue Step SFX) -->
   <div id="zone2" class="screen">
     <div class="mode-bar">
       <button class="pill-btn pill-sub active" id="z2StoryRandom" onclick="setZ2Story('random')">🎲 สุ่มเรื่องราว</button>
@@ -763,153 +790,167 @@
   </div>
 
   <script>
-    // ======== WEB AUDIO SYNTHESIZER (CHARACTER-SPECIFIC SFX) ========
+    // ======== WEB AUDIO ENGINE (WITH ANDROID/HUAWEI KEEP-ALIVE & SCHEDULER) ========
     let audioCtx = null;
     function getAudioCtx() {
       if (!audioCtx) {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) audioCtx = new AudioContext();
       }
-      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      if (audioCtx && audioCtx.state !== 'running') {
+        audioCtx.resume();
+      }
       return audioCtx;
     }
 
-    // Helper to create white noise burst (for rocket thruster, water spray, etc.)
-    function playNoiseBurst(duration, filterFreq = 1000, volume = 0.25) {
+    // Unlock audio hardware on any touch (Crucial for Huawei P30 & iOS)
+    function unlockMobileAudio() {
       const ctx = getAudioCtx();
       if (!ctx) return;
-      const bufferSize = ctx.sampleRate * duration;
+      if (ctx.state !== 'running') ctx.resume();
+      const buffer = ctx.createBuffer(1, 1, 22050);
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(ctx.destination);
+      if (source.start) source.start(0);
+    }
+    document.addEventListener('touchstart', unlockMobileAudio, { passive: true });
+    document.addEventListener('click', unlockMobileAudio, { passive: true });
+
+    // Helper for white noise burst (supports exact scheduled start time `when`)
+    function playNoiseBurstAt(when, duration, filterFreq = 1200, volume = 0.35) {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const t0 = Math.max(ctx.currentTime, when || ctx.currentTime);
+      const bufferSize = Math.floor(ctx.sampleRate * duration);
       const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
       const data = buffer.getChannelData(0);
-      for (let i = 0; i < bufferSize; i++) {
-        data[i] = Math.random() * 2 - 1;
-      }
+      for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
       const noise = ctx.createBufferSource();
       noise.buffer = buffer;
 
       const filter = ctx.createBiquadFilter();
       filter.type = 'bandpass';
-      filter.frequency.setValueAtTime(filterFreq, ctx.currentTime);
-      filter.frequency.exponentialRampToValueAtTime(filterFreq * 0.4, ctx.currentTime + duration);
+      filter.frequency.setValueAtTime(filterFreq, t0);
+      filter.frequency.exponentialRampToValueAtTime(filterFreq * 0.4, t0 + duration);
 
       const gain = ctx.createGain();
-      gain.gain.setValueAtTime(volume, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+      gain.gain.setValueAtTime(volume, t0);
+      gain.gain.exponentialRampToValueAtTime(0.01, t0 + duration);
 
       noise.connect(filter);
       filter.connect(gain);
       gain.connect(ctx.destination);
-      noise.start();
+      noise.start(t0);
     }
 
-    // Play character-specific movement sound when moving on the grid!
-    function playAdventureMoveSFX(storyId) {
+    // Play or Schedule Character-Specific Movement Sound (Works in both Step & Coding Queue modes!)
+    function playAdventureMoveSFX(storyId, scheduledTime = 0) {
       const ctx = getAudioCtx();
       if (!ctx) return;
-      const now = ctx.currentTime;
+      const now = Math.max(ctx.currentTime, scheduledTime || ctx.currentTime);
 
       if (storyId === 'puppy') {
-        // 🐶 ลูกหมาเดิน: เสียงฝีเท้า "ต๊อก-แต๊ก!" (Double woodblock tap)
-        [0, 0.085].forEach((offset, i) => {
+        // 🐶 ลูกหมาเดิน: เสียงฝีเท้า "ต๊อก-แต๊ก!" ชัดเจน 2 จังหวะ
+        [0, 0.09].forEach((offset, i) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'triangle';
-          const baseFreq = i === 0 ? 720 : 920; // ต๊อก (ต่ำ) - แต๊ก (สูง)
+          const baseFreq = i === 0 ? 680 : 940;
           osc.frequency.setValueAtTime(baseFreq, now + offset);
-          osc.frequency.exponentialRampToValueAtTime(220, now + offset + 0.055);
-          gain.gain.setValueAtTime(0.35, now + offset);
-          gain.gain.exponentialRampToValueAtTime(0.01, now + offset + 0.06);
+          osc.frequency.exponentialRampToValueAtTime(200, now + offset + 0.065);
+          gain.gain.setValueAtTime(0.45, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + offset + 0.07);
           osc.connect(gain);
           gain.connect(ctx.destination);
           osc.start(now + offset);
-          osc.stop(now + offset + 0.065);
+          osc.stop(now + offset + 0.075);
         });
       } else if (storyId === 'bunny') {
-        // 🐰 กระต่ายกระโดด: เสียงสปริง "ดึ๋ง!" (Cartoon Boing)
+        // 🐰 กระต่ายกระโดด: เสียงสปริง "ดึ๋ง!"
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
         osc.frequency.setValueAtTime(240, now);
-        osc.frequency.exponentialRampToValueAtTime(680, now + 0.14);
+        osc.frequency.exponentialRampToValueAtTime(720, now + 0.14);
         osc.frequency.exponentialRampToValueAtTime(520, now + 0.22);
-        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.setValueAtTime(0.42, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.23);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
         osc.stop(now + 0.24);
       } else if (storyId === 'rocket') {
-        // 🚀 จรวดอวกาศ: เสียงไอพ่น "ฟู่-วูบ!" (Thruster Whoosh + Sci-fi sweep)
-        playNoiseBurst(0.22, 1400, 0.3);
+        // 🚀 จรวดอวกาศ: เสียงพ่นไอพ่น "ฟู่-วูบ!"
+        playNoiseBurstAt(now, 0.22, 1400, 0.38);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(180, now);
-        osc.frequency.exponentialRampToValueAtTime(540, now + 0.18);
-        gain.gain.setValueAtTime(0.12, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.frequency.setValueAtTime(190, now);
+        osc.frequency.exponentialRampToValueAtTime(580, now + 0.19);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.21);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.2);
+        osc.stop(now + 0.22);
       } else if (storyId === 'bee') {
-        // 🐝 ผึ้งน้อยบิน: เสียงกระพือปีก "หึ่งงง~" (Vibrato Buzz)
+        // 🐝 ผึ้งน้อยบิน: เสียงกระพือปีก "หึ่งงง~"
         const osc = ctx.createOscillator();
         const lfo = ctx.createOscillator();
         const lfoGain = ctx.createGain();
         const gain = ctx.createGain();
 
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(290, now);
+        osc.frequency.setValueAtTime(300, now);
 
-        lfo.frequency.setValueAtTime(38, now); // Fast wing flutter
-        lfoGain.gain.setValueAtTime(45, now);
+        lfo.frequency.setValueAtTime(40, now);
+        lfoGain.gain.setValueAtTime(50, now);
         lfo.connect(lfoGain);
         lfoGain.connect(osc.frequency);
 
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.21);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
         lfo.start(now);
-        osc.stop(now + 0.21);
-        lfo.stop(now + 0.21);
+        osc.stop(now + 0.22);
+        lfo.stop(now + 0.22);
       } else if (storyId === 'firetruck') {
-        // 🚒 รถดับเพลิง: เสียงเครื่องยนต์ + ไซเรนสั้น "บรื้น-หวอ!" (Engine + Two-tone siren)
+        // 🚒 รถดับเพลิง: เสียงไซเรน "บรื้น-หวอ!"
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'square';
         osc.frequency.setValueAtTime(580, now);
-        osc.frequency.setValueAtTime(780, now + 0.09);
-        gain.gain.setValueAtTime(0.16, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.frequency.setValueAtTime(800, now + 0.09);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.21);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.21);
+        osc.stop(now + 0.22);
       } else {
-        playSFX('step');
+        playSFX('step', now);
       }
     }
 
-    // Play character-specific celebration sound on reaching goal
-    function playAdventureWinSFX(storyId) {
+    function playAdventureWinSFX(storyId, scheduledTime = 0) {
       const ctx = getAudioCtx();
       if (!ctx) return;
-      const now = ctx.currentTime;
+      const now = Math.max(ctx.currentTime, scheduledTime || ctx.currentTime);
 
       if (storyId === 'puppy') {
-        // เสียงลูกหมาเห่าดีใจ "โฮ่ง-โฮ่ง!" 2 ครั้ง
         [0, 0.16].forEach(offset => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
           osc.type = 'sawtooth';
           osc.frequency.setValueAtTime(320, now + offset);
-          osc.frequency.exponentialRampToValueAtTime(520, now + offset + 0.05);
+          osc.frequency.exponentialRampToValueAtTime(540, now + offset + 0.05);
           osc.frequency.exponentialRampToValueAtTime(180, now + offset + 0.12);
-          gain.gain.setValueAtTime(0.28, now + offset);
+          gain.gain.setValueAtTime(0.35, now + offset);
           gain.gain.exponentialRampToValueAtTime(0.01, now + offset + 0.13);
           osc.connect(gain);
           gain.connect(ctx.destination);
@@ -917,56 +958,52 @@
           osc.stop(now + offset + 0.14);
         });
       } else if (storyId === 'firetruck') {
-        // เสียงฉีดน้ำดับไฟ "ฟู่!"
-        playNoiseBurst(0.35, 1800, 0.3);
+        playNoiseBurstAt(now, 0.35, 1800, 0.35);
       }
-      // ตามด้วยเสียงแฟนแฟร์ชัยชนะ
-      setTimeout(() => playSFX('win'), 150);
+      playSFX('win', now + 0.15);
     }
 
-    function playSFX(type) {
+    function playSFX(type, scheduledTime = 0) {
       const ctx = getAudioCtx();
       if (!ctx) return;
-      const now = ctx.currentTime;
+      const now = Math.max(ctx.currentTime, scheduledTime || ctx.currentTime);
 
       if (type === 'step') {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(320, now);
-        osc.frequency.exponentialRampToValueAtTime(580, now + 0.09);
-        gain.gain.setValueAtTime(0.22, now);
+        osc.frequency.setValueAtTime(340, now);
+        osc.frequency.exponentialRampToValueAtTime(620, now + 0.09);
+        gain.gain.setValueAtTime(0.3, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.1);
+        osc.stop(now + 0.11);
       } else if (type === 'queue') {
-        // เสียงกดเรียงปุ่มลูกศร "ติ๊ด!"
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(700, now);
-        osc.frequency.exponentialRampToValueAtTime(920, now + 0.06);
-        gain.gain.setValueAtTime(0.22, now);
+        osc.frequency.exponentialRampToValueAtTime(940, now + 0.06);
+        gain.gain.setValueAtTime(0.28, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.07);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.07);
+        osc.stop(now + 0.075);
       } else if (type === 'wall' || type === 'rock') {
-        // เสียงชนกำแพง/ชนหิน "ตึง-แป่วว~"
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(190, now);
         osc.frequency.linearRampToValueAtTime(65, now + 0.28);
-        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.setValueAtTime(0.38, now);
         gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.3);
+        osc.stop(now + 0.31);
       } else if (type === 'win') {
         const notes = [523.25, 659.25, 783.99, 1046.5];
         notes.forEach((freq, idx) => {
@@ -974,12 +1011,12 @@
           const gain = ctx.createGain();
           osc.type = 'triangle';
           osc.frequency.setValueAtTime(freq, now + idx * 0.09);
-          gain.gain.setValueAtTime(0.22, now + idx * 0.09);
+          gain.gain.setValueAtTime(0.3, now + idx * 0.09);
           gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.09 + 0.22);
           osc.connect(gain);
           gain.connect(ctx.destination);
           osc.start(now + idx * 0.09);
-          osc.stop(now + idx * 0.09 + 0.22);
+          osc.stop(now + idx * 0.09 + 0.23);
         });
       }
     }
@@ -1201,7 +1238,7 @@
       }
     }
 
-    // ======== ZONE 2: GARDEN MAZE (5 Story Themes + Custom Character Movement SFX) ========
+    // ======== ZONE 2: GARDEN MAZE (WITH HARDWARE-SCHEDULED CODING QUEUE SFX) ========
     let z2GridSize = 4;
     let z2Control = 'step';
     let z2StoryMode = 'random';
@@ -1211,6 +1248,7 @@
     let rocks = [];
     let codeQueue = [];
     let isRunningQueue = false;
+    let queueTimers = [];
 
     const mazeStories = {
       puppy: {
@@ -1250,7 +1288,14 @@
       }
     };
 
+    function clearQueueTimers() {
+      queueTimers.forEach(t => clearTimeout(t));
+      queueTimers = [];
+      isRunningQueue = false;
+    }
+
     function setZ2Story(storyKey) {
+      clearQueueTimers();
       z2StoryMode = storyKey;
       document.getElementById('z2StoryRandom').classList.toggle('active', storyKey === 'random');
       document.getElementById('z2StoryPuppy').classList.toggle('active', storyKey === 'puppy');
@@ -1258,12 +1303,12 @@
       document.getElementById('z2StoryRocket').classList.toggle('active', storyKey === 'rocket');
       document.getElementById('z2StoryBee').classList.toggle('active', storyKey === 'bee');
       document.getElementById('z2StoryFire').classList.toggle('active', storyKey === 'firetruck');
-      // Play a preview of that character's sound when selected!
       if (storyKey !== 'random') playAdventureMoveSFX(storyKey);
-      initZone2();
+      initZone2(false);
     }
 
     function setZ2Grid(size) {
+      clearQueueTimers();
       z2GridSize = size;
       document.getElementById('z2Size4').classList.toggle('active', size === 4);
       document.getElementById('z2Size5').classList.toggle('active', size === 5);
@@ -1272,17 +1317,18 @@
     }
 
     function setZ2Control(mode) {
+      clearQueueTimers();
       z2Control = mode;
       document.getElementById('z2StepMode').classList.toggle('active', mode === 'step');
       document.getElementById('z2CodeMode').classList.toggle('active', mode === 'code');
       document.getElementById('codeQueueBox').style.display = mode === 'code' ? 'flex' : 'none';
       document.getElementById('mazeGoBtn').style.display = mode === 'code' ? 'inline-block' : 'none';
       document.getElementById('mazeClearBtn').style.display = mode === 'code' ? 'inline-block' : 'none';
-      initZone2();
+      initZone2(false);
     }
 
-    function initZone2() {
-      isRunningQueue = false;
+    function initZone2(shouldSpeak = true) {
+      clearQueueTimers();
       playerPos = { r: 0, c: 0 };
       goalPos = { r: z2GridSize - 1, c: z2GridSize - 1 };
       codeQueue = [];
@@ -1324,7 +1370,7 @@
         `${currentStory.actorEmoji} พา${currentStory.actorTh}หลบ${currentStory.obsTh} ไปหา${currentStory.goalTh}! (Help the ${currentStory.actorEn} find the ${currentStory.goalEn})`;
       renderMaze();
       updateQueueUI();
-      speakZ2();
+      if (shouldSpeak) speakZ2();
     }
 
     function speakZ2() {
@@ -1360,9 +1406,14 @@
 
     function handleMazeInput(dir) {
       if (isRunningQueue) return;
+      // Stop any ongoing speech so Android/Huawei doesn't duck/mute WebAudio
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      unlockMobileAudio();
+
       if (z2Control === 'step') {
         moveSingleStep(dir);
       } else {
+        // Play both a button click AND a quick preview of the character sound
         playSFX('queue');
         codeQueue.push(dir);
         updateQueueUI();
@@ -1373,19 +1424,19 @@
       const icons = { UP: '⬆️', DOWN: '⬇️', LEFT: '⬅️', RIGHT: '➡️' };
       const box = document.getElementById('codeQueueBox');
       if (!codeQueue.length) {
-        box.textContent = 'กดลูกศรเพื่อเรียงคำสั่ง แล้วกด GO!';
+        box.textContent = 'กดลูกศรเพื่อเรียงคำสั่ง แล้วกด ▶️ GO!';
         return;
       }
       box.innerHTML = codeQueue.map((d, idx) => {
         const highlight = idx === activeIndex
-          ? 'background:#ffeaa7; border:2px solid #e17055; border-radius:8px; padding:2px 6px; transform:scale(1.2);'
-          : 'padding:2px 4px;';
+          ? 'background:#ffeaa7; border:3px solid #e17055; border-radius:10px; padding:2px 8px; transform:scale(1.22); display:inline-block;'
+          : 'padding:2px 4px; display:inline-block;';
         return `<span style="${highlight}">${icons[d]}</span>`;
       }).join('');
     }
 
     function clearCodeQueue() {
-      if (isRunningQueue) return;
+      if (isRunningQueue) clearQueueTimers();
       playSFX('queue');
       codeQueue = [];
       playerPos = { r: 0, c: 0 };
@@ -1393,7 +1444,7 @@
       updateQueueUI();
     }
 
-    function moveSingleStep(dir) {
+    function moveSingleStep(dir, playImmediateSound = true) {
       let nr = playerPos.r, nc = playerPos.c;
       if (dir === 'UP') nr--;
       if (dir === 'DOWN') nr++;
@@ -1403,92 +1454,138 @@
       const gridEl = document.getElementById('mazeGrid');
 
       if (nr < 0 || nr >= z2GridSize || nc < 0 || nc >= z2GridSize) {
-        playSFX('wall');
+        if (playImmediateSound) playSFX('wall');
         gridEl.classList.add('shake');
         setTimeout(() => gridEl.classList.remove('shake'), 400);
-        speakByZone('z2', 'อุ๊ย ชนขอบกำแพงแล้วจ้า!', 'Oops! Hit the wall!');
+        setTimeout(() => speakByZone('z2', 'อุ๊ย ชนขอบกำแพงแล้วจ้า!', 'Oops! Hit the wall!'), 250);
         return false;
       }
       if (rocks.some(k => k.r === nr && k.c === nc)) {
-        playSFX('rock');
+        if (playImmediateSound) playSFX('rock');
         gridEl.classList.add('shake');
         setTimeout(() => gridEl.classList.remove('shake'), 400);
-        speakByZone('z2', `อุ๊ย ชน${currentStory.obsTh}!`, `Oops! Hit the ${currentStory.obsEn}!`);
+        setTimeout(() => speakByZone('z2', `อุ๊ย ชน${currentStory.obsTh}!`, `Oops! Hit the ${currentStory.obsEn}!`), 250);
         return false;
       }
 
-      // Play story-specific movement sound effect on every step!
-      playAdventureMoveSFX(currentStory.id);
+      if (playImmediateSound) playAdventureMoveSFX(currentStory.id);
       playerPos = { r: nr, c: nc };
       renderMaze();
 
       if (playerPos.r === goalPos.r && playerPos.c === goalPos.c) {
-        playAdventureWinSFX(currentStory.id);
+        if (playImmediateSound) playAdventureWinSFX(currentStory.id);
         addStar(z2GridSize === 6 ? 2 : 1);
         setTimeout(() => {
           speakByZone('z2',
             `เย้! พา${currentStory.actorTh}ไปถึง${currentStory.goalTh}สำเร็จแล้ว!`,
             `Awesome! The ${currentStory.actorEn} found the ${currentStory.goalEn}!`
           );
-        }, 250);
-        setTimeout(initZone2, 1400);
+        }, 380);
+        setTimeout(() => initZone2(true), 1600);
         return 'WIN';
       }
       return true;
     }
 
+    // Hardware-Scheduled Coding Queue Runner (Guarantees sound on every step on Huawei P30 & iPhone!)
     function runCodeQueue() {
       if (!codeQueue.length || isRunningQueue) return;
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      unlockMobileAudio();
+
+      const ctx = getAudioCtx();
       isRunningQueue = true;
       playerPos = { r: 0, c: 0 };
       renderMaze();
-      let i = 0;
-      const timer = setInterval(() => {
-        if (i >= codeQueue.length) {
-          clearInterval(timer);
-          isRunningQueue = false;
-          updateQueueUI(-1);
-          return;
+
+      const stepIntervalMs = 460;
+      const stepIntervalSec = stepIntervalMs / 1000;
+
+      // 1. Pre-simulate the path right inside the user tap gesture so we can pre-schedule WebAudio hardware clock!
+      let simR = 0, simC = 0;
+      let simSteps = [];
+      for (let i = 0; i < codeQueue.length; i++) {
+        const dir = codeQueue[i];
+        let nr = simR, nc = simC;
+        if (dir === 'UP') nr--;
+        if (dir === 'DOWN') nr++;
+        if (dir === 'LEFT') nc--;
+        if (dir === 'RIGHT') nc++;
+
+        if (nr < 0 || nr >= z2GridSize || nc < 0 || nc >= z2GridSize) {
+          simSteps.push({ dir, outcome: 'WALL' });
+          break;
+        } else if (rocks.some(k => k.r === nr && k.c === nc)) {
+          simSteps.push({ dir, outcome: 'ROCK' });
+          break;
+        } else {
+          simR = nr;
+          simC = nc;
+          const isGoal = (simR === goalPos.r && simC === goalPos.c);
+          simSteps.push({ dir, outcome: isGoal ? 'WIN' : 'STEP' });
+          if (isGoal) break;
         }
-        updateQueueUI(i);
-        const res = moveSingleStep(codeQueue[i]);
-        i++;
-        if (res === false || res === 'WIN') {
-          clearInterval(timer);
-          isRunningQueue = false;
-        }
-      }, 450);
+      }
+
+      // 2. Schedule all step sounds on the WebAudio hardware timeline immediately inside the tap event!
+      if (ctx) {
+        const baseTime = ctx.currentTime + 0.05;
+        simSteps.forEach((st, idx) => {
+          const t = baseTime + idx * stepIntervalSec;
+          if (st.outcome === 'STEP') {
+            playAdventureMoveSFX(currentStory.id, t);
+          } else if (st.outcome === 'WIN') {
+            playAdventureMoveSFX(currentStory.id, t);
+            playAdventureWinSFX(currentStory.id, t + 0.12);
+          } else if (st.outcome === 'WALL' || st.outcome === 'ROCK') {
+            playSFX(st.outcome === 'WALL' ? 'wall' : 'rock', t);
+          }
+        });
+      }
+
+      // 3. Synchronize visual movement on the grid with the pre-scheduled sounds
+      simSteps.forEach((st, idx) => {
+        const timerId = setTimeout(() => {
+          updateQueueUI(idx);
+          // Pass false so we don't double-trigger sound, or true as fallback
+          moveSingleStep(st.dir, false);
+          if (idx === simSteps.length - 1) {
+            isRunningQueue = false;
+          }
+        }, 50 + idx * stepIntervalMs);
+        queueTimers.push(timerId);
+      });
     }
 
-    // ======== ZONE 3: MINI MART ========
+    // ======== ZONE 3: MINI MART (WITH AUTO-FIT TEXT FOR HIDDEN PICTURES) ========
     let z3Category = 'thai';
     let z3Diff = 'easy';
     let z3ShowPic = true;
     let z3Answer = null;
 
     const thaiItems = [
-      { charOnly: 'ก', label: 'ก. ไก่', emoji: '🐔', speakTh: 'กอ ไก่', speakEn: 'Gor Gai, Chicken', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ขันตอนเช้า เอกอีเอ้กเอ้ก?', riddleEn: 'Which Thai letter is for a chicken that crows in the morning?' },
-      { charOnly: 'ข', label: 'ข. ไข่', emoji: '🥚', speakTh: 'ขอ ไข่', speakEn: 'Khor Khai, Egg', riddleTh: 'พยัญชนะตัวอะไรเอ่ย แม่ไก่ฟักออกมาเป็นฟองกลมๆ?', riddleEn: 'Which Thai letter is for an oval egg?' },
-      { charOnly: 'ช', label: 'ช. ช้าง', emoji: '🐘', speakTh: 'ชอ ช้าง', speakEn: 'Chor Chang, Elephant', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ตัวใหญ่มีงวงยาวๆ?', riddleEn: 'Which Thai letter is for a big animal with a long trunk?' },
-      { charOnly: 'ต', label: 'ต. เต่า', emoji: '🐢', speakTh: 'ตอ เต่า', speakEn: 'Tor Tao, Turtle', riddleTh: 'พยัญชนะตัวอะไรเอ่ย เดินช้าๆ มีกระดองแข็ง?', riddleEn: 'Which Thai letter is for a slow animal with a hard shell?' },
-      { charOnly: 'ป', label: 'ป. ปลา', emoji: '🐟', speakTh: 'ปอ ปลา', speakEn: 'Por Pla, Fish', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ว่ายอยู่ในน้ำ มีครีบมีหาง?', riddleEn: 'Which Thai letter is for an animal that swims in water?' },
-      { charOnly: 'ผ', label: 'ผ. ผึ้ง', emoji: '🐝', speakTh: 'ผอ ผึ้ง', speakEn: 'Phor Phueng, Bee', riddleTh: 'พยัญชนะตัวอะไรเอ่ย บินหึ่งๆ ทำรังมีน้ำหวาน?', riddleEn: 'Which Thai letter is for a buzzing bee that makes honey?' },
-      { charOnly: 'ม', label: 'ม. ม้า', emoji: '🐴', speakTh: 'มอ ม้า', speakEn: 'Mor Ma, Horse', riddleTh: 'พยัญชนะตัวอะไรเอ่ย วิ่งเร็วคึกคัก กั๊บๆ?', riddleEn: 'Which Thai letter is for a fast galloping horse?' },
-      { charOnly: 'ล', label: 'ล. ลิง', emoji: '🐵', speakTh: 'ลอ ลิง', speakEn: 'Lor Ling, Monkey', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ชอบห้อยโหนและกินกล้วย?', riddleEn: 'Which Thai letter is for a monkey that loves bananas?' },
-      { charOnly: 'ส', label: 'ส. เสือ', emoji: '🐯', speakTh: 'สอ เสือ', speakEn: 'Sor Suea, Tiger', riddleTh: 'พยัญชนะตัวอะไรเอ่ย เป็นสัตว์ป่ามีลายพาดกลอน?', riddleEn: 'Which Thai letter is for a striped tiger?' },
-      { charOnly: 'ฮ', label: 'ฮ. นกฮูก', emoji: '🦉', speakTh: 'ฮอ นกฮูก', speakEn: 'Hor Nok-Hook, Owl', riddleTh: 'พยัญชนะตัวสุดท้าย ตาโต๊โต ออกหากินกลางคืน?', riddleEn: 'Which last Thai letter is for a big-eyed night owl?' }
+      { charOnly: 'ก', isWord: false, label: 'ก. ไก่', emoji: '🐔', speakTh: 'กอ ไก่', speakEn: 'Gor Gai, Chicken', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ขันตอนเช้า เอกอีเอ้กเอ้ก?', riddleEn: 'Which Thai letter is for a chicken that crows in the morning?' },
+      { charOnly: 'ข', isWord: false, label: 'ข. ไข่', emoji: '🥚', speakTh: 'ขอ ไข่', speakEn: 'Khor Khai, Egg', riddleTh: 'พยัญชนะตัวอะไรเอ่ย แม่ไก่ฟักออกมาเป็นฟองกลมๆ?', riddleEn: 'Which Thai letter is for an oval egg?' },
+      { charOnly: 'ช', isWord: false, label: 'ช. ช้าง', emoji: '🐘', speakTh: 'ชอ ช้าง', speakEn: 'Chor Chang, Elephant', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ตัวใหญ่มีงวงยาวๆ?', riddleEn: 'Which Thai letter is for a big animal with a long trunk?' },
+      { charOnly: 'ต', isWord: false, label: 'ต. เต่า', emoji: '🐢', speakTh: 'ตอ เต่า', speakEn: 'Tor Tao, Turtle', riddleTh: 'พยัญชนะตัวอะไรเอ่ย เดินช้าๆ มีกระดองแข็ง?', riddleEn: 'Which Thai letter is for a slow animal with a hard shell?' },
+      { charOnly: 'ป', isWord: false, label: 'ป. ปลา', emoji: '🐟', speakTh: 'ปอ ปลา', speakEn: 'Por Pla, Fish', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ว่ายอยู่ในน้ำ มีครีบมีหาง?', riddleEn: 'Which Thai letter is for an animal that swims in water?' },
+      { charOnly: 'ผ', isWord: false, label: 'ผ. ผึ้ง', emoji: '🐝', speakTh: 'ผอ ผึ้ง', speakEn: 'Phor Phueng, Bee', riddleTh: 'พยัญชนะตัวอะไรเอ่ย บินหึ่งๆ ทำรังมีน้ำหวาน?', riddleEn: 'Which Thai letter is for a buzzing bee that makes honey?' },
+      { charOnly: 'ม', isWord: false, label: 'ม. ม้า', emoji: '🐴', speakTh: 'มอ ม้า', speakEn: 'Mor Ma, Horse', riddleTh: 'พยัญชนะตัวอะไรเอ่ย วิ่งเร็วคึกคัก กั๊บๆ?', riddleEn: 'Which Thai letter is for a fast galloping horse?' },
+      { charOnly: 'ล', isWord: false, label: 'ล. ลิง', emoji: '🐵', speakTh: 'ลอ ลิง', speakEn: 'Lor Ling, Monkey', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ชอบห้อยโหนและกินกล้วย?', riddleEn: 'Which Thai letter is for a monkey that loves bananas?' },
+      { charOnly: 'ส', isWord: false, label: 'ส. เสือ', emoji: '🐯', speakTh: 'สอ เสือ', speakEn: 'Sor Suea, Tiger', riddleTh: 'พยัญชนะตัวอะไรเอ่ย เป็นสัตว์ป่ามีลายพาดกลอน?', riddleEn: 'Which Thai letter is for a striped tiger?' },
+      { charOnly: 'ฮ', isWord: false, label: 'ฮ. นกฮูก', emoji: '🦉', speakTh: 'ฮอ นกฮูก', speakEn: 'Hor Nok-Hook, Owl', riddleTh: 'พยัญชนะตัวสุดท้าย ตาโต๊โต ออกหากินกลางคืน?', riddleEn: 'Which last Thai letter is for a big-eyed night owl?' }
     ];
 
     const engItems = [
-      { charOnly: 'Apple', label: 'Apple', emoji: '🍎', speakTh: 'แอปเปิล', speakEn: 'Apple', riddleTh: 'ผลไม้อะไรเอ่ย สีแดงกรอบอร่อย?', riddleEn: 'What fruit is red and crunchy?' },
-      { charOnly: 'Banana', label: 'Banana', emoji: '🍌', speakTh: 'กล้วยหอม', speakEn: 'Banana', riddleTh: 'ผลไม้อะไรเอ่ย สีเหลืองที่ลิงชอบกิน?', riddleEn: 'What fruit is yellow and monkeys love to eat?' },
-      { charOnly: 'Orange', label: 'Orange', emoji: '🍊', speakTh: 'ส้ม', speakEn: 'Orange', riddleTh: 'ผลไม้กลมๆ สีส้ม รสเปรี้ยวอมหวานคืออะไรเอ่ย?', riddleEn: 'What round fruit is orange and juicy?' },
-      { charOnly: 'Milk', label: 'Milk', emoji: '🥛', speakTh: 'นมสด', speakEn: 'Milk', riddleTh: 'เครื่องดื่มสีขาวมีประโยชน์ได้จากแม่วัวคืออะไรเอ่ย?', riddleEn: 'What white drink comes from a cow?' },
-      { charOnly: 'Bread', label: 'Bread', emoji: '🍞', speakTh: 'ขนมปัง', speakEn: 'Bread', riddleTh: 'อาหารนุ่มๆ ที่เรานำมาปิ้งทาแยมตอนเช้าคืออะไรเอ่ย?', riddleEn: 'What soft food do we toast for breakfast?' },
-      { charOnly: 'Carrot', label: 'Carrot', emoji: '🥕', speakTh: 'แครอท', speakEn: 'Carrot', riddleTh: 'ผักสีส้มของโปรดเจ้ากระต่ายคืออะไรเอ่ย?', riddleEn: 'What orange vegetable do rabbits love?' },
-      { charOnly: 'Watermelon', label: 'Watermelon', emoji: '🍉', speakTh: 'แตงโม', speakEn: 'Watermelon', riddleTh: 'ผลไม้ลูกใหญ่ เปลือกสีเขียว ข้างในสีแดงฉ่ำน้ำ?', riddleEn: 'What big fruit is green outside and red inside?' },
-      { charOnly: 'Grapes', label: 'Grapes', emoji: '🍇', speakTh: 'องุ่น', speakEn: 'Grapes', riddleTh: 'ผลไม้ลูกเล็กๆ สีม่วง อยู่รวมกันเป็นพวง?', riddleEn: 'What small purple fruit grows in a bunch?' },
-      { charOnly: 'Cheese', label: 'Cheese', emoji: '🧀', speakTh: 'ชีส', speakEn: 'Cheese', riddleTh: 'อาหารสีเหลืองของโปรดเจ้าหนูตัวน้อย?', riddleEn: 'What yellow food do little mice love?' }
+      { charOnly: 'A - Apple', isWord: true, label: 'Apple', emoji: '🍎', speakTh: 'แอปเปิล', speakEn: 'Apple', riddleTh: 'ผลไม้อะไรเอ่ย สีแดงกรอบอร่อย?', riddleEn: 'What fruit is red and crunchy?' },
+      { charOnly: 'B - Banana', isWord: true, label: 'Banana', emoji: '🍌', speakTh: 'กล้วยหอม', speakEn: 'Banana', riddleTh: 'ผลไม้อะไรเอ่ย สีเหลืองที่ลิงชอบกิน?', riddleEn: 'What fruit is yellow and monkeys love to eat?' },
+      { charOnly: 'O - Orange', isWord: true, label: 'Orange', emoji: '🍊', speakTh: 'ส้ม', speakEn: 'Orange', riddleTh: 'ผลไม้กลมๆ สีส้ม รสเปรี้ยวอมหวานคืออะไรเอ่ย?', riddleEn: 'What round fruit is orange and juicy?' },
+      { charOnly: 'M - Milk', isWord: true, label: 'Milk', emoji: '🥛', speakTh: 'นมสด', speakEn: 'Milk', riddleTh: 'เครื่องดื่มสีขาวมีประโยชน์ได้จากแม่วัวคืออะไรเอ่ย?', riddleEn: 'What white drink comes from a cow?' },
+      { charOnly: 'B - Bread', isWord: true, label: 'Bread', emoji: '🍞', speakTh: 'ขนมปัง', speakEn: 'Bread', riddleTh: 'อาหารนุ่มๆ ที่เรานำมาปิ้งทาแยมตอนเช้าคืออะไรเอ่ย?', riddleEn: 'What soft food do we toast for breakfast?' },
+      { charOnly: 'C - Carrot', isWord: true, label: 'Carrot', emoji: '🥕', speakTh: 'แครอท', speakEn: 'Carrot', riddleTh: 'ผักสีส้มของโปรดเจ้ากระต่ายคืออะไรเอ่ย?', riddleEn: 'What orange vegetable do rabbits love?' },
+      { charOnly: 'W - Watermelon', isWord: true, label: 'Watermelon', emoji: '🍉', speakTh: 'แตงโม', speakEn: 'Watermelon', riddleTh: 'ผลไม้ลูกใหญ่ เปลือกสีเขียว ข้างในสีแดงฉ่ำน้ำ?', riddleEn: 'What big fruit is green outside and red inside?' },
+      { charOnly: 'G - Grapes', isWord: true, label: 'Grapes', emoji: '🍇', speakTh: 'องุ่น', speakEn: 'Grapes', riddleTh: 'ผลไม้ลูกเล็กๆ สีม่วง อยู่รวมกันเป็นพวง?', riddleEn: 'What small purple fruit grows in a bunch?' },
+      { charOnly: 'C - Cheese', isWord: true, label: 'Cheese', emoji: '🧀', speakTh: 'ชีส', speakEn: 'Cheese', riddleTh: 'อาหารสีเหลืองของโปรดเจ้าหนูตัวน้อย?', riddleEn: 'What yellow food do little mice love?' }
     ];
 
     function setZ3Category(cat) {
@@ -1537,10 +1634,19 @@
         if (z3ShowPic) {
           card.innerHTML = `<div class="mart-emoji">${item.emoji}</div><div class="mart-label">${item.label}</div>`;
         } else {
-          card.innerHTML = `
-            <div class="mart-big-char">${item.charOnly}</div>
-            <div class="mart-sub-hint">แตะเพื่อเลือกตัวอักษรนี้</div>
-          `;
+          // Responsive styling: Giant font for single Thai consonant, auto-scaled badge for English words
+          if (!item.isWord) {
+            card.innerHTML = `
+              <div class="mart-big-char">${item.charOnly}</div>
+              <div class="mart-sub-hint">แตะเลือกพยัญชนะ</div>
+            `;
+          } else {
+            const isLong = item.charOnly.length > 9;
+            card.innerHTML = `
+              <div class="mart-big-word ${isLong ? 'long-word' : ''}">${item.charOnly}</div>
+              <div class="mart-sub-hint">แตะเลือกคำศัพท์</div>
+            `;
+          }
         }
 
         card.onclick = () => {
@@ -1566,7 +1672,7 @@
     function speakZ3() {
       if (!z3Answer) return;
       if (z3Diff === 'easy') {
-        speakByZone('z3', `หาตัวอักษร ${z3Answer.speakTh} ให้หน่อยจ้า`, `Find ${z3Answer.speakEn}`);
+        speakByZone('z3', `หาคำว่า ${z3Answer.speakTh} ให้หน่อยจ้า`, `Find ${z3Answer.speakEn}`);
       } else {
         speakByZone('z3', z3Answer.riddleTh, z3Answer.riddleEn);
       }
@@ -2070,4 +2176,3 @@
   </script>
 </body>
 </html>
-
