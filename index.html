@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>My Little Smart Town V4 - เมืองจำลองของหนู</title>
+  <title>My Little Smart Town V5 - เมืองจำลองของหนู</title>
   <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -271,14 +271,17 @@
       align-items: center;
       justify-content: center;
       font-size: 30px;
-      transition: transform 0.15s;
     }
     .maze-cell.player-cell {
       background: #ffeaa7;
-      border: 2px solid #fdcb6e;
-      animation: bounceChar 0.6s infinite alternate;
+      border: 3px solid #f39c12;
+      animation: hopMove 0.28s ease-out;
     }
-    @keyframes bounceChar { from { transform: translateY(0); } to { transform: translateY(-3px); } }
+    @keyframes hopMove {
+      0% { transform: scale(0.75) translateY(6px); }
+      60% { transform: scale(1.18) translateY(-6px); }
+      100% { transform: scale(1) translateY(0); }
+    }
     .queue-box {
       min-height: 44px;
       background: rgba(255,255,255,0.85);
@@ -568,7 +571,7 @@
       <div class="zone-card zone-2" onclick="openZone(2)">
         <div class="zone-emoji">🚀</div>
         <div class="zone-name">2. สวนผจญภัย</div>
-        <div class="zone-tag">Coding 5 เรื่องราว + เอฟเฟกต์เสียง (<span id="hubLang2">EN</span>)</div>
+        <div class="zone-tag">Coding 5 เรื่องราว + เสียงเดินสมจริง (<span id="hubLang2">EN</span>)</div>
       </div>
 
       <div class="zone-card zone-3" onclick="openZone(3)">
@@ -599,16 +602,15 @@
     <div class="toy-box" id="toyBoxStatus">📦 กล่องเก็บของเล่น (แตะที่ของเล่นเพื่อเก็บลงกล่อง)</div>
   </div>
 
-  <!-- ZONE 2: GARDEN MAZE (Multi-story + SFX) -->
+  <!-- ZONE 2: GARDEN MAZE (Multi-story + Character Movement SFX) -->
   <div id="zone2" class="screen">
-    <!-- Story Theme Selector -->
     <div class="mode-bar">
       <button class="pill-btn pill-sub active" id="z2StoryRandom" onclick="setZ2Story('random')">🎲 สุ่มเรื่องราว</button>
-      <button class="pill-btn pill-sub" id="z2StoryPuppy" onclick="setZ2Story('puppy')">🐶 ลูกหมา</button>
-      <button class="pill-btn pill-sub" id="z2StoryBunny" onclick="setZ2Story('bunny')">🐰 กระต่าย</button>
-      <button class="pill-btn pill-sub" id="z2StoryRocket" onclick="setZ2Story('rocket')">🚀 จรวดอวกาศ</button>
-      <button class="pill-btn pill-sub" id="z2StoryBee" onclick="setZ2Story('bee')">🐝 ผึ้งน้อย</button>
-      <button class="pill-btn pill-sub" id="z2StoryFire" onclick="setZ2Story('firetruck')">🚒 รถดับเพลิง</button>
+      <button class="pill-btn pill-sub" id="z2StoryPuppy" onclick="setZ2Story('puppy')">🐶 ลูกหมา (ต๊อกแต๊ก)</button>
+      <button class="pill-btn pill-sub" id="z2StoryBunny" onclick="setZ2Story('bunny')">🐰 กระต่าย (ดึ๋งๆ)</button>
+      <button class="pill-btn pill-sub" id="z2StoryRocket" onclick="setZ2Story('rocket')">🚀 จรวด (ฟู่ๆ)</button>
+      <button class="pill-btn pill-sub" id="z2StoryBee" onclick="setZ2Story('bee')">🐝 ผึ้งน้อย (หึ่งๆ)</button>
+      <button class="pill-btn pill-sub" id="z2StoryFire" onclick="setZ2Story('firetruck')">🚒 รถดับเพลิง (หวอๆ)</button>
     </div>
     <div class="mode-bar">
       <button class="pill-btn active" id="z2Size4" onclick="setZ2Grid(4)">🟢 4x4 (ง่าย)</button>
@@ -633,7 +635,7 @@
     </div>
   </div>
 
-  <!-- ZONE 3: MINI MART (With Show/Hide Picture Toggle) -->
+  <!-- ZONE 3: MINI MART -->
   <div id="zone3" class="screen">
     <div class="mode-bar">
       <button class="pill-btn active" id="z3CatThai" onclick="setZ3Category('thai')">🇹🇭 พยัญชนะ ก-ฮ</button>
@@ -698,7 +700,7 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL (With Per-Game Language Controls) -->
+  <!-- SETTINGS MODAL -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-card">
       <h2 style="margin-top:0;">⚙️ ตั้งค่าสำหรับคุณพ่อคุณแม่</h2>
@@ -761,7 +763,7 @@
   </div>
 
   <script>
-    // ======== WEB AUDIO SYNTHESIZER (SOUND EFFECTS) ========
+    // ======== WEB AUDIO SYNTHESIZER (CHARACTER-SPECIFIC SFX) ========
     let audioCtx = null;
     function getAudioCtx() {
       if (!audioCtx) {
@@ -772,13 +774,162 @@
       return audioCtx;
     }
 
+    // Helper to create white noise burst (for rocket thruster, water spray, etc.)
+    function playNoiseBurst(duration, filterFreq = 1000, volume = 0.25) {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const bufferSize = ctx.sampleRate * duration;
+      const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+      const noise = ctx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'bandpass';
+      filter.frequency.setValueAtTime(filterFreq, ctx.currentTime);
+      filter.frequency.exponentialRampToValueAtTime(filterFreq * 0.4, ctx.currentTime + duration);
+
+      const gain = ctx.createGain();
+      gain.gain.setValueAtTime(volume, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(ctx.destination);
+      noise.start();
+    }
+
+    // Play character-specific movement sound when moving on the grid!
+    function playAdventureMoveSFX(storyId) {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+
+      if (storyId === 'puppy') {
+        // 🐶 ลูกหมาเดิน: เสียงฝีเท้า "ต๊อก-แต๊ก!" (Double woodblock tap)
+        [0, 0.085].forEach((offset, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          const baseFreq = i === 0 ? 720 : 920; // ต๊อก (ต่ำ) - แต๊ก (สูง)
+          osc.frequency.setValueAtTime(baseFreq, now + offset);
+          osc.frequency.exponentialRampToValueAtTime(220, now + offset + 0.055);
+          gain.gain.setValueAtTime(0.35, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + offset + 0.06);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.065);
+        });
+      } else if (storyId === 'bunny') {
+        // 🐰 กระต่ายกระโดด: เสียงสปริง "ดึ๋ง!" (Cartoon Boing)
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(240, now);
+        osc.frequency.exponentialRampToValueAtTime(680, now + 0.14);
+        osc.frequency.exponentialRampToValueAtTime(520, now + 0.22);
+        gain.gain.setValueAtTime(0.32, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.23);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.24);
+      } else if (storyId === 'rocket') {
+        // 🚀 จรวดอวกาศ: เสียงไอพ่น "ฟู่-วูบ!" (Thruster Whoosh + Sci-fi sweep)
+        playNoiseBurst(0.22, 1400, 0.3);
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.exponentialRampToValueAtTime(540, now + 0.18);
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.2);
+      } else if (storyId === 'bee') {
+        // 🐝 ผึ้งน้อยบิน: เสียงกระพือปีก "หึ่งงง~" (Vibrato Buzz)
+        const osc = ctx.createOscillator();
+        const lfo = ctx.createOscillator();
+        const lfoGain = ctx.createGain();
+        const gain = ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(290, now);
+
+        lfo.frequency.setValueAtTime(38, now); // Fast wing flutter
+        lfoGain.gain.setValueAtTime(45, now);
+        lfo.connect(lfoGain);
+        lfoGain.connect(osc.frequency);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        lfo.start(now);
+        osc.stop(now + 0.21);
+        lfo.stop(now + 0.21);
+      } else if (storyId === 'firetruck') {
+        // 🚒 รถดับเพลิง: เสียงเครื่องยนต์ + ไซเรนสั้น "บรื้น-หวอ!" (Engine + Two-tone siren)
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(580, now);
+        osc.frequency.setValueAtTime(780, now + 0.09);
+        gain.gain.setValueAtTime(0.16, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.21);
+      } else {
+        playSFX('step');
+      }
+    }
+
+    // Play character-specific celebration sound on reaching goal
+    function playAdventureWinSFX(storyId) {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+
+      if (storyId === 'puppy') {
+        // เสียงลูกหมาเห่าดีใจ "โฮ่ง-โฮ่ง!" 2 ครั้ง
+        [0, 0.16].forEach(offset => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(320, now + offset);
+          osc.frequency.exponentialRampToValueAtTime(520, now + offset + 0.05);
+          osc.frequency.exponentialRampToValueAtTime(180, now + offset + 0.12);
+          gain.gain.setValueAtTime(0.28, now + offset);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + offset + 0.13);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + offset);
+          osc.stop(now + offset + 0.14);
+        });
+      } else if (storyId === 'firetruck') {
+        // เสียงฉีดน้ำดับไฟ "ฟู่!"
+        playNoiseBurst(0.35, 1800, 0.3);
+      }
+      // ตามด้วยเสียงแฟนแฟร์ชัยชนะ
+      setTimeout(() => playSFX('win'), 150);
+    }
+
     function playSFX(type) {
       const ctx = getAudioCtx();
       if (!ctx) return;
       const now = ctx.currentTime;
 
       if (type === 'step') {
-        // Cute pop footstep sound
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
@@ -791,32 +942,32 @@
         osc.start(now);
         osc.stop(now + 0.1);
       } else if (type === 'queue') {
-        // Crisp button click beep
+        // เสียงกดเรียงปุ่มลูกศร "ติ๊ด!"
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(660, now);
-        gain.gain.setValueAtTime(0.18, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+        osc.frequency.setValueAtTime(700, now);
+        osc.frequency.exponentialRampToValueAtTime(920, now + 0.06);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.07);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.06);
+        osc.stop(now + 0.07);
       } else if (type === 'wall' || type === 'rock') {
-        // Low comic boing/thud for hitting obstacle or wall
+        // เสียงชนกำแพง/ชนหิน "ตึง-แป่วว~"
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(160, now);
-        osc.frequency.linearRampToValueAtTime(75, now + 0.25);
-        gain.gain.setValueAtTime(0.25, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.26);
+        osc.frequency.setValueAtTime(190, now);
+        osc.frequency.linearRampToValueAtTime(65, now + 0.28);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start(now);
-        osc.stop(now + 0.26);
+        osc.stop(now + 0.3);
       } else if (type === 'win') {
-        // Cheerful 4-note fanfare arpeggio
         const notes = [523.25, 659.25, 783.99, 1046.5];
         notes.forEach((freq, idx) => {
           const osc = ctx.createOscillator();
@@ -865,7 +1016,6 @@
       document.getElementById('starText').textContent = `⭐ ${appState.stars} / ${appState.starGoal} ดาว`;
       document.getElementById('couponTextDisplay').textContent = appState.couponText;
 
-      // Update Hub Language Labels
       ['z1', 'z2', 'z3', 'z4'].forEach((z, idx) => {
         const el = document.getElementById('hubLang' + (idx + 1));
         if (el) el.textContent = appState.langs[z] === 'en' ? 'เสียง EN' : 'เสียง TH';
@@ -1051,7 +1201,7 @@
       }
     }
 
-    // ======== ZONE 2: GARDEN MAZE (5 Story Themes + Web Audio SFX) ========
+    // ======== ZONE 2: GARDEN MAZE (5 Story Themes + Custom Character Movement SFX) ========
     let z2GridSize = 4;
     let z2Control = 'step';
     let z2StoryMode = 'random';
@@ -1060,6 +1210,7 @@
     let goalPos = { r: 3, c: 3 };
     let rocks = [];
     let codeQueue = [];
+    let isRunningQueue = false;
 
     const mazeStories = {
       puppy: {
@@ -1107,6 +1258,8 @@
       document.getElementById('z2StoryRocket').classList.toggle('active', storyKey === 'rocket');
       document.getElementById('z2StoryBee').classList.toggle('active', storyKey === 'bee');
       document.getElementById('z2StoryFire').classList.toggle('active', storyKey === 'firetruck');
+      // Play a preview of that character's sound when selected!
+      if (storyKey !== 'random') playAdventureMoveSFX(storyKey);
       initZone2();
     }
 
@@ -1129,6 +1282,7 @@
     }
 
     function initZone2() {
+      isRunningQueue = false;
       playerPos = { r: 0, c: 0 };
       goalPos = { r: z2GridSize - 1, c: z2GridSize - 1 };
       codeQueue = [];
@@ -1205,6 +1359,7 @@
     }
 
     function handleMazeInput(dir) {
+      if (isRunningQueue) return;
       if (z2Control === 'step') {
         moveSingleStep(dir);
       } else {
@@ -1214,13 +1369,23 @@
       }
     }
 
-    function updateQueueUI() {
+    function updateQueueUI(activeIndex = -1) {
       const icons = { UP: '⬆️', DOWN: '⬇️', LEFT: '⬅️', RIGHT: '➡️' };
       const box = document.getElementById('codeQueueBox');
-      box.textContent = codeQueue.length ? codeQueue.map(d => icons[d]).join(' ') : 'กดลูกศรเพื่อเรียงคำสั่ง แล้วกด GO!';
+      if (!codeQueue.length) {
+        box.textContent = 'กดลูกศรเพื่อเรียงคำสั่ง แล้วกด GO!';
+        return;
+      }
+      box.innerHTML = codeQueue.map((d, idx) => {
+        const highlight = idx === activeIndex
+          ? 'background:#ffeaa7; border:2px solid #e17055; border-radius:8px; padding:2px 6px; transform:scale(1.2);'
+          : 'padding:2px 4px;';
+        return `<span style="${highlight}">${icons[d]}</span>`;
+      }).join('');
     }
 
     function clearCodeQueue() {
+      if (isRunningQueue) return;
       playSFX('queue');
       codeQueue = [];
       playerPos = { r: 0, c: 0 };
@@ -1252,40 +1417,50 @@
         return false;
       }
 
-      playSFX('step');
+      // Play story-specific movement sound effect on every step!
+      playAdventureMoveSFX(currentStory.id);
       playerPos = { r: nr, c: nc };
       renderMaze();
 
       if (playerPos.r === goalPos.r && playerPos.c === goalPos.c) {
-        playSFX('win');
+        playAdventureWinSFX(currentStory.id);
         addStar(z2GridSize === 6 ? 2 : 1);
-        speakByZone('z2',
-          `เย้! พา${currentStory.actorTh}ไปถึง${currentStory.goalTh}สำเร็จแล้ว!`,
-          `Awesome! The ${currentStory.actorEn} found the ${currentStory.goalEn}!`
-        );
-        setTimeout(initZone2, 1100);
+        setTimeout(() => {
+          speakByZone('z2',
+            `เย้! พา${currentStory.actorTh}ไปถึง${currentStory.goalTh}สำเร็จแล้ว!`,
+            `Awesome! The ${currentStory.actorEn} found the ${currentStory.goalEn}!`
+          );
+        }, 250);
+        setTimeout(initZone2, 1400);
         return 'WIN';
       }
       return true;
     }
 
     function runCodeQueue() {
-      if (!codeQueue.length) return;
+      if (!codeQueue.length || isRunningQueue) return;
+      isRunningQueue = true;
       playerPos = { r: 0, c: 0 };
       renderMaze();
       let i = 0;
       const timer = setInterval(() => {
         if (i >= codeQueue.length) {
           clearInterval(timer);
+          isRunningQueue = false;
+          updateQueueUI(-1);
           return;
         }
+        updateQueueUI(i);
         const res = moveSingleStep(codeQueue[i]);
         i++;
-        if (res === false || res === 'WIN') clearInterval(timer);
-      }, 420);
+        if (res === false || res === 'WIN') {
+          clearInterval(timer);
+          isRunningQueue = false;
+        }
+      }, 450);
     }
 
-    // ======== ZONE 3: MINI MART (With Picture Show/Hide Toggle) ========
+    // ======== ZONE 3: MINI MART ========
     let z3Category = 'thai';
     let z3Diff = 'easy';
     let z3ShowPic = true;
@@ -1362,7 +1537,6 @@
         if (z3ShowPic) {
           card.innerHTML = `<div class="mart-emoji">${item.emoji}</div><div class="mart-label">${item.label}</div>`;
         } else {
-          // Picture hidden! Show giant consonant/word so child reads the letter directly
           card.innerHTML = `
             <div class="mart-big-char">${item.charOnly}</div>
             <div class="mart-sub-hint">แตะเพื่อเลือกตัวอักษรนี้</div>
@@ -1372,7 +1546,6 @@
         card.onclick = () => {
           if (item.label === z3Answer.label) {
             playSFX('win');
-            // Reveal picture on success even if in hidden-picture mode!
             card.style.background = '#d4fc79';
             card.innerHTML = `<div class="mart-emoji">${item.emoji}</div><div class="mart-label">${item.label}</div>`;
             addStar((z3Diff === 'hard' ? 2 : 1) + (z3ShowPic ? 0 : 1));
