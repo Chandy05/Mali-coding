@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>My Little Smart Town V3 - เมืองจำลองของหนู</title>
+  <title>My Little Smart Town V4 - เมืองจำลองของหนู</title>
   <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -166,6 +166,12 @@
       border-color: #00896f;
       box-shadow: 0 3px 0 #006266;
     }
+    .pill-warn.active {
+      background: #e17055;
+      color: #fff;
+      border-color: #d63031;
+      box-shadow: 0 3px 0 #b33939;
+    }
 
     /* Prompt Box */
     .prompt-box {
@@ -255,16 +261,24 @@
       padding: 10px;
       border-radius: 20px;
       border: 4px solid #00b894;
+      transition: background 0.3s, border-color 0.3s;
     }
     .maze-cell {
       aspect-ratio: 1;
-      background: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.88);
       border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 30px;
+      transition: transform 0.15s;
     }
+    .maze-cell.player-cell {
+      background: #ffeaa7;
+      border: 2px solid #fdcb6e;
+      animation: bounceChar 0.6s infinite alternate;
+    }
+    @keyframes bounceChar { from { transform: translateY(0); } to { transform: translateY(-3px); } }
     .queue-box {
       min-height: 44px;
       background: rgba(255,255,255,0.85);
@@ -319,14 +333,31 @@
     .mart-card {
       background: #fff;
       border-radius: 20px;
-      padding: 12px 8px;
+      padding: 14px 8px;
       border: 4px solid #dfe6e9;
       cursor: pointer;
       box-shadow: 0 5px 0 #b2bec3;
+      min-height: 112px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s, background 0.2s;
     }
     .mart-card:active { transform: translateY(3px); box-shadow: none; }
-    .mart-emoji { font-size: 42px; }
-    .mart-label { font-size: 20px; font-weight: 700; margin-top: 4px; }
+    .mart-emoji { font-size: 44px; line-height: 1.1; }
+    .mart-label { font-size: 20px; font-weight: 700; margin-top: 6px; color: #2d3436; }
+    .mart-big-char {
+      font-size: 46px;
+      font-weight: 700;
+      color: #6c5ce7;
+      line-height: 1.1;
+    }
+    .mart-sub-hint {
+      font-size: 13px;
+      color: #636e72;
+      margin-top: 4px;
+    }
 
     /* Game 4: Smart School & Interactive Worksheet Pattern */
     .worksheet-stage {
@@ -436,7 +467,7 @@
       height: 100%;
     }
 
-    /* Modals */
+    /* Modals & Settings */
     .modal-overlay {
       position: fixed;
       inset: 0;
@@ -445,18 +476,50 @@
       align-items: center;
       justify-content: center;
       z-index: 999;
-      padding: 16px;
+      padding: 14px;
+      overflow-y: auto;
     }
     .modal-overlay.show { display: flex; }
     .modal-card {
       background: #fff;
       border-radius: 28px;
-      padding: 24px;
-      max-width: 440px;
+      padding: 20px;
+      max-width: 480px;
       width: 100%;
       text-align: center;
       border: 5px solid #fdcb6e;
       box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+    .lang-setting-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f1f2f6;
+      padding: 8px 12px;
+      border-radius: 14px;
+      margin-bottom: 8px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .lang-toggle-group {
+      display: flex;
+      gap: 6px;
+    }
+    .lang-chip {
+      border: 2px solid #b2bec3;
+      background: #fff;
+      border-radius: 12px;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .lang-chip.active {
+      background: #0984e3;
+      color: #fff;
+      border-color: #0652DD;
     }
     .primary-btn {
       background: #00b894;
@@ -499,25 +562,25 @@
       <div class="zone-card zone-1" onclick="openZone(1)">
         <div class="zone-emoji">🧸</div>
         <div class="zone-name">1. ห้องของเล่น</div>
-        <div class="zone-tag">วินัย + นับเลข + สี (ง่าย/ยาก)</div>
+        <div class="zone-tag">วินัย + นับเลข + สี (<span id="hubLang1">EN</span>)</div>
       </div>
 
       <div class="zone-card zone-2" onclick="openZone(2)">
-        <div class="zone-emoji">🐶</div>
+        <div class="zone-emoji">🚀</div>
         <div class="zone-name">2. สวนผจญภัย</div>
-        <div class="zone-tag">Coding + อังกฤษ (4x4 ถึง 6x6)</div>
+        <div class="zone-tag">Coding 5 เรื่องราว + เอฟเฟกต์เสียง (<span id="hubLang2">EN</span>)</div>
       </div>
 
       <div class="zone-card zone-3" onclick="openZone(3)">
         <div class="zone-emoji">🛒</div>
         <div class="zone-name">3. ตลาดนัดหรรษา</div>
-        <div class="zone-tag">ก-ฮ + คำศัพท์ + ปริศนาคำใบ้</div>
+        <div class="zone-tag">ก-ฮ + คำศัพท์ + โหมดซ่อนภาพ (<span id="hubLang3">TH</span>)</div>
       </div>
 
       <div class="zone-card zone-4" onclick="openZone(4)">
         <div class="zone-emoji">🎨</div>
         <div class="zone-name">4. โรงเรียนฝึกสมอง</div>
-        <div class="zone-tag">อนุกรมรูปทรง/ยานพาหนะ + นิสัยดี + เลขหาย</div>
+        <div class="zone-tag">อนุกรมภาพ + นิสัยดี + เลขหาย (<span id="hubLang4">TH</span>)</div>
       </div>
     </div>
   </div>
@@ -536,19 +599,26 @@
     <div class="toy-box" id="toyBoxStatus">📦 กล่องเก็บของเล่น (แตะที่ของเล่นเพื่อเก็บลงกล่อง)</div>
   </div>
 
-  <!-- ZONE 2: GARDEN MAZE -->
+  <!-- ZONE 2: GARDEN MAZE (Multi-story + SFX) -->
   <div id="zone2" class="screen">
+    <!-- Story Theme Selector -->
     <div class="mode-bar">
-      <button class="pill-btn active" id="z2Size4" onclick="setZ2Grid(4)">🟢 4x4 (ง่าย)</button>
-      <button class="pill-btn" id="z2Size5" onclick="setZ2Grid(5)">🟡 5x5 (หินเยอะขึ้น)</button>
-      <button class="pill-btn" id="z2Size6" onclick="setZ2Grid(6)">🔴 6x6 (ท้าทาย)</button>
+      <button class="pill-btn pill-sub active" id="z2StoryRandom" onclick="setZ2Story('random')">🎲 สุ่มเรื่องราว</button>
+      <button class="pill-btn pill-sub" id="z2StoryPuppy" onclick="setZ2Story('puppy')">🐶 ลูกหมา</button>
+      <button class="pill-btn pill-sub" id="z2StoryBunny" onclick="setZ2Story('bunny')">🐰 กระต่าย</button>
+      <button class="pill-btn pill-sub" id="z2StoryRocket" onclick="setZ2Story('rocket')">🚀 จรวดอวกาศ</button>
+      <button class="pill-btn pill-sub" id="z2StoryBee" onclick="setZ2Story('bee')">🐝 ผึ้งน้อย</button>
+      <button class="pill-btn pill-sub" id="z2StoryFire" onclick="setZ2Story('firetruck')">🚒 รถดับเพลิง</button>
     </div>
     <div class="mode-bar">
-      <button class="pill-btn active" id="z2StepMode" onclick="setZ2Control('step')">👆 กดเดินทีละก้าว</button>
+      <button class="pill-btn active" id="z2Size4" onclick="setZ2Grid(4)">🟢 4x4 (ง่าย)</button>
+      <button class="pill-btn" id="z2Size5" onclick="setZ2Grid(5)">🟡 5x5 (กลาง)</button>
+      <button class="pill-btn" id="z2Size6" onclick="setZ2Grid(6)">🔴 6x6 (ยาก)</button>
+      <button class="pill-btn active" id="z2StepMode" onclick="setZ2Control('step')">👆 เดินทีละก้าว</button>
       <button class="pill-btn" id="z2CodeMode" onclick="setZ2Control('code')">🤖 เรียงคำสั่ง Coding</button>
     </div>
     <div class="prompt-box">
-      <div class="prompt-text" id="z2Prompt">พาลูกหมาเดินหลบก้อนหินไปหาเป้าหมาย!</div>
+      <div class="prompt-text" id="z2Prompt">พาตัวละครเดินหลบสิ่งกีดขวางไปหาเป้าหมาย!</div>
       <button class="speak-btn" onclick="speakZ2()">🔊</button>
     </div>
     <div class="maze-grid" id="mazeGrid"></div>
@@ -563,7 +633,7 @@
     </div>
   </div>
 
-  <!-- ZONE 3: MINI MART -->
+  <!-- ZONE 3: MINI MART (With Show/Hide Picture Toggle) -->
   <div id="zone3" class="screen">
     <div class="mode-bar">
       <button class="pill-btn active" id="z3CatThai" onclick="setZ3Category('thai')">🇹🇭 พยัญชนะ ก-ฮ</button>
@@ -572,7 +642,9 @@
     </div>
     <div class="mode-bar">
       <button class="pill-btn active" id="z3DiffEasy" onclick="setZ3Diff('easy')">🌱 ง่าย (6 ช่อง)</button>
-      <button class="pill-btn" id="z3DiffHard" onclick="setZ3Diff('hard')">🔥 ยาก (9 ช่อง + โจทย์คำใบ้)</button>
+      <button class="pill-btn" id="z3DiffHard" onclick="setZ3Diff('hard')">🔥 ยาก (9 ช่อง + คำใบ้)</button>
+      <button class="pill-btn pill-sub active" id="z3PicShow" onclick="setZ3ShowPic(true)">🖼️ แสดงรูปภาพ</button>
+      <button class="pill-btn pill-warn" id="z3PicHide" onclick="setZ3ShowPic(false)">🔤 ซ่อนรูป (ฝึกจำตัวอักษร)</button>
     </div>
     <div class="prompt-box">
       <div class="prompt-text" id="z3Prompt">เลือกของใส่ตะกร้าเลยจ้า</div>
@@ -581,7 +653,7 @@
     <div class="mart-grid" id="martGrid"></div>
   </div>
 
-  <!-- ZONE 4: SMART SCHOOL (Pattern Worksheets + Attitude + Missing Number) -->
+  <!-- ZONE 4: SMART SCHOOL -->
   <div id="zone4" class="screen">
     <div class="mode-bar">
       <button class="pill-btn active" id="z4ModePat" onclick="setZ4Mode('pattern')">🎨 อนุกรมภาพต่อเนื่อง</button>
@@ -589,7 +661,6 @@
       <button class="pill-btn" id="z4ModeNum" onclick="setZ4Mode('number')">🔢 เลขอะไรหายไป?</button>
     </div>
 
-    <!-- Sub-toolbar specifically for Pattern Mode -->
     <div id="z4PatternToolbar">
       <div class="mode-bar">
         <button class="pill-btn pill-sub active" id="patThemeMix" onclick="setPatTheme('mix')">🌈 รวมทุกหมวด</button>
@@ -627,23 +698,60 @@
     </div>
   </div>
 
-  <!-- SETTINGS MODAL -->
+  <!-- SETTINGS MODAL (With Per-Game Language Controls) -->
   <div class="modal-overlay" id="settingsModal">
     <div class="modal-card">
-      <h2>⚙️ ตั้งค่าสำหรับคุณพ่อคุณแม่</h2>
-      <div style="text-align:left; margin-bottom:12px;">
+      <h2 style="margin-top:0;">⚙️ ตั้งค่าสำหรับคุณพ่อคุณแม่</h2>
+
+      <div style="text-align:left; margin-bottom:14px; background:#dfe6e9; padding:12px; border-radius:18px;">
+        <div style="font-weight:700; margin-bottom:8px; font-size:16px;">🗣️ เลือกภาษาเสียงพูดในแต่ละเกม:</div>
+
+        <div class="lang-setting-row">
+          <span>1. ห้องของเล่น</span>
+          <div class="lang-toggle-group">
+            <button class="lang-chip" id="langBtn_z1_th" onclick="setZoneLang('z1','th')">🇹🇭 เสียงไทย</button>
+            <button class="lang-chip" id="langBtn_z1_en" onclick="setZoneLang('z1','en')">🇬🇧 เสียง Eng</button>
+          </div>
+        </div>
+
+        <div class="lang-setting-row">
+          <span>2. สวนผจญภัย (Coding)</span>
+          <div class="lang-toggle-group">
+            <button class="lang-chip" id="langBtn_z2_th" onclick="setZoneLang('z2','th')">🇹🇭 เสียงไทย</button>
+            <button class="lang-chip" id="langBtn_z2_en" onclick="setZoneLang('z2','en')">🇬🇧 เสียง Eng</button>
+          </div>
+        </div>
+
+        <div class="lang-setting-row">
+          <span>3. ตลาดนัดหรรษา</span>
+          <div class="lang-toggle-group">
+            <button class="lang-chip" id="langBtn_z3_th" onclick="setZoneLang('z3','th')">🇹🇭 เสียงไทย</button>
+            <button class="lang-chip" id="langBtn_z3_en" onclick="setZoneLang('z3','en')">🇬🇧 เสียง Eng</button>
+          </div>
+        </div>
+
+        <div class="lang-setting-row" style="margin-bottom:0;">
+          <span>4. โรงเรียนฝึกสมอง</span>
+          <div class="lang-toggle-group">
+            <button class="lang-chip" id="langBtn_z4_th" onclick="setZoneLang('z4','th')">🇹🇭 เสียงไทย</button>
+            <button class="lang-chip" id="langBtn_z4_en" onclick="setZoneLang('z4','en')">🇬🇧 เสียง Eng</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:left; margin-bottom:10px;">
         <label style="font-weight:700;">ชื่อของน้อง:</label>
-        <input type="text" id="inputChildName" style="width:100%; padding:10px; border-radius:12px; border:2px solid #b2bec3; font-size:16px; margin-top:4px;">
+        <input type="text" id="inputChildName" style="width:100%; padding:8px 10px; border-radius:12px; border:2px solid #b2bec3; font-size:16px; margin-top:4px;">
+      </div>
+      <div style="text-align:left; margin-bottom:10px;">
+        <label style="font-weight:700;">เป้าหมายดาวแลกรางวัล (ค่าเริ่มต้น 50 ดาว):</label>
+        <input type="number" id="inputStarGoal" style="width:100%; padding:8px 10px; border-radius:12px; border:2px solid #b2bec3; font-size:16px; margin-top:4px;">
       </div>
       <div style="text-align:left; margin-bottom:12px;">
-        <label style="font-weight:700;">เป้าหมายดาวแลกรางวัล (ค่าเริ่มต้น 50 ดาว):</label>
-        <input type="number" id="inputStarGoal" style="width:100%; padding:10px; border-radius:12px; border:2px solid #b2bec3; font-size:16px; margin-top:4px;">
-      </div>
-      <div style="text-align:left; margin-bottom:14px;">
         <label style="font-weight:700;">ข้อความคูปองรางวัลจริง:</label>
-        <input type="text" id="inputCouponText" style="width:100%; padding:10px; border-radius:12px; border:2px solid #b2bec3; font-size:16px; margin-top:4px;">
+        <input type="text" id="inputCouponText" style="width:100%; padding:8px 10px; border-radius:12px; border:2px solid #b2bec3; font-size:16px; margin-top:4px;">
       </div>
-      <div style="margin-bottom:14px;">
+      <div style="margin-bottom:12px;">
         <button class="pill-btn" onclick="adjustStars(5)">➕ เพิ่มให้ 5 ดาว</button>
         <button class="pill-btn" onclick="adjustStars(-5)">➖ ลด 5 ดาว</button>
       </div>
@@ -653,12 +761,91 @@
   </div>
 
   <script>
+    // ======== WEB AUDIO SYNTHESIZER (SOUND EFFECTS) ========
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) audioCtx = new AudioContext();
+      }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    function playSFX(type) {
+      const ctx = getAudioCtx();
+      if (!ctx) return;
+      const now = ctx.currentTime;
+
+      if (type === 'step') {
+        // Cute pop footstep sound
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320, now);
+        osc.frequency.exponentialRampToValueAtTime(580, now + 0.09);
+        gain.gain.setValueAtTime(0.22, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      } else if (type === 'queue') {
+        // Crisp button click beep
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(660, now);
+        gain.gain.setValueAtTime(0.18, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.06);
+      } else if (type === 'wall' || type === 'rock') {
+        // Low comic boing/thud for hitting obstacle or wall
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.linearRampToValueAtTime(75, now + 0.25);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.26);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.26);
+      } else if (type === 'win') {
+        // Cheerful 4-note fanfare arpeggio
+        const notes = [523.25, 659.25, 783.99, 1046.5];
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.09);
+          gain.gain.setValueAtTime(0.22, now + idx * 0.09);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.09 + 0.22);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(now + idx * 0.09);
+          osc.stop(now + idx * 0.09 + 0.22);
+        });
+      }
+    }
+
     // ======== STATE & LOCAL STORAGE ========
+    let defaultLangs = { z1: 'en', z2: 'en', z3: 'th', z4: 'th' };
+    let savedLangs = {};
+    try {
+      savedLangs = JSON.parse(localStorage.getItem('mlst_langs') || '{}');
+    } catch (e) { savedLangs = {}; }
+
     let appState = {
       childName: localStorage.getItem('mlst_name') || 'น้องมะลิ',
       stars: parseInt(localStorage.getItem('mlst_stars') || '0', 10),
       starGoal: parseInt(localStorage.getItem('mlst_goal') || '50', 10),
-      couponText: localStorage.getItem('mlst_coupon') || '🍦 คูปองแลกไอศกรีม 1 แท่ง หรือนิทานก่อนนอน 2 เรื่อง!'
+      couponText: localStorage.getItem('mlst_coupon') || '🍦 คูปองแลกไอศกรีม 1 แท่ง หรือนิทานก่อนนอน 2 เรื่อง!',
+      langs: { ...defaultLangs, ...savedLangs }
     };
 
     function saveState() {
@@ -666,6 +853,7 @@
       localStorage.setItem('mlst_stars', appState.stars);
       localStorage.setItem('mlst_goal', appState.starGoal);
       localStorage.setItem('mlst_coupon', appState.couponText);
+      localStorage.setItem('mlst_langs', JSON.stringify(appState.langs));
       updateTopUI();
     }
 
@@ -676,6 +864,24 @@
       document.getElementById('starFill').style.width = pct + '%';
       document.getElementById('starText').textContent = `⭐ ${appState.stars} / ${appState.starGoal} ดาว`;
       document.getElementById('couponTextDisplay').textContent = appState.couponText;
+
+      // Update Hub Language Labels
+      ['z1', 'z2', 'z3', 'z4'].forEach((z, idx) => {
+        const el = document.getElementById('hubLang' + (idx + 1));
+        if (el) el.textContent = appState.langs[z] === 'en' ? 'เสียง EN' : 'เสียง TH';
+      });
+    }
+
+    function setZoneLang(zoneKey, lang) {
+      appState.langs[zoneKey] = lang;
+      updateLangChipsUI();
+    }
+
+    function updateLangChipsUI() {
+      ['z1', 'z2', 'z3', 'z4'].forEach(z => {
+        document.getElementById(`langBtn_${z}_th`).classList.toggle('active', appState.langs[z] === 'th');
+        document.getElementById(`langBtn_${z}_en`).classList.toggle('active', appState.langs[z] === 'en');
+      });
     }
 
     // ======== SOUND & SPEECH ========
@@ -688,10 +894,16 @@
       window.speechSynthesis.speak(utter);
     }
 
+    function speakByZone(zoneKey, thText, enText) {
+      const isEn = appState.langs[zoneKey] === 'en';
+      speakText(isEn ? enText : thText, isEn ? 'en-US' : 'th-TH');
+    }
+
     function addStar(amount = 1) {
       appState.stars += amount;
       saveState();
       if (appState.stars >= appState.starGoal) {
+        playSFX('win');
         document.getElementById('rewardModalTitle').textContent = `🎉 ครบ ${appState.starGoal} ดาวแล้ว!`;
         document.getElementById('rewardModalDesc').textContent = `${appState.childName} เก่งมากๆ เลย เอาหน้าจอนี้ไปแลกรางวัลกับคุณพ่อคุณแม่ได้เลยครับ!`;
         document.getElementById('rewardModal').classList.add('show');
@@ -797,10 +1009,16 @@
     function speakZ1() {
       if (z1Tasks.length === 1) {
         const t = z1Tasks[0];
-        speakText(`Put ${t.target} ${t.color.en} ${t.toy.en} in the box`, 'en-US');
+        speakByZone('z1',
+          `มาช่วยกันเก็บ${t.toy.th}${t.color.th} จำนวน ${t.target} ชิ้น ลงกล่องกันเถอะ`,
+          `Put ${t.target} ${t.color.en} ${t.toy.en} in the box`
+        );
       } else {
         const [t1, t2] = z1Tasks;
-        speakText(`Put ${t1.target} ${t1.color.en} ${t1.toy.en}, and ${t2.target} ${t2.color.en} ${t2.toy.en} in the box`, 'en-US');
+        speakByZone('z1',
+          `เก็บ${t1.toy.th}${t1.color.th} ${t1.target} ชิ้น และ ${t2.toy.th}${t2.color.th} ${t2.target} ชิ้น ลงกล่องจ้า`,
+          `Put ${t1.target} ${t1.color.en} ${t1.toy.en}, and ${t2.target} ${t2.color.en} ${t2.toy.en} in the box`
+        );
       }
     }
 
@@ -809,40 +1027,88 @@
         t.color.id === item.color.id && t.toy.id === item.toy.id && t.collected < t.target
       );
       if (matchTask) {
+        playSFX('step');
         matchTask.collected++;
         el.style.transform = 'scale(0)';
         setTimeout(() => el.remove(), 150);
-        speakText(String(matchTask.collected), 'en-US');
+        const countStr = String(matchTask.collected);
+        speakByZone('z1', countStr, countStr);
         updateZ1Prompt();
 
         if (z1Tasks.every(t => t.collected >= t.target)) {
+          playSFX('win');
           addStar(z1Diff === 'hard' ? 2 : 1);
           setTimeout(() => {
-            speakText('Good job! You are very helpful!', 'en-US');
+            speakByZone('z1', 'เก่งมากๆ เลย ช่วยเก็บของเรียบร้อยแล้ว!', 'Good job! You are very helpful!');
             initZone1();
           }, 900);
         }
       } else {
+        playSFX('wall');
         el.classList.add('shake');
         setTimeout(() => el.classList.remove('shake'), 400);
-        speakText('ลองดูใหม่นะจ๊ะ', 'th-TH');
+        speakByZone('z1', 'ลองดูใหม่นะจ๊ะ', 'Try again please!');
       }
     }
 
-    // ======== ZONE 2: GARDEN MAZE ========
+    // ======== ZONE 2: GARDEN MAZE (5 Story Themes + Web Audio SFX) ========
     let z2GridSize = 4;
     let z2Control = 'step';
+    let z2StoryMode = 'random';
+    let currentStory = null;
     let playerPos = { r: 0, c: 0 };
     let goalPos = { r: 3, c: 3 };
     let rocks = [];
     let codeQueue = [];
-    let currentTargetObj = { emoji: '🦴', en: 'Bone', th: 'กระดูก' };
-    const mazeTargets = [
-      { emoji: '🦴', en: 'Bone', th: 'กระดูก' },
-      { emoji: '🍎', en: 'Apple', th: 'แอปเปิล' },
-      { emoji: '🏠', en: 'House', th: 'บ้าน' },
-      { emoji: '🍓', en: 'Strawberry', th: 'สตรอว์เบอร์รี' }
-    ];
+
+    const mazeStories = {
+      puppy: {
+        id: 'puppy',
+        actorEmoji: '🐶', actorTh: 'ลูกหมา', actorEn: 'Puppy',
+        goalEmoji: '🦴', goalTh: 'กระดูก', goalEn: 'Bone',
+        obsEmoji: '🪨', obsTh: 'ก้อนหิน', obsEn: 'Rock',
+        bg: '#55efc4', border: '#00b894'
+      },
+      bunny: {
+        id: 'bunny',
+        actorEmoji: '🐰', actorTh: 'กระต่ายน้อย', actorEn: 'Bunny',
+        goalEmoji: '🥕', goalTh: 'แครอท', goalEn: 'Carrot',
+        obsEmoji: '🪵', obsTh: 'ขอนไม้', obsEn: 'Log',
+        bg: '#a8e6cf', border: '#38ada9'
+      },
+      rocket: {
+        id: 'rocket',
+        actorEmoji: '🚀', actorTh: 'จรวดอวกาศ', actorEn: 'Rocket',
+        goalEmoji: '🌕', goalTh: 'ดวงจันทร์', goalEn: 'Moon',
+        obsEmoji: '☄️', obsTh: 'อุกกาบาต', obsEn: 'Meteor',
+        bg: '#6c5ce7', border: '#341f97'
+      },
+      bee: {
+        id: 'bee',
+        actorEmoji: '🐝', actorTh: 'ผึ้งน้อย', actorEn: 'Little Bee',
+        goalEmoji: '🌻', goalTh: 'ดอกทานตะวัน', goalEn: 'Sunflower',
+        obsEmoji: '🕸️', obsTh: 'ใยแมงมุม', obsEn: 'Spiderweb',
+        bg: '#ffeaa7', border: '#fdcb6e'
+      },
+      firetruck: {
+        id: 'firetruck',
+        actorEmoji: '🚒', actorTh: 'รถดับเพลิง', actorEn: 'Fire Truck',
+        goalEmoji: '🔥', goalTh: 'จุดไฟไหม้', goalEn: 'Fire',
+        obsEmoji: '🚧', obsTh: 'แผงกั้นถนน', obsEn: 'Barrier',
+        bg: '#fab1a0', border: '#e17055'
+      }
+    };
+
+    function setZ2Story(storyKey) {
+      z2StoryMode = storyKey;
+      document.getElementById('z2StoryRandom').classList.toggle('active', storyKey === 'random');
+      document.getElementById('z2StoryPuppy').classList.toggle('active', storyKey === 'puppy');
+      document.getElementById('z2StoryBunny').classList.toggle('active', storyKey === 'bunny');
+      document.getElementById('z2StoryRocket').classList.toggle('active', storyKey === 'rocket');
+      document.getElementById('z2StoryBee').classList.toggle('active', storyKey === 'bee');
+      document.getElementById('z2StoryFire').classList.toggle('active', storyKey === 'firetruck');
+      initZone2();
+    }
 
     function setZ2Grid(size) {
       z2GridSize = size;
@@ -866,7 +1132,18 @@
       playerPos = { r: 0, c: 0 };
       goalPos = { r: z2GridSize - 1, c: z2GridSize - 1 };
       codeQueue = [];
-      currentTargetObj = mazeTargets[Math.floor(Math.random() * mazeTargets.length)];
+
+      const keys = Object.keys(mazeStories);
+      if (z2StoryMode === 'random') {
+        const rk = keys[Math.floor(Math.random() * keys.length)];
+        currentStory = mazeStories[rk];
+      } else {
+        currentStory = mazeStories[z2StoryMode];
+      }
+
+      const gridEl = document.getElementById('mazeGrid');
+      gridEl.style.background = currentStory.bg;
+      gridEl.style.borderColor = currentStory.border;
 
       let safePath = new Set(['0,0', `${goalPos.r},${goalPos.c}`]);
       let cr = 0, cc = 0;
@@ -890,14 +1167,18 @@
       }
 
       document.getElementById('z2Prompt').textContent =
-        `Help the Puppy find the ${currentTargetObj.en}! (พาลูกหมาไปหา${currentTargetObj.th})`;
+        `${currentStory.actorEmoji} พา${currentStory.actorTh}หลบ${currentStory.obsTh} ไปหา${currentStory.goalTh}! (Help the ${currentStory.actorEn} find the ${currentStory.goalEn})`;
       renderMaze();
       updateQueueUI();
       speakZ2();
     }
 
     function speakZ2() {
-      speakText(`Help the Puppy find the ${currentTargetObj.en}`, 'en-US');
+      if (!currentStory) return;
+      speakByZone('z2',
+        `มาช่วยพา${currentStory.actorTh} เดินหลบ${currentStory.obsTh} ไปหา${currentStory.goalTh}กันเถอะ`,
+        `Help the ${currentStory.actorEn} find the ${currentStory.goalEn}`
+      );
     }
 
     function renderMaze() {
@@ -910,17 +1191,24 @@
           const cell = document.createElement('div');
           cell.className = 'maze-cell';
           cell.style.fontSize = z2GridSize === 6 ? '22px' : '30px';
-          if (playerPos.r === r && playerPos.c === c) cell.textContent = '🐶';
-          else if (goalPos.r === r && goalPos.c === c) cell.textContent = currentTargetObj.emoji;
-          else if (rocks.some(k => k.r === r && k.c === c)) cell.textContent = '🪨';
+          if (playerPos.r === r && playerPos.c === c) {
+            cell.textContent = currentStory.actorEmoji;
+            cell.classList.add('player-cell');
+          } else if (goalPos.r === r && goalPos.c === c) {
+            cell.textContent = currentStory.goalEmoji;
+          } else if (rocks.some(k => k.r === r && k.c === c)) {
+            cell.textContent = currentStory.obsEmoji;
+          }
           grid.appendChild(cell);
         }
       }
     }
 
     function handleMazeInput(dir) {
-      if (z2Control === 'step') moveSingleStep(dir);
-      else {
+      if (z2Control === 'step') {
+        moveSingleStep(dir);
+      } else {
+        playSFX('queue');
         codeQueue.push(dir);
         updateQueueUI();
       }
@@ -933,6 +1221,7 @@
     }
 
     function clearCodeQueue() {
+      playSFX('queue');
       codeQueue = [];
       playerPos = { r: 0, c: 0 };
       renderMaze();
@@ -946,22 +1235,35 @@
       if (dir === 'LEFT') nc--;
       if (dir === 'RIGHT') nc++;
 
+      const gridEl = document.getElementById('mazeGrid');
+
       if (nr < 0 || nr >= z2GridSize || nc < 0 || nc >= z2GridSize) {
-        speakText('ชนขอบรั้วแล้วจ้า', 'th-TH');
+        playSFX('wall');
+        gridEl.classList.add('shake');
+        setTimeout(() => gridEl.classList.remove('shake'), 400);
+        speakByZone('z2', 'อุ๊ย ชนขอบกำแพงแล้วจ้า!', 'Oops! Hit the wall!');
         return false;
       }
       if (rocks.some(k => k.r === nr && k.c === nc)) {
-        speakText('อุ๊ย ชนก้อนหิน!', 'th-TH');
+        playSFX('rock');
+        gridEl.classList.add('shake');
+        setTimeout(() => gridEl.classList.remove('shake'), 400);
+        speakByZone('z2', `อุ๊ย ชน${currentStory.obsTh}!`, `Oops! Hit the ${currentStory.obsEn}!`);
         return false;
       }
 
+      playSFX('step');
       playerPos = { r: nr, c: nc };
       renderMaze();
 
       if (playerPos.r === goalPos.r && playerPos.c === goalPos.c) {
+        playSFX('win');
         addStar(z2GridSize === 6 ? 2 : 1);
-        speakText(`Awesome! You found the ${currentTargetObj.en}!`, 'en-US');
-        setTimeout(initZone2, 1000);
+        speakByZone('z2',
+          `เย้! พา${currentStory.actorTh}ไปถึง${currentStory.goalTh}สำเร็จแล้ว!`,
+          `Awesome! The ${currentStory.actorEn} found the ${currentStory.goalEn}!`
+        );
+        setTimeout(initZone2, 1100);
         return 'WIN';
       }
       return true;
@@ -983,34 +1285,35 @@
       }, 420);
     }
 
-    // ======== ZONE 3: MINI MART ========
+    // ======== ZONE 3: MINI MART (With Picture Show/Hide Toggle) ========
     let z3Category = 'thai';
     let z3Diff = 'easy';
+    let z3ShowPic = true;
     let z3Answer = null;
 
     const thaiItems = [
-      { label: 'ก. ไก่', emoji: '🐔', speak: 'กอ ไก่', riddle: 'พยัญชนะตัวอะไรเอ่ย ขันตอนเช้า เอกอีเอ้กเอ้ก?' },
-      { label: 'ข. ไข่', emoji: '🥚', speak: 'ขอ ไข่', riddle: 'พยัญชนะตัวอะไรเอ่ย แม่ไก่ฟักออกมาเป็นฟองกลมๆ?' },
-      { label: 'ช. ช้าง', emoji: '🐘', speak: 'ชอ ช้าง', riddle: 'พยัญชนะตัวอะไรเอ่ย ตัวใหญ่มีงวงยาวๆ?' },
-      { label: 'ต. เต่า', emoji: '🐢', speak: 'ตอ เต่า', riddle: 'พยัญชนะตัวอะไรเอ่ย เดินช้าๆ มีกระดองแข็ง?' },
-      { label: 'ป. ปลา', emoji: '🐟', speak: 'ปอ ปลา', riddle: 'พยัญชนะตัวอะไรเอ่ย ว่ายอยู่ในน้ำ มีครีบมีหาง?' },
-      { label: 'ผ. ผึ้ง', emoji: '🐝', speak: 'ผอ ผึ้ง', riddle: 'พยัญชนะตัวอะไรเอ่ย บินหึ่งๆ ทำรังมีน้ำหวาน?' },
-      { label: 'ม. ม้า', emoji: '🐴', speak: 'มอ ม้า', riddle: 'พยัญชนะตัวอะไรเอ่ย วิ่งเร็วคึกคัก กั๊บๆ?' },
-      { label: 'ล. ลิง', emoji: '🐵', speak: 'ลอ ลิง', riddle: 'พยัญชนะตัวอะไรเอ่ย ชอบห้อยโหนและกินกล้วย?' },
-      { label: 'ส. เสือ', emoji: '🐯', speak: 'สอ เสือ', riddle: 'พยัญชนะตัวอะไรเอ่ย เป็นสัตว์ป่ามีลายพาดกลอน?' },
-      { label: 'ฮ. นกฮูก', emoji: '🦉', speak: 'ฮอ นกฮูก', riddle: 'พยัญชนะตัวสุดท้าย ตาโต๊โต ออกหากินกลางคืน?' }
+      { charOnly: 'ก', label: 'ก. ไก่', emoji: '🐔', speakTh: 'กอ ไก่', speakEn: 'Gor Gai, Chicken', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ขันตอนเช้า เอกอีเอ้กเอ้ก?', riddleEn: 'Which Thai letter is for a chicken that crows in the morning?' },
+      { charOnly: 'ข', label: 'ข. ไข่', emoji: '🥚', speakTh: 'ขอ ไข่', speakEn: 'Khor Khai, Egg', riddleTh: 'พยัญชนะตัวอะไรเอ่ย แม่ไก่ฟักออกมาเป็นฟองกลมๆ?', riddleEn: 'Which Thai letter is for an oval egg?' },
+      { charOnly: 'ช', label: 'ช. ช้าง', emoji: '🐘', speakTh: 'ชอ ช้าง', speakEn: 'Chor Chang, Elephant', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ตัวใหญ่มีงวงยาวๆ?', riddleEn: 'Which Thai letter is for a big animal with a long trunk?' },
+      { charOnly: 'ต', label: 'ต. เต่า', emoji: '🐢', speakTh: 'ตอ เต่า', speakEn: 'Tor Tao, Turtle', riddleTh: 'พยัญชนะตัวอะไรเอ่ย เดินช้าๆ มีกระดองแข็ง?', riddleEn: 'Which Thai letter is for a slow animal with a hard shell?' },
+      { charOnly: 'ป', label: 'ป. ปลา', emoji: '🐟', speakTh: 'ปอ ปลา', speakEn: 'Por Pla, Fish', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ว่ายอยู่ในน้ำ มีครีบมีหาง?', riddleEn: 'Which Thai letter is for an animal that swims in water?' },
+      { charOnly: 'ผ', label: 'ผ. ผึ้ง', emoji: '🐝', speakTh: 'ผอ ผึ้ง', speakEn: 'Phor Phueng, Bee', riddleTh: 'พยัญชนะตัวอะไรเอ่ย บินหึ่งๆ ทำรังมีน้ำหวาน?', riddleEn: 'Which Thai letter is for a buzzing bee that makes honey?' },
+      { charOnly: 'ม', label: 'ม. ม้า', emoji: '🐴', speakTh: 'มอ ม้า', speakEn: 'Mor Ma, Horse', riddleTh: 'พยัญชนะตัวอะไรเอ่ย วิ่งเร็วคึกคัก กั๊บๆ?', riddleEn: 'Which Thai letter is for a fast galloping horse?' },
+      { charOnly: 'ล', label: 'ล. ลิง', emoji: '🐵', speakTh: 'ลอ ลิง', speakEn: 'Lor Ling, Monkey', riddleTh: 'พยัญชนะตัวอะไรเอ่ย ชอบห้อยโหนและกินกล้วย?', riddleEn: 'Which Thai letter is for a monkey that loves bananas?' },
+      { charOnly: 'ส', label: 'ส. เสือ', emoji: '🐯', speakTh: 'สอ เสือ', speakEn: 'Sor Suea, Tiger', riddleTh: 'พยัญชนะตัวอะไรเอ่ย เป็นสัตว์ป่ามีลายพาดกลอน?', riddleEn: 'Which Thai letter is for a striped tiger?' },
+      { charOnly: 'ฮ', label: 'ฮ. นกฮูก', emoji: '🦉', speakTh: 'ฮอ นกฮูก', speakEn: 'Hor Nok-Hook, Owl', riddleTh: 'พยัญชนะตัวสุดท้าย ตาโต๊โต ออกหากินกลางคืน?', riddleEn: 'Which last Thai letter is for a big-eyed night owl?' }
     ];
 
     const engItems = [
-      { label: 'Apple', emoji: '🍎', speak: 'Apple', riddle: 'What fruit is red and crunchy?' },
-      { label: 'Banana', emoji: '🍌', speak: 'Banana', riddle: 'What fruit is yellow and monkeys love to eat?' },
-      { label: 'Orange', emoji: '🍊', speak: 'Orange', riddle: 'What round fruit is orange and juicy?' },
-      { label: 'Milk', emoji: '🥛', speak: 'Milk', riddle: 'What white drink comes from a cow?' },
-      { label: 'Bread', emoji: '🍞', speak: 'Bread', riddle: 'What soft food do we toast for breakfast?' },
-      { label: 'Carrot', emoji: '🥕', speak: 'Carrot', riddle: 'What orange vegetable do rabbits love?' },
-      { label: 'Watermelon', emoji: '🍉', speak: 'Watermelon', riddle: 'What big fruit is green outside and red inside?' },
-      { label: 'Grapes', emoji: '🍇', speak: 'Grapes', riddle: 'What small purple fruit grows in a bunch?' },
-      { label: 'Cheese', emoji: '🧀', speak: 'Cheese', riddle: 'What yellow food do little mice love?' }
+      { charOnly: 'Apple', label: 'Apple', emoji: '🍎', speakTh: 'แอปเปิล', speakEn: 'Apple', riddleTh: 'ผลไม้อะไรเอ่ย สีแดงกรอบอร่อย?', riddleEn: 'What fruit is red and crunchy?' },
+      { charOnly: 'Banana', label: 'Banana', emoji: '🍌', speakTh: 'กล้วยหอม', speakEn: 'Banana', riddleTh: 'ผลไม้อะไรเอ่ย สีเหลืองที่ลิงชอบกิน?', riddleEn: 'What fruit is yellow and monkeys love to eat?' },
+      { charOnly: 'Orange', label: 'Orange', emoji: '🍊', speakTh: 'ส้ม', speakEn: 'Orange', riddleTh: 'ผลไม้กลมๆ สีส้ม รสเปรี้ยวอมหวานคืออะไรเอ่ย?', riddleEn: 'What round fruit is orange and juicy?' },
+      { charOnly: 'Milk', label: 'Milk', emoji: '🥛', speakTh: 'นมสด', speakEn: 'Milk', riddleTh: 'เครื่องดื่มสีขาวมีประโยชน์ได้จากแม่วัวคืออะไรเอ่ย?', riddleEn: 'What white drink comes from a cow?' },
+      { charOnly: 'Bread', label: 'Bread', emoji: '🍞', speakTh: 'ขนมปัง', speakEn: 'Bread', riddleTh: 'อาหารนุ่มๆ ที่เรานำมาปิ้งทาแยมตอนเช้าคืออะไรเอ่ย?', riddleEn: 'What soft food do we toast for breakfast?' },
+      { charOnly: 'Carrot', label: 'Carrot', emoji: '🥕', speakTh: 'แครอท', speakEn: 'Carrot', riddleTh: 'ผักสีส้มของโปรดเจ้ากระต่ายคืออะไรเอ่ย?', riddleEn: 'What orange vegetable do rabbits love?' },
+      { charOnly: 'Watermelon', label: 'Watermelon', emoji: '🍉', speakTh: 'แตงโม', speakEn: 'Watermelon', riddleTh: 'ผลไม้ลูกใหญ่ เปลือกสีเขียว ข้างในสีแดงฉ่ำน้ำ?', riddleEn: 'What big fruit is green outside and red inside?' },
+      { charOnly: 'Grapes', label: 'Grapes', emoji: '🍇', speakTh: 'องุ่น', speakEn: 'Grapes', riddleTh: 'ผลไม้ลูกเล็กๆ สีม่วง อยู่รวมกันเป็นพวง?', riddleEn: 'What small purple fruit grows in a bunch?' },
+      { charOnly: 'Cheese', label: 'Cheese', emoji: '🧀', speakTh: 'ชีส', speakEn: 'Cheese', riddleTh: 'อาหารสีเหลืองของโปรดเจ้าหนูตัวน้อย?', riddleEn: 'What yellow food do little mice love?' }
     ];
 
     function setZ3Category(cat) {
@@ -1028,32 +1331,58 @@
       initZone3();
     }
 
+    function setZ3ShowPic(show) {
+      z3ShowPic = show;
+      document.getElementById('z3PicShow').classList.toggle('active', show === true);
+      document.getElementById('z3PicHide').classList.toggle('active', show === false);
+      initZone3();
+    }
+
     function initZone3() {
       let pool = z3Category === 'thai' ? [...thaiItems] : (z3Category === 'eng' ? [...engItems] : [...thaiItems, ...engItems]);
       const count = z3Diff === 'easy' ? 6 : 9;
       const choices = pool.sort(() => Math.random() - 0.5).slice(0, count);
       z3Answer = choices[Math.floor(Math.random() * choices.length)];
 
-      const isThaiItem = thaiItems.some(t => t.label === z3Answer.label);
-      document.getElementById('z3Prompt').textContent = z3Diff === 'easy'
-        ? (isThaiItem ? `แม่ค้าอยากได้ "${z3Answer.label}" จ้า!` : `Find the "${z3Answer.label}" please!`)
-        : `🧩 คำใบ้: ${z3Answer.riddle}`;
+      const useEn = appState.langs.z3 === 'en';
+      if (z3Diff === 'easy') {
+        document.getElementById('z3Prompt').textContent = useEn
+          ? `Find "${z3Answer.label}" please! (${z3ShowPic ? 'มีรูปภาพ' : 'โหมดซ่อนรูป'})`
+          : `แม่ค้าอยากได้ "${z3Answer.label}" จ้า! (${z3ShowPic ? 'มีรูปภาพ' : 'โหมดซ่อนรูป'})`;
+      } else {
+        document.getElementById('z3Prompt').textContent = `🧩 คำใบ้: ${useEn ? z3Answer.riddleEn : z3Answer.riddleTh}`;
+      }
 
       const grid = document.getElementById('martGrid');
       grid.innerHTML = '';
       choices.forEach(item => {
         const card = document.createElement('div');
         card.className = 'mart-card';
-        card.innerHTML = `<div class="mart-emoji">${item.emoji}</div><div class="mart-label">${item.label}</div>`;
+
+        if (z3ShowPic) {
+          card.innerHTML = `<div class="mart-emoji">${item.emoji}</div><div class="mart-label">${item.label}</div>`;
+        } else {
+          // Picture hidden! Show giant consonant/word so child reads the letter directly
+          card.innerHTML = `
+            <div class="mart-big-char">${item.charOnly}</div>
+            <div class="mart-sub-hint">แตะเพื่อเลือกตัวอักษรนี้</div>
+          `;
+        }
+
         card.onclick = () => {
           if (item.label === z3Answer.label) {
-            addStar(z3Diff === 'hard' ? 2 : 1);
-            speakText(isThaiItem ? `ถูกต้องจ้า ${item.speak}` : `Great! ${item.speak}`, isThaiItem ? 'th-TH' : 'en-US');
-            setTimeout(initZone3, 950);
+            playSFX('win');
+            // Reveal picture on success even if in hidden-picture mode!
+            card.style.background = '#d4fc79';
+            card.innerHTML = `<div class="mart-emoji">${item.emoji}</div><div class="mart-label">${item.label}</div>`;
+            addStar((z3Diff === 'hard' ? 2 : 1) + (z3ShowPic ? 0 : 1));
+            speakByZone('z3', `ถูกต้องจ้า ${item.speakTh}`, `Great job! ${item.speakEn}`);
+            setTimeout(initZone3, 1000);
           } else {
+            playSFX('wall');
             card.classList.add('shake');
             setTimeout(() => card.classList.remove('shake'), 400);
-            speakText('ยังไม่ใช่นะจ๊ะ ลองฟังใหม่นะ', 'th-TH');
+            speakByZone('z3', 'ยังไม่ใช่นะจ๊ะ ลองดูตัวอักษรใหม่นะ', 'Not that one, try again!');
           }
         };
         grid.appendChild(card);
@@ -1063,11 +1392,10 @@
 
     function speakZ3() {
       if (!z3Answer) return;
-      const isThaiItem = thaiItems.some(t => t.label === z3Answer.label);
       if (z3Diff === 'easy') {
-        speakText(isThaiItem ? `หยิบ ${z3Answer.speak} ให้หน่อยจ้า` : `Find the ${z3Answer.speak}`, isThaiItem ? 'th-TH' : 'en-US');
+        speakByZone('z3', `หาตัวอักษร ${z3Answer.speakTh} ให้หน่อยจ้า`, `Find ${z3Answer.speakEn}`);
       } else {
-        speakText(z3Answer.riddle, isThaiItem ? 'th-TH' : 'en-US');
+        speakByZone('z3', z3Answer.riddleTh, z3Answer.riddleEn);
       }
     }
 
@@ -1077,7 +1405,6 @@
     let patDiff = 'easy';
     let currentZ4Question = null;
 
-    // Rich Custom SVG Generator for Crisp, Colorful Shapes & Vehicles
     function makeShapeSVG(type, fill, stroke = '#2d3436') {
       const shapes = {
         circle: `<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="${fill}" stroke="${stroke}" stroke-width="6"/><circle cx="35" cy="35" r="8" fill="rgba(255,255,255,0.45)"/></svg>`,
@@ -1161,46 +1488,45 @@
       </svg>`;
     }
 
-    // Master Visual Catalog (Over 35 distinct colorful visual items!)
     const visualCatalog = {
       shapes: [
-        { id: 'sh_cy', name: 'วงกลมสีเหลือง', svg: makeShapeSVG('circle', '#ffd32a') },
-        { id: 'sh_cb', name: 'วงกลมสีน้ำตาล', svg: makeShapeSVG('circle', '#b37d4e') },
-        { id: 'sh_sp', name: 'สี่เหลี่ยมสีชมพูเข้ม', svg: makeShapeSVG('square', '#f53b57') },
-        { id: 'sh_so', name: 'สี่เหลี่ยมสีส้ม', svg: makeShapeSVG('square', '#ff9f1a') },
-        { id: 'sh_sr', name: 'สี่เหลี่ยมสีแดง', svg: makeShapeSVG('square', '#eb2f06') },
-        { id: 'sh_tb', name: 'สามเหลี่ยมสีฟ้า', svg: makeShapeSVG('triangle', '#4bcffa') },
-        { id: 'sh_ty', name: 'สามเหลี่ยมสีเหลือง', svg: makeShapeSVG('triangle', '#fffa65') },
-        { id: 'sh_hg', name: 'หกเหลี่ยมสีเขียว', svg: makeShapeSVG('hexagon', '#05c46b') },
-        { id: 'sh_stp', name: 'ดาวสีม่วง', svg: makeShapeSVG('star', '#8c7ae6') },
-        { id: 'sh_stpk', name: 'ดาวสีชมพูอ่อน', svg: makeShapeSVG('star', '#ffcccc') },
-        { id: 'sh_hr', name: 'หัวใจสีชมพู', svg: makeShapeSVG('heart', '#ff6b81') },
-        { id: 'sh_dm', name: 'เพชรสีฟ้า', svg: makeShapeSVG('diamond', '#18dcff') }
+        { id: 'sh_cy', svg: makeShapeSVG('circle', '#ffd32a') },
+        { id: 'sh_cb', svg: makeShapeSVG('circle', '#b37d4e') },
+        { id: 'sh_sp', svg: makeShapeSVG('square', '#f53b57') },
+        { id: 'sh_so', svg: makeShapeSVG('square', '#ff9f1a') },
+        { id: 'sh_sr', svg: makeShapeSVG('square', '#eb2f06') },
+        { id: 'sh_tb', svg: makeShapeSVG('triangle', '#4bcffa') },
+        { id: 'sh_ty', svg: makeShapeSVG('triangle', '#fffa65') },
+        { id: 'sh_hg', svg: makeShapeSVG('hexagon', '#05c46b') },
+        { id: 'sh_stp', svg: makeShapeSVG('star', '#8c7ae6') },
+        { id: 'sh_stpk', svg: makeShapeSVG('star', '#ffcccc') },
+        { id: 'sh_hr', svg: makeShapeSVG('heart', '#ff6b81') },
+        { id: 'sh_dm', svg: makeShapeSVG('diamond', '#18dcff') }
       ],
       vehicles: [
-        { id: 'vh_scoot', name: 'มอเตอร์ไซค์สีแดง', svg: makeVehicleSVG('scooter', '#ff3f34') },
-        { id: 'vh_taxi', name: 'รถแท็กซี่สีเหลือง', svg: makeVehicleSVG('car', '#ffd32a') },
-        { id: 'vh_car_o', name: 'รถเก๋งสีส้ม', svg: makeVehicleSVG('car', '#ff793f') },
-        { id: 'vh_car_b', name: 'รถตำรวจสีน้ำเงิน', svg: makeVehicleSVG('car', '#3867d6') },
-        { id: 'vh_bike', name: 'รถจักรยาน', svg: makeVehicleSVG('bike', '#eb3b5a') },
-        { id: 'vh_plane', name: 'เครื่องบิน', svg: makeVehicleSVG('plane', '#45aaf2', '#fed330') },
-        { id: 'vh_heli', name: 'เฮลิคอปเตอร์สีเหลือง', svg: makeVehicleSVG('heli', '#fed330') },
-        { id: 'vh_boat', name: 'เรือใบสีฟ้า', svg: makeVehicleSVG('boat', '#2bcbba', '#fed330') },
-        { id: 'vh_bus', name: 'รถบัสสีส้ม', svg: makeVehicleSVG('bus', '#fa8231') },
-        { id: 'vh_rock_o', name: 'จรวดสีส้ม', svg: makeVehicleSVG('rocket', '#fd9644', '#4b7bec') },
-        { id: 'vh_rock_p', name: 'จรวดสีม่วง', svg: makeVehicleSVG('rocket', '#a55eea', '#ff7675') }
+        { id: 'vh_scoot', svg: makeVehicleSVG('scooter', '#ff3f34') },
+        { id: 'vh_taxi', svg: makeVehicleSVG('car', '#ffd32a') },
+        { id: 'vh_car_o', svg: makeVehicleSVG('car', '#ff793f') },
+        { id: 'vh_car_b', svg: makeVehicleSVG('car', '#3867d6') },
+        { id: 'vh_bike', svg: makeVehicleSVG('bike', '#eb3b5a') },
+        { id: 'vh_plane', svg: makeVehicleSVG('plane', '#45aaf2', '#fed330') },
+        { id: 'vh_heli', svg: makeVehicleSVG('heli', '#fed330') },
+        { id: 'vh_boat', svg: makeVehicleSVG('boat', '#2bcbba', '#fed330') },
+        { id: 'vh_bus', svg: makeVehicleSVG('bus', '#fa8231') },
+        { id: 'vh_rock_o', svg: makeVehicleSVG('rocket', '#fd9644', '#4b7bec') },
+        { id: 'vh_rock_p', svg: makeVehicleSVG('rocket', '#a55eea', '#ff7675') }
       ],
       animals: [
-        { id: 'an_lion', name: 'สิงโต', svg: makeEmojiSVG('🦁', '#ffeaa7') },
-        { id: 'an_frog', name: 'กบ', svg: makeEmojiSVG('🐸', '#b8e994') },
-        { id: 'an_panda', name: 'แพนด้า', svg: makeEmojiSVG('🐼', '#dff9fb') },
-        { id: 'an_rab', name: 'กระต่าย', svg: makeEmojiSVG('🐰', '#ffcccc') },
-        { id: 'an_oct', name: 'ปลาหมึก', svg: makeEmojiSVG('🐙', '#f8a5c2') },
-        { id: 'fr_apple', name: 'แอปเปิล', svg: makeEmojiSVG('🍎', '#ffcccc') },
-        { id: 'fr_bana', name: 'กล้วยหอม', svg: makeEmojiSVG('🍌', '#fff200') },
-        { id: 'fr_straw', name: 'สตรอว์เบอร์รี', svg: makeEmojiSVG('🍓', '#fab1a0') },
-        { id: 'fr_grape', name: 'องุ่น', svg: makeEmojiSVG('🍇', '#d6a2e8') },
-        { id: 'fr_melon', name: 'แตงโม', svg: makeEmojiSVG('🍉', '#b8e994') }
+        { id: 'an_lion', svg: makeEmojiSVG('🦁', '#ffeaa7') },
+        { id: 'an_frog', svg: makeEmojiSVG('🐸', '#b8e994') },
+        { id: 'an_panda', svg: makeEmojiSVG('🐼', '#dff9fb') },
+        { id: 'an_rab', svg: makeEmojiSVG('🐰', '#ffcccc') },
+        { id: 'an_oct', svg: makeEmojiSVG('🐙', '#f8a5c2') },
+        { id: 'fr_apple', svg: makeEmojiSVG('🍎', '#ffcccc') },
+        { id: 'fr_bana', svg: makeEmojiSVG('🍌', '#fff200') },
+        { id: 'fr_straw', svg: makeEmojiSVG('🍓', '#fab1a0') },
+        { id: 'fr_grape', svg: makeEmojiSVG('🍇', '#d6a2e8') },
+        { id: 'fr_melon', svg: makeEmojiSVG('🍉', '#b8e994') }
       ]
     };
 
@@ -1236,7 +1562,6 @@
       stage.innerHTML = '';
       choicesEl.innerHTML = '';
 
-      // 1. Pick theme pool
       let pool = [];
       if (patTheme === 'shapes') pool = [...visualCatalog.shapes];
       else if (patTheme === 'vehicles') pool = [...visualCatalog.vehicles];
@@ -1248,17 +1573,11 @@
       }
 
       pool.sort(() => Math.random() - 0.5);
-      const itemA = pool[0];
-      const itemB = pool[1];
-      const itemC = pool[2];
+      const itemA = pool[0], itemB = pool[1], itemC = pool[2];
 
-      // 2. Build pattern rule based on difficulty (Directly inspired by user's worksheet images!)
-      let seq = [];
-      let blankStart = 0;
-      let blankCount = 1;
+      let seq = [], blankStart = 0, blankCount = 1;
 
       if (patDiff === 'easy') {
-        // Classic ABAB_[?] or AABBAA_[?]
         const templates = [
           [itemA, itemB, itemA, itemB, itemA],
           [itemA, itemB, itemA, itemB, itemA, itemB],
@@ -1268,7 +1587,6 @@
         blankStart = seq.length - 1;
         blankCount = 1;
       } else if (patDiff === 'med') {
-        // Worksheet Type 2: AABAAB or ABCABC with missing slot anywhere in the middle or end
         const templates = [
           [itemA, itemA, itemB, itemA, itemA, itemB, itemA, itemA, itemB],
           [itemA, itemB, itemA, itemB, itemA, itemB, itemA],
@@ -1279,7 +1597,6 @@
         blankStart = possiblePositions[Math.floor(Math.random() * possiblePositions.length)];
         blankCount = 1;
       } else {
-        // Hard Mode: Missing 2-item pair in the middle (Just like Row 3 & Row 4 of Worksheet 1!)
         const templates = [
           { s: [itemA, itemB, itemB, itemA, itemB, itemB, itemA, itemB, itemB, itemA], b: 3 },
           { s: [itemA, itemA, itemB, itemB, itemA, itemA, itemB, itemB, itemA, itemA], b: 1 },
@@ -1291,14 +1608,13 @@
         blankCount = 2;
       }
 
-      // 3. Render sequence on stage
       for (let i = 0; i < seq.length; i++) {
         if (i === blankStart) {
           const blankBox = document.createElement('div');
           blankBox.className = 'pat-blank' + (blankCount === 2 ? ' double-blank' : '');
           blankBox.textContent = blankCount === 2 ? '❓ ❓' : '❓';
           stage.appendChild(blankBox);
-          if (blankCount === 2) i++; // skip second item of the pair
+          if (blankCount === 2) i++;
         } else {
           const itemBox = document.createElement('div');
           itemBox.className = 'pat-item';
@@ -1307,7 +1623,6 @@
         }
       }
 
-      // 4. Generate Choices (ก., ข., ค.)
       const thaiLetters = ['ก.', 'ข.', 'ค.'];
       let options = [];
 
@@ -1320,18 +1635,22 @@
           { items: [wrong1], correct: false },
           { items: [wrong2], correct: false }
         ];
-        currentZ4Question = { speak: 'ให้เลือกภาพเติมในช่องว่างให้สัมพันธ์กับแบบรูปนะจ๊ะ' };
+        currentZ4Question = {
+          th: 'ให้เลือกภาพเติมในช่องว่างให้สัมพันธ์กับแบบรูปนะจ๊ะ',
+          en: 'Choose the right picture to complete the pattern!'
+        };
         document.getElementById('z4Prompt').textContent = '🎨 เลือกภาพเติมลงในกรอบสี่เหลี่ยม [ ❓ ] ให้ถูกต้อง!';
       } else {
-        // Pair choices (2 items per choice button, like ก. [square][star] vs ข. [star][square])
-        const c1 = seq[blankStart];
-        const c2 = seq[blankStart + 1];
+        const c1 = seq[blankStart], c2 = seq[blankStart + 1];
         options = [
           { items: [c1, c2], correct: true },
           { items: [c2, c1.id === c2.id ? (c1.id === itemA.id ? itemB : itemA) : c1], correct: false },
           { items: [itemB, itemB.id === c1.id && itemB.id === c2.id ? itemA : itemB], correct: false }
         ];
-        currentZ4Question = { speak: 'ช่องว่างหายไปสองรูป เลือกคู่ภาพ กอ ขอ หรือ คอ มาเติมให้ถูกต้องนะจ๊ะ' };
+        currentZ4Question = {
+          th: 'ช่องว่างหายไปสองรูป เลือกคู่ภาพ กอ ขอ หรือ คอ มาเติมให้ถูกต้องนะจ๊ะ',
+          en: 'Two pictures are missing! Choose the right pair to fill the blanks!'
+        };
         document.getElementById('z4Prompt').textContent = '🔥 ท้าทาย! เลือกคู่ภาพ (2 รูป) เติมลงในช่องว่าง [ ❓ ❓ ] ให้ถูกต้อง!';
       }
 
@@ -1347,73 +1666,80 @@
         `;
         btn.onclick = () => {
           if (opt.correct) {
+            playSFX('win');
             addStar(patDiff === 'hard' ? 2 : 1);
-            speakText('เก่งมากจ้า ถูกต้องเลย!', 'th-TH');
+            speakByZone('z4', 'เก่งมากจ้า ถูกต้องเลย!', 'Awesome! That is correct!');
             setTimeout(initZone4, 900);
           } else {
+            playSFX('wall');
             btn.classList.add('shake');
             setTimeout(() => btn.classList.remove('shake'), 400);
-            speakText('ยังไม่ใช่นะจ๊ะ ลองสังเกตลำดับภาพอีกทีนะ', 'th-TH');
+            speakByZone('z4', 'ยังไม่ใช่นะจ๊ะ ลองสังเกตลำดับภาพอีกทีนะ', 'Not quite, look closely at the pattern!');
           }
         };
         choicesEl.appendChild(btn);
       });
     }
 
-    // Attitude Questions
     const attitudeQuestions = [
       {
-        prompt: 'กินกล้วยเสร็จแล้ว ควรทำอะไรต่อครับ?',
+        promptTh: 'กินกล้วยเสร็จแล้ว ควรทำอะไรต่อครับ?',
+        promptEn: 'After eating a banana, what should you do next?',
         seq: ['🍌', '😋', '❓'],
         options: [
-          { icon: '🗑️', text: 'ทิ้งเปลือกในถังขยะ', correct: true },
-          { icon: '🛣️', text: 'โยนทิ้งบนพื้น', correct: false },
-          { icon: '🛏️', text: 'วางไว้บนที่นอน', correct: false }
+          { icon: '🗑️', textTh: 'ทิ้งเปลือกในถังขยะ', textEn: 'Put peel in the trash', correct: true },
+          { icon: '🛣️', textTh: 'โยนทิ้งบนพื้น', textEn: 'Throw on the floor', correct: false },
+          { icon: '🛏️', textTh: 'วางไว้บนที่นอน', textEn: 'Leave on the bed', correct: false }
         ]
       },
       {
-        prompt: 'เล่นของเล่นเต็มห้องเสร็จแล้ว ทำอย่างไรต่อดีนะ?',
+        promptTh: 'เล่นของเล่นเต็มห้องเสร็จแล้ว ทำอย่างไรต่อดีนะ?',
+        promptEn: 'After playing with toys, what should you do?',
         seq: ['🧸', '🚗', '❓'],
         options: [
-          { icon: '📦', text: 'เก็บใส่กล่องให้เรียบร้อย', correct: true },
-          { icon: '🏃', text: 'เดินหนีไปเลย', correct: false },
-          { icon: '😭', text: 'ร้องไห้งอแง', correct: false }
+          { icon: '📦', textTh: 'เก็บใส่กล่องให้เรียบร้อย', textEn: 'Put toys in the box', correct: true },
+          { icon: '🏃', textTh: 'เดินหนีไปเลย', textEn: 'Walk away', correct: false },
+          { icon: '😭', textTh: 'ร้องไห้งอแง', textEn: 'Cry loudly', correct: false }
         ]
       },
       {
-        prompt: 'ก่อนกินข้าว มือเปื้อน ต้องทำอะไรก่อนครับ?',
+        promptTh: 'ก่อนกินข้าว มือเปื้อน ต้องทำอะไรก่อนครับ?',
+        promptEn: 'Before eating with dirty hands, what should you do?',
         seq: ['👐', '🦠', '❓'],
         options: [
-          { icon: '🧼', text: 'ล้างมือด้วยสบู่', correct: true },
-          { icon: '👕', text: 'เช็ดกับเสื้อผ้า', correct: false },
-          { icon: '🎮', text: 'ไปเล่นเกมต่อ', correct: false }
+          { icon: '🧼', textTh: 'ล้างมือด้วยสบู่', textEn: 'Wash hands with soap', correct: true },
+          { icon: '👕', textTh: 'เช็ดกับเสื้อผ้า', textEn: 'Wipe on clothes', correct: false },
+          { icon: '🎮', textTh: 'ไปเล่นเกมต่อ', textEn: 'Play games', correct: false }
         ]
       },
       {
-        prompt: 'เห็นเพื่อนหกล้มที่สนามเด็กเล่น เราควรทำอย่างไร?',
+        promptTh: 'เห็นเพื่อนหกล้มที่สนามเด็กเล่น เราควรทำอย่างไร?',
+        promptEn: 'When a friend falls down, what should we do?',
         seq: ['👦', '💥', '❓'],
         options: [
-          { icon: '🤝', text: 'เข้าไปช่วยพยุงเพื่อน', correct: true },
-          { icon: '😆', text: 'หัวเราะเยาะเพื่อน', correct: false },
-          { icon: '🙈', text: 'แกล้งทำเป็นไม่เห็น', correct: false }
+          { icon: '🤝', textTh: 'เข้าไปช่วยพยุงเพื่อน', textEn: 'Help the friend up', correct: true },
+          { icon: '😆', textTh: 'หัวเราะเยาะเพื่อน', textEn: 'Laugh at them', correct: false },
+          { icon: '🙈', textTh: 'แกล้งทำเป็นไม่เห็น', textEn: 'Ignore them', correct: false }
         ]
       },
       {
-        prompt: 'ตื่นนอนตอนเช้า พับผ้าห่มแล้ว ควรทำอะไรต่อ?',
+        promptTh: 'ตื่นนอนตอนเช้า พับผ้าห่มแล้ว ควรทำอะไรต่อ?',
+        promptEn: 'After waking up and making the bed, what is next?',
         seq: ['🌅', '🛏️', '❓'],
         options: [
-          { icon: '🪥', text: 'แปรงฟันล้างหน้า', correct: true },
-          { icon: '🍬', text: 'กินลูกอมทันที', correct: false },
-          { icon: '👟', text: 'ใส่รองเท้าขึ้นเตียง', correct: false }
+          { icon: '🪥', textTh: 'แปรงฟันล้างหน้า', textEn: 'Brush teeth and wash face', correct: true },
+          { icon: '🍬', textTh: 'กินลูกอมทันที', textEn: 'Eat candy right away', correct: false },
+          { icon: '👟', textTh: 'ใส่รองเท้าขึ้นเตียง', textEn: 'Wear shoes in bed', correct: false }
         ]
       },
       {
-        prompt: 'เมื่อคุณพ่อคุณแม่ยื่นของให้ เราควรทำอย่างไร?',
+        promptTh: 'เมื่อคุณพ่อคุณแม่ยื่นของให้ เราควรทำอย่างไร?',
+        promptEn: 'When parents give you something, what should you do?',
         seq: ['🎁', '👨‍👩‍👧', '❓'],
         options: [
-          { icon: '🙏', text: 'ไหว้และพูดว่า ขอบคุณค่ะ/ครับ', correct: true },
-          { icon: '😠', text: 'ดึงของแล้ววิ่งหนี', correct: false },
-          { icon: '🙄', text: 'ไม่พูดอะไรเลย', correct: false }
+          { icon: '🙏', textTh: 'ไหว้และพูดขอบคุณ', textEn: 'Say thank you nicely', correct: true },
+          { icon: '😠', textTh: 'ดึงของแล้ววิ่งหนี', textEn: 'Grab and run away', correct: false },
+          { icon: '🙄', textTh: 'ไม่พูดอะไรเลย', textEn: 'Say nothing', correct: false }
         ]
       }
     ];
@@ -1424,12 +1750,14 @@
       stage.innerHTML = '';
       choicesEl.innerHTML = '';
 
+      const useEn = appState.langs.z4 === 'en';
+
       if (z4Mode === 'pattern') {
         generateWorksheetPattern();
       } else if (z4Mode === 'attitude') {
         const q = attitudeQuestions[Math.floor(Math.random() * attitudeQuestions.length)];
-        currentZ4Question = { speak: q.prompt };
-        document.getElementById('z4Prompt').textContent = q.prompt;
+        currentZ4Question = { th: q.promptTh, en: q.promptEn };
+        document.getElementById('z4Prompt').textContent = useEn ? q.promptEn : q.promptTh;
 
         q.seq.forEach(item => {
           const box = document.createElement('div');
@@ -1443,8 +1771,9 @@
         opts.forEach(opt => {
           const btn = document.createElement('button');
           btn.className = 'choice-btn';
-          btn.innerHTML = `<span style="font-size:42px;">${opt.icon}</span><span>${opt.text}</span>`;
-          btn.onclick = () => checkZ4SimpleAnswer(btn, opt.correct, opt.text);
+          const label = useEn ? opt.textEn : opt.textTh;
+          btn.innerHTML = `<span style="font-size:42px;">${opt.icon}</span><span>${label}</span>`;
+          btn.onclick = () => checkZ4SimpleAnswer(btn, opt.correct, opt.textTh, opt.textEn);
           choicesEl.appendChild(btn);
         });
       } else if (z4Mode === 'number') {
@@ -1454,8 +1783,13 @@
         const seqNums = [0, 1, 2, 3, 4].map(i => start + i * step);
         const ans = seqNums[missingIdx];
 
-        currentZ4Question = { speak: 'ตัวเลขอะไรเอ่ยที่หายไปจากช่องว่าง?' };
-        document.getElementById('z4Prompt').textContent = '🔢 ตัวเลขอะไรเอ่ยที่หายไปจากช่องว่าง?';
+        currentZ4Question = {
+          th: 'ตัวเลขอะไรเอ่ยที่หายไปจากช่องว่าง?',
+          en: 'Which number is missing from the box?'
+        };
+        document.getElementById('z4Prompt').textContent = useEn
+          ? '🔢 Which number is missing?'
+          : '🔢 ตัวเลขอะไรเอ่ยที่หายไปจากช่องว่าง?';
 
         seqNums.forEach((n, idx) => {
           const box = document.createElement('div');
@@ -1480,7 +1814,12 @@
           const btn = document.createElement('button');
           btn.className = 'choice-btn';
           btn.innerHTML = `<span style="font-size:40px;">${opt.label}</span><span class="choice-badge">${['ก.', 'ข.', 'ค.'][i]}</span>`;
-          btn.onclick = () => checkZ4SimpleAnswer(btn, opt.correct, `หมายเลข ${opt.label} ถูกต้องจ้า!`);
+          btn.onclick = () => checkZ4SimpleAnswer(
+            btn,
+            opt.correct,
+            `หมายเลข ${opt.label} ถูกต้องจ้า!`,
+            `Number ${opt.label} is correct!`
+          );
           choicesEl.appendChild(btn);
         });
       }
@@ -1489,18 +1828,22 @@
     }
 
     function speakZ4() {
-      if (currentZ4Question) speakText(currentZ4Question.speak, 'th-TH');
+      if (currentZ4Question) {
+        speakByZone('z4', currentZ4Question.th, currentZ4Question.en);
+      }
     }
 
-    function checkZ4SimpleAnswer(btn, isCorrect, successMsg) {
+    function checkZ4SimpleAnswer(btn, isCorrect, msgTh, msgEn) {
       if (isCorrect) {
+        playSFX('win');
         addStar(1);
-        speakText(`ยอดเยี่ยมมาก! ${successMsg}`, 'th-TH');
+        speakByZone('z4', `ยอดเยี่ยมมาก! ${msgTh}`, `Great job! ${msgEn}`);
         setTimeout(initZone4, 950);
       } else {
+        playSFX('wall');
         btn.classList.add('shake');
         setTimeout(() => btn.classList.remove('shake'), 400);
-        speakText('เอ๊... ลองคิดดูใหม่อีกทีนะจ๊ะ', 'th-TH');
+        speakByZone('z4', 'เอ๊... ลองคิดดูใหม่อีกทีนะจ๊ะ', 'Hmm, let us try again!');
       }
     }
 
@@ -1529,6 +1872,7 @@
       document.getElementById('inputChildName').value = appState.childName;
       document.getElementById('inputStarGoal').value = appState.starGoal;
       document.getElementById('inputCouponText').value = appState.couponText;
+      updateLangChipsUI();
       document.getElementById('settingsModal').classList.add('show');
     }
 
