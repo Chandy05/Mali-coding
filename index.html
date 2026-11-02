@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>My Little Smart Town V5.1 - เมืองจำลองของหนู</title>
+  <title>My Little Smart Town V5.2 - เมืองจำลองของหนู</title>
   <link href="https://fonts.googleapis.com/css2?family=Mali:wght@500;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -127,10 +127,14 @@
     .zone-2 { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); }
     .zone-3 { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); }
     .zone-4 { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); }
+    .zone-5 {
+      background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+      grid-column: 1 / -1;
+    }
     .zone-emoji { font-size: 54px; margin-bottom: 6px; }
     .zone-name { font-size: 21px; font-weight: 700; margin: 4px 0; }
     .zone-tag {
-      background: rgba(255,255,255,0.8);
+      background: rgba(255,255,255,0.85);
       padding: 4px 12px;
       border-radius: 20px;
       font-size: 13px;
@@ -360,7 +364,6 @@
       line-height: 1.2;
       max-width: 100%;
     }
-    /* Single Thai Character vs Long English Word */
     .mart-big-char {
       font-size: 48px;
       font-weight: 700;
@@ -592,25 +595,31 @@
       <div class="zone-card zone-1" onclick="openZone(1)">
         <div class="zone-emoji">🧸</div>
         <div class="zone-name">1. ห้องของเล่น</div>
-        <div class="zone-tag">วินัย + นับเลข + สี (<span id="hubLang1">EN</span>)</div>
+        <div class="zone-tag">วินัย + นับเลข + สี (<span id="hubLang1">เสียง EN</span>)</div>
       </div>
 
       <div class="zone-card zone-2" onclick="openZone(2)">
         <div class="zone-emoji">🚀</div>
         <div class="zone-name">2. สวนผจญภัย</div>
-        <div class="zone-tag">Coding 5 เรื่องราว + เสียงเดินครบทุกก้าว (<span id="hubLang2">EN</span>)</div>
+        <div class="zone-tag">Coding 5 เรื่องราว + เสียงเดินครบทุกก้าว (<span id="hubLang2">เสียง EN</span>)</div>
       </div>
 
       <div class="zone-card zone-3" onclick="openZone(3)">
         <div class="zone-emoji">🛒</div>
         <div class="zone-name">3. ตลาดนัดหรรษา</div>
-        <div class="zone-tag">ก-ฮ + คำศัพท์ + โหมดซ่อนภาพ (<span id="hubLang3">TH</span>)</div>
+        <div class="zone-tag">ก-ฮ + คำศัพท์ + โหมดซ่อนภาพ (<span id="hubLang3">เสียง TH</span>)</div>
       </div>
 
       <div class="zone-card zone-4" onclick="openZone(4)">
         <div class="zone-emoji">🎨</div>
         <div class="zone-name">4. โรงเรียนฝึกสมอง</div>
-        <div class="zone-tag">อนุกรมภาพ + นิสัยดี + เลขหาย (<span id="hubLang4">TH</span>)</div>
+        <div class="zone-tag">อนุกรมภาพ + นิสัยดี + เลขหาย (<span id="hubLang4">เสียง TH</span>)</div>
+      </div>
+
+      <div class="zone-card zone-5" onclick="window.location.href='clock.html'">
+        <div class="zone-emoji">⏰</div>
+        <div class="zone-name">5. หอนาฬิกาหรรษา (Magic Clock)</div>
+        <div class="zone-tag">ฝึกดูเข็มสั้น/เข็มยาว + นาฬิกาดิจิตอล + กิจวัตรประจำวัน (<span id="hubLang5">เสียง TH</span>)</div>
       </div>
     </div>
   </div>
@@ -629,7 +638,7 @@
     <div class="toy-box" id="toyBoxStatus">📦 กล่องเก็บของเล่น (แตะที่ของเล่นเพื่อเก็บลงกล่อง)</div>
   </div>
 
-  <!-- ZONE 2: GARDEN MAZE (Multi-story + Guaranteed Queue Step SFX) -->
+  <!-- ZONE 2: GARDEN MAZE -->
   <div id="zone2" class="screen">
     <div class="mode-bar">
       <button class="pill-btn pill-sub active" id="z2StoryRandom" onclick="setZ2Story('random')">🎲 สุ่มเรื่องราว</button>
@@ -759,11 +768,19 @@
           </div>
         </div>
 
-        <div class="lang-setting-row" style="margin-bottom:0;">
+        <div class="lang-setting-row">
           <span>4. โรงเรียนฝึกสมอง</span>
           <div class="lang-toggle-group">
             <button class="lang-chip" id="langBtn_z4_th" onclick="setZoneLang('z4','th')">🇹🇭 เสียงไทย</button>
             <button class="lang-chip" id="langBtn_z4_en" onclick="setZoneLang('z4','en')">🇬🇧 เสียง Eng</button>
+          </div>
+        </div>
+
+        <div class="lang-setting-row" style="margin-bottom:0;">
+          <span>5. หอนาฬิกาหรรษา</span>
+          <div class="lang-toggle-group">
+            <button class="lang-chip" id="langBtn_z5_th" onclick="setZoneLang('z5','th')">🇹🇭 เสียงไทย</button>
+            <button class="lang-chip" id="langBtn_z5_en" onclick="setZoneLang('z5','en')">🇬🇧 เสียง Eng</button>
           </div>
         </div>
       </div>
@@ -803,7 +820,6 @@
       return audioCtx;
     }
 
-    // Unlock audio hardware on any touch (Crucial for Huawei P30 & iOS)
     function unlockMobileAudio() {
       const ctx = getAudioCtx();
       if (!ctx) return;
@@ -817,7 +833,6 @@
     document.addEventListener('touchstart', unlockMobileAudio, { passive: true });
     document.addEventListener('click', unlockMobileAudio, { passive: true });
 
-    // Helper for white noise burst (supports exact scheduled start time `when`)
     function playNoiseBurstAt(when, duration, filterFreq = 1200, volume = 0.35) {
       const ctx = getAudioCtx();
       if (!ctx) return;
@@ -845,14 +860,12 @@
       noise.start(t0);
     }
 
-    // Play or Schedule Character-Specific Movement Sound (Works in both Step & Coding Queue modes!)
     function playAdventureMoveSFX(storyId, scheduledTime = 0) {
       const ctx = getAudioCtx();
       if (!ctx) return;
       const now = Math.max(ctx.currentTime, scheduledTime || ctx.currentTime);
 
       if (storyId === 'puppy') {
-        // 🐶 ลูกหมาเดิน: เสียงฝีเท้า "ต๊อก-แต๊ก!" ชัดเจน 2 จังหวะ
         [0, 0.09].forEach((offset, i) => {
           const osc = ctx.createOscillator();
           const gain = ctx.createGain();
@@ -868,7 +881,6 @@
           osc.stop(now + offset + 0.075);
         });
       } else if (storyId === 'bunny') {
-        // 🐰 กระต่ายกระโดด: เสียงสปริง "ดึ๋ง!"
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'sine';
@@ -882,7 +894,6 @@
         osc.start(now);
         osc.stop(now + 0.24);
       } else if (storyId === 'rocket') {
-        // 🚀 จรวดอวกาศ: เสียงพ่นไอพ่น "ฟู่-วูบ!"
         playNoiseBurstAt(now, 0.22, 1400, 0.38);
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -896,7 +907,6 @@
         osc.start(now);
         osc.stop(now + 0.22);
       } else if (storyId === 'bee') {
-        // 🐝 ผึ้งน้อยบิน: เสียงกระพือปีก "หึ่งงง~"
         const osc = ctx.createOscillator();
         const lfo = ctx.createOscillator();
         const lfoGain = ctx.createGain();
@@ -920,7 +930,6 @@
         osc.stop(now + 0.22);
         lfo.stop(now + 0.22);
       } else if (storyId === 'firetruck') {
-        // 🚒 รถดับเพลิง: เสียงไซเรน "บรื้น-หวอ!"
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'square';
@@ -1022,7 +1031,13 @@
     }
 
     // ======== STATE & LOCAL STORAGE ========
-    let defaultLangs = { z1: 'en', z2: 'en', z3: 'th', z4: 'th' };
+    let defaultLangs = {
+      z1: 'en',
+      z2: 'en',
+      z3: 'th',
+      z4: 'th',
+      z5: localStorage.getItem('mlst_clock_lang') || 'th'
+    };
     let savedLangs = {};
     try {
       savedLangs = JSON.parse(localStorage.getItem('mlst_langs') || '{}');
@@ -1042,6 +1057,7 @@
       localStorage.setItem('mlst_goal', appState.starGoal);
       localStorage.setItem('mlst_coupon', appState.couponText);
       localStorage.setItem('mlst_langs', JSON.stringify(appState.langs));
+      localStorage.setItem('mlst_clock_lang', appState.langs.z5 || 'th');
       updateTopUI();
     }
 
@@ -1053,7 +1069,7 @@
       document.getElementById('starText').textContent = `⭐ ${appState.stars} / ${appState.starGoal} ดาว`;
       document.getElementById('couponTextDisplay').textContent = appState.couponText;
 
-      ['z1', 'z2', 'z3', 'z4'].forEach((z, idx) => {
+      ['z1', 'z2', 'z3', 'z4', 'z5'].forEach((z, idx) => {
         const el = document.getElementById('hubLang' + (idx + 1));
         if (el) el.textContent = appState.langs[z] === 'en' ? 'เสียง EN' : 'เสียง TH';
       });
@@ -1061,13 +1077,16 @@
 
     function setZoneLang(zoneKey, lang) {
       appState.langs[zoneKey] = lang;
+      if (zoneKey === 'z5') localStorage.setItem('mlst_clock_lang', lang);
       updateLangChipsUI();
     }
 
     function updateLangChipsUI() {
-      ['z1', 'z2', 'z3', 'z4'].forEach(z => {
-        document.getElementById(`langBtn_${z}_th`).classList.toggle('active', appState.langs[z] === 'th');
-        document.getElementById(`langBtn_${z}_en`).classList.toggle('active', appState.langs[z] === 'en');
+      ['z1', 'z2', 'z3', 'z4', 'z5'].forEach(z => {
+        const btnTh = document.getElementById(`langBtn_${z}_th`);
+        const btnEn = document.getElementById(`langBtn_${z}_en`);
+        if (btnTh) btnTh.classList.toggle('active', appState.langs[z] === 'th');
+        if (btnEn) btnEn.classList.toggle('active', appState.langs[z] === 'en');
       });
     }
 
@@ -1238,7 +1257,7 @@
       }
     }
 
-    // ======== ZONE 2: GARDEN MAZE (WITH HARDWARE-SCHEDULED CODING QUEUE SFX) ========
+    // ======== ZONE 2: GARDEN MAZE ========
     let z2GridSize = 4;
     let z2Control = 'step';
     let z2StoryMode = 'random';
@@ -1406,14 +1425,12 @@
 
     function handleMazeInput(dir) {
       if (isRunningQueue) return;
-      // Stop any ongoing speech so Android/Huawei doesn't duck/mute WebAudio
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
       unlockMobileAudio();
 
       if (z2Control === 'step') {
         moveSingleStep(dir);
       } else {
-        // Play both a button click AND a quick preview of the character sound
         playSFX('queue');
         codeQueue.push(dir);
         updateQueueUI();
@@ -1487,7 +1504,6 @@
       return true;
     }
 
-    // Hardware-Scheduled Coding Queue Runner (Guarantees sound on every step on Huawei P30 & iPhone!)
     function runCodeQueue() {
       if (!codeQueue.length || isRunningQueue) return;
       if ('speechSynthesis' in window) window.speechSynthesis.cancel();
@@ -1501,7 +1517,6 @@
       const stepIntervalMs = 460;
       const stepIntervalSec = stepIntervalMs / 1000;
 
-      // 1. Pre-simulate the path right inside the user tap gesture so we can pre-schedule WebAudio hardware clock!
       let simR = 0, simC = 0;
       let simSteps = [];
       for (let i = 0; i < codeQueue.length; i++) {
@@ -1527,7 +1542,6 @@
         }
       }
 
-      // 2. Schedule all step sounds on the WebAudio hardware timeline immediately inside the tap event!
       if (ctx) {
         const baseTime = ctx.currentTime + 0.05;
         simSteps.forEach((st, idx) => {
@@ -1543,11 +1557,9 @@
         });
       }
 
-      // 3. Synchronize visual movement on the grid with the pre-scheduled sounds
       simSteps.forEach((st, idx) => {
         const timerId = setTimeout(() => {
           updateQueueUI(idx);
-          // Pass false so we don't double-trigger sound, or true as fallback
           moveSingleStep(st.dir, false);
           if (idx === simSteps.length - 1) {
             isRunningQueue = false;
@@ -1557,7 +1569,7 @@
       });
     }
 
-    // ======== ZONE 3: MINI MART (WITH AUTO-FIT TEXT FOR HIDDEN PICTURES) ========
+    // ======== ZONE 3: MINI MART ========
     let z3Category = 'thai';
     let z3Diff = 'easy';
     let z3ShowPic = true;
@@ -1634,7 +1646,6 @@
         if (z3ShowPic) {
           card.innerHTML = `<div class="mart-emoji">${item.emoji}</div><div class="mart-label">${item.label}</div>`;
         } else {
-          // Responsive styling: Giant font for single Thai consonant, auto-scaled badge for English words
           if (!item.isWord) {
             card.innerHTML = `
               <div class="mart-big-char">${item.charOnly}</div>
